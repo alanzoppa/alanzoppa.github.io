@@ -4,24 +4,39 @@ Static HTML pages hosted via GitHub Pages.
 
 ## URL
 
-Once deployed: `https://alan.zoppa.github.io/pages/` (or your preferred username/repo)
+<https://alanzoppa.github.io/pages/>
+
+## Structure
+
+Each page lives in its own subfolder:
+
+```
+pages/
+├── index.html          # Directory listing
+├── skinkedin/
+│   └── index.html      # 🦎 SkinkedIn
+├── your-new-page/
+│   └── index.html      # Future page
+└── template.html       # Copy this to start
+```
 
 ## Adding New Pages
 
-1. Create a new `.html` file in this directory
-2. Link to it from `index.html` or other pages
-3. Commit and push
-4. GitHub Pages will auto-deploy
+1. Create a new folder: `mkdir my-new-page`
+2. Copy template: `cp template.html my-new-page/index.html`
+3. Edit `my-new-page/index.html` with your content
+4. Add a link in root `index.html`
+5. Commit and push — GitHub Pages auto-deploys
 
 ## Current Pages
 
-- `index.html` — SkinkedIn (LinkedIn for skinks)
+- `skinkedin/` — 🦎 SkinkedIn (LinkedIn for skinks)
 
 ## Local Testing
 
 Open any HTML file directly in a browser:
 ```bash
-open index.html
+open skinkedin/index.html
 ```
 
 Or serve with a simple HTTP server:

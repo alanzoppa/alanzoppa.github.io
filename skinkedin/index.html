@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SkinkedIn</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f3f2ef;
+      min-height: 100vh;
+    }
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #0a66c2;
+      text-decoration: none;
+    }
+    .search {
+      flex: 1;
+    }
+    .search input {
+      background: #eef3f8;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      width: 300px;
+      font-size: 14px;
+    }
+    .nav {
+      display: flex;
+      gap: 24px;
+      color: #666;
+      font-size: 12px;
+    }
+    .nav-item {
+      text-align: center;
+      cursor: pointer;
+    }
+    .nav-item:hover {
+      color: #000;
+    }
+    .main {
+      max-width: 1128px;
+      margin: 24px auto;
+      display: grid;
+      grid-template-columns: 225px 1fr 300px;
+      gap: 24px;
+      padding: 0 24px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      overflow: hidden;
+    }
+    .profile-header {
+      height: 60px;
+      background: linear-gradient(135deg, #0077b5 0%, #0a66c2 100%);
+    }
+    .profile-content {
+      text-align: center;
+      padding: 0 16px 16px;
+    }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      background: #4a7c59;
+      border-radius: 50%;
+      margin: -36px auto 12px;
+      border: 3px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+    .name {
+      font-weight: 600;
+      color: #000;
+      font-size: 16px;
+    }
+    .title {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .location {
+      color: #666;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .stats {
+      border-top: 1px solid #e0e0e0;
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      color: #666;
+    }
+    .stat-value {
+      color: #0a66c2;
+      font-weight: 600;
+    }
+    .post-input {
+      padding: 12px 16px;
+    }
+    .post-input-row {
+      display: flex;
+      gap: 12px;
+    }
+    .post-avatar {
+      width: 48px;
+      height: 48px;
+      background: #4a7c59;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .post-input-field {
+      flex: 1;
+      border: 1px solid #e0e0e0;
+      border-radius: 24px;
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+    .post-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 14px;
+      color: #666;
+    }
+    .post {
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .post-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .post-avatar-small {
+      width: 48px;
+      height: 48px;
+      background: #6b8e23;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .post-meta {
+      flex: 1;
+    }
+    .post-author {
+      font-weight: 600;
+      color: #000;
+      font-size: 14px;
+    }
+    .post-title {
+      color: #666;
+      font-size: 12px;
+    }
+    .post-time {
+      color: #999;
+      font-size: 12px;
+    }
+    .post-content {
+      color: #000;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .post-footer {
+      border-top: 1px solid #e0e0e0;
+      padding-top: 8px;
+      display: flex;
+      gap: 24px;
+      color: #666;
+      font-size: 14px;
+    }
+    .sidebar-section {
+      padding: 16px;
+    }
+    .sidebar-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .trending-item {
+      margin-bottom: 12px;
+    }
+    .trending-tag {
+      font-size: 14px;
+      color: #0a66c2;
+      font-weight: 600;
+    }
+    .trending-count {
+      font-size: 12px;
+      color: #666;
+    }
+    .follow-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .follow-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .follow-info {
+      flex: 1;
+    }
+    .follow-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .follow-title {
+      font-size: 12px;
+      color: #666;
+    }
+    .follow-btn {
+      border: 1px solid #0a66c2;
+      color: #0a66c2;
+      background: transparent;
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="#" class="logo">🦎 SkinkedIn</a>
+    <div class="search">
+      <input type="text" placeholder="Search skinks, bugs, warm rocks...">
+    </div>
+    <div class="nav">
+      <div class="nav-item">🏠<br>Home</div>
+      <div class="nav-item">👥<br>Network</div>
+      <div class="nav-item">💼<br>Jobs</div>
+      <div class="nav-item">💬<br>Messaging</div>
+      <div class="nav-item">🔔<br>Notifications</div>
+      <div class="nav-item">🦎<br>Me</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Left Sidebar -->
+    <div class="card">
+      <div class="profile-header"></div>
+      <div class="profile-content">
+        <div class="avatar">🦎</div>
+        <div class="name">Blue-Tailed Skink</div>
+        <div class="title">Professional Basker at Warm Rocks Inc.</div>
+        <div class="location">Sunshine Coast, Australia</div>
+      </div>
+      <div class="stats">
+        <div class="stat-row">
+          <span class="stat-label">Profile views</span>
+          <span class="stat-value">342</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Post impressions</span>
+          <span class="stat-value">1,247</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Feed -->
+    <div>
+      <div class="card post-input">
+        <div class="post-input-row">
+          <div class="post-avatar">🦎</div>
+          <input type="text" class="post-input-field" placeholder="Start a post about your latest shed...">
+        </div>
+        <div class="post-actions">
+          <span>📷 Photo</span>
+          <span>🎥 Video</span>
+          <span>📅 Event</span>
+          <span>📝 Article</span>
+        </div>
+      </div>
+
+      <div class="card post">
+        <div class="post-header">
+          <div class="post-avatar-small">🦎</div>
+          <div class="post-meta">
+            <div class="post-author">Five-Lined Skink</div>
+            <div class="post-title">Senior Sunbather | Thermal Regulation Expert</div>
+            <div class="post-time">2h • 🌍</div>
+          </div>
+        </div>
+        <div class="post-content">
+          Just finished an incredible 6-hour basking session on my favorite rock! The UV index was perfect today. Remember fellow skinks: proper thermoregulation is key to optimal digestion. 🌞🦎 #BaskingLife #SkinkWisdom #WarmRocks
+        </div>
+        <div class="post-footer">
+          <span>👍 127</span>
+          <span>💬 23</span>
+          <span>🔄 8</span>
+          <span>📤 Send</span>
+        </div>
+      </div>
+
+      <div class="card post">
+        <div class="post-header">
+          <div class="post-avatar-small" style="background: #8b4513;">🦎</div>
+          <div class="post-meta">
+            <div class="post-author">Broad-Headed Skink</div>
+            <div class="post-title">Predator Detection Specialist</div>
+            <div class="post-time">4h • 🌍</div>
+          </div>
+        </div>
+        <div class="post-content">
+          Excited to announce I've accepted a new position as Lead Lookout at The Garden Wall! Looking forward to keeping an eye out for hawks and neighborhood cats. Thanks to everyone who supported my job search! 🎉 #NewJob #SkinkCareer #SafetyFirst
+        </div>
+        <div class="post-footer">
+          <span>👍 342</span>
+          <span>💬 56</span>
+          <span>🔄 12</span>
+          <span>📤 Send</span>
+        </div>
+      </div>
+
+      <div class="card post">
+        <div class="post-header">
+          <div class="post-avatar-small" style="background: #228b22;">🦎</div>
+          <div class="post-meta">
+            <div class="post-author">Prehensile-Tailed Skink</div>
+            <div class="post-title">Arboreal Climbing Expert | Rainforest Division</div>
+            <div class="post-time">6h • 🌍</div>
+          </div>
+        </div>
+        <div class="post-content">
+          Who says skinks can't climb trees? Just reached a new personal best: 15 meters up a smooth-barked eucalyptus! Legs AND tail working in perfect harmony. 💪🌳 #ArborealLife #ClimbingSkills #NotJustGroundDwellers
+        </div>
+        <div class="post-footer">
+          <span>👍 89</span>
+          <span>💬 31</span>
+          <span>🔄 15</span>
+          <span>📤 Send</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div>
+      <div class="card">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Trending in the Skink Community</div>
+          <div class="trending-item">
+            <div class="trending-tag">#MoltingSeason</div>
+            <div class="trending-count">2,847 skinks talking about this</div>
+          </div>
+          <div class="trending-item">
+            <div class="trending-tag">#BestBaskingSpots</div>
+            <div class="trending-count">1,523 posts</div>
+          </div>
+          <div class="trending-item">
+            <div class="trending-tag">#SkinkCareers</div>
+            <div class="trending-count">892 skinks hiring</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="sidebar-section">
+          <div class="sidebar-title">Skinks to follow</div>
+          <div class="follow-item">
+            <div class="follow-avatar" style="background: #cd853f;">🦎</div>
+            <div class="follow-info">
+              <div class="follow-name">Fire Skink</div>
+              <div class="follow-title">Color Specialist</div>
+            </div>
+            <button class="follow-btn">Follow</button>
+          </div>
+          <div class="follow-item">
+            <div class="follow-avatar" style="background: #8fbc8f;">🦎</div>
+            <div class="follow-info">
+              <div class="follow-name">Glass Lizard</div>
+              <div class="follow-title">Limbless Advocate (honorary skink)</div>
+            </div>
+            <button class="follow-btn">Follow</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
