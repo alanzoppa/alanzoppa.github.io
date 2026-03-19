@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Voynich Manuscript — The Book Nobody Can Read</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 1.8;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #2c2c2c;
+      background: #fefefe;
+    }
+    h1 {
+      font-size: 2.4em;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+      border-bottom: 3px double #8b4513;
+      padding-bottom: 12px;
+    }
+    .subtitle {
+      color: #6b4226;
+      font-style: italic;
+      margin-bottom: 32px;
+      font-size: 1.1em;
+    }
+    h2 {
+      margin-top: 36px;
+      margin-bottom: 12px;
+      color: #4a3728;
+      font-size: 1.5em;
+    }
+    p { margin-bottom: 16px; }
+    a { color: #8b4513; }
+    .img-container {
+      margin: 28px 0;
+      text-align: center;
+    }
+    .img-container img {
+      max-width: 100%;
+      border: 2px solid #d4c5a9;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.15);
+      border-radius: 2px;
+    }
+    .caption {
+      font-size: 0.85em;
+      color: #888;
+      margin-top: 8px;
+      font-style: italic;
+    }
+    .caption .real { color: #8b4513; }
+    .caption .gen { color: #2e7d32; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .stat-box {
+      background: #f8f4eb;
+      border: 1px solid #d4c5a9;
+      padding: 14px 18px;
+      border-radius: 4px;
+    }
+    .stat-box .label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-box .value { font-size: 1.15em; font-weight: bold; color: #4a3728; }
+    blockquote {
+      border-left: 3px solid #d4c5a9;
+      margin: 16px 0;
+      padding: 8px 20px;
+      color: #555;
+      font-style: italic;
+      background: #faf8f3;
+    }
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+      margin: 24px 0;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 4px;
+      bottom: 4px;
+      width: 2px;
+      background: #d4c5a9;
+    }
+    .timeline .event {
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .timeline .event::before {
+      content: '●';
+      position: absolute;
+      left: -24px;
+      color: #8b4513;
+      font-size: 1.2em;
+    }
+    .timeline .year { font-weight: bold; color: #8b4513; }
+    hr { border: none; border-top: 1px solid #d4c5a9; margin: 32px 0; }
+    .mystery-box {
+      background: #2c1810;
+      color: #e8dcc8;
+      padding: 24px;
+      border-radius: 6px;
+      margin: 28px 0;
+    }
+    .mystery-box h3 { color: #d4c5a9; margin-bottom: 12px; }
+    .mystery-box p { color: #c4b498; }
+    .back { margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+<h1>🧪 The Voynich Manuscript</h1>
+<p class="subtitle">The world's most mysterious book — 600 years old, 240 pages long, and nobody has ever read a single word of it.</p>
+
+<div class="img-container">
+  <img src="images/voynich_p29.jpg" alt="A page from the Voynich Manuscript showing a floral illustration">
+  <p class="caption"><span class="real">📷 Real photo</span> — Page 29 of the Voynich Manuscript, showing one of its many unidentifiable plant illustrations. Yale University, Beinecke Library (MS 408).</p>
+</div>
+
+<h2>What Is It?</h2>
+
+<p>The Voynich manuscript is a handwritten book, carbon-dated to between <strong>1404 and 1438</strong>. It's written in a completely unknown script on vellum (animal skin), filled with bizarre illustrations of plants that don't exist, strange astronomical diagrams, naked women bathing in green pools connected by tubes, and mysterious pharmacological recipes.</p>
+
+<p>Nobody knows who wrote it. Nobody knows what language it's in — if it's a language at all. And despite the best efforts of codebreakers from <strong>both World Wars</strong>, top cryptographers, AI researchers, and thousands of amateur sleuths, <strong>it has never been deciphered.</strong></p>
+
+<div class="stat-grid">
+  <div class="stat-box">
+    <div class="label">Dated to</div>
+    <div class="value">1404–1438</div>
+  </div>
+  <div class="stat-box">
+    <div class="label">Pages</div>
+    <div class="value">~240 (of 272)</div>
+  </div>
+  <div class="stat-box">
+    <div class="label">Times deciphered</div>
+    <div class="value">Zero</div>
+  </div>
+  <div class="stat-box">
+    <div class="label">People who've tried</div>
+    <div class="value">Thousands</div>
+  </div>
+</div>
+
+<h2>The Sections</h2>
+
+<p>The manuscript is roughly divided into sections based on its illustrations:</p>
+
+<p><strong>🧬 Herbal (≈112 pages):</strong> Drawings of plants, most of which don't match any known species. Each plant has a label in Voynichese — presumably the plant's name, if we could read it.</p>
+
+<p><strong>⭐ Astronomical (≈24 pages):</strong> Diagrams of stars, zodiac symbols, and celestial objects. Some pages fold out to much larger sizes.</p>
+
+<p><strong>🧽 Balneological (≈26 pages):</strong> The famous "naked ladies in pools" section. Groups of women bathe in green or blue water connected by a network of tubes that some have compared to blood vessels or alchemical apparatus.</p>
+
+<p><strong>💊 Pharmacological (≈34 pages):</strong> Drawings of roots, herbs, and apothecary jars alongside labeled text — presumably recipes, but for what?</p>
+
+<p><strong>📜 Recipes (≈22 pages):</strong> Dense text paragraphs with stars in the margins. The most text-heavy section, and the one that would presumably reveal the most if anyone could read it.</p>
+
+<h2>A Wild History</h2>
+
+<div class="timeline">
+  <div class="event"><span class="year">1404–1438</span> — The vellum is created (radiocarbon dating). The manuscript is written sometime in this window.</div>
+  <div class="event"><span class="year">~1600</span> — The earliest definite reference: a letter found inside the manuscript's covers, written in 1665 or 1666 by <strong>Georg Baresch</strong>, an alchemist in Prague. He'd been puzzling over the book for years and sent a copy to a Jesuit scholar in Rome for help.</div>
+  <div class="event"><span class="year">~1622</span> — Previously owned by <strong>Rudolf II, Holy Roman Emperor</strong>, who reportedly paid 600 gold ducats for it — an astronomical sum. He believed it was the work of <strong>Roger Bacon</strong>, the 13th-century English polymath.</div>
+  <div class="event"><span class="year">1912</span> — <strong>Wilfrid Voynich</strong>, a Polish-American book dealer, discovers the manuscript in a Jesuit college in Italy and buys it. It's been known by his name ever since.</div>
+  <div class="event"><span class="year">WWII</span> — American cryptographer <strong>William Friedman</strong> (who cracked Japan's PURPLE cipher) works on the Voynich. He fails. His wife <strong>Elizebeth Friedman</strong>, also a legendary codebreaker, also fails.</div>
+  <div class="event"><span class="year">1969</span> — Voynich's widow donates the manuscript to <strong>Yale University</strong>, where it remains today in the Beinecke Rare Book and Manuscript Library.</div>
+  <div class="event"><span class="year">2020</span> — Yale digitizes the entire manuscript and publishes it online for free, launching a fresh wave of worldwide attempts.</div>
+</div>
+
+<div class="img-container">
+  <img src="images/generated_monk.png" alt="AI-generated image of a medieval monk studying the Voynich Manuscript">
+  <p class="caption"><span class="gen">🎨 Generated</span> — An imagining of what it might have looked like when the manuscript was still being written.</p>
+</div>
+
+<h2>The Theories</h2>
+
+<div class="mystery-box">
+  <h3>Why Can't We Read It?</h3>
+  <p>There are several camps, and they all have problems:</p>
+</div>
+
+<p><strong>1. It's a cipher of a known language.</strong> Someone encrypted Latin, or English, or Hebrew using a complex code. <em>Problem:</em> Cryptanalysis techniques that crack everything else fail here. The letter frequency distribution is weird — it resembles natural language, but doesn't match any known language's patterns.</p>
+
+<p><strong>2. It's a constructed language.</strong> The author invented a writing system for a language they made up. <em>Problem:</em> Constructed languages from the 15th century are essentially unknown, and the text has patterns (word repetition, structure) that suggest a real language's grammar.</p>
+
+<p><strong>3. It's a hoax.</strong> Someone in the 15th century created meaningless gibberish to sell to a wealthy buyer (like Rudolf II, who was known to overspend on occult curiosities). <em>Problem:</em> Radiocarbon dating confirms the vellum is from the right period, and the statistical properties of the text show it's <em>not random</em> — it has real structure. Creating something this convincing as a hoax, before information theory existed, would be extraordinary.</p>
+
+<p><strong>4. It's glossolalia.</strong> The author was writing in a trance state, producing sounds that felt meaningful but weren't. <em>Problem:</em> The internal consistency of the script makes this unlikely.</p>
+
+<p><strong>5. It's an elaborate medical/alchemical reference work.</strong> The herbal, pharmacological, and balneological sections suggest practical knowledge — just encoded for secrecy or obscurity.</p>
+
+<blockquote>
+"The feeling of familiarity it creates is what makes it so frustrating. You look at it and think, <em>I should be able to read this</em>. And then you can't. And no one can. And it's been 600 years."
+</blockquote>
+
+<h2>Why It Matters</h2>
+
+<p>Even if the Voynich manuscript turns out to be a medieval hoax, it's one of the most fascinating artifacts in human history. It sits at the intersection of linguistics, cryptography, art history, and mystery — a time capsule from a world we can almost but never quite understand.</p>
+
+<p>In an age where AI can generate text in any language and crack codes that once seemed unbreakable, the Voynich remains stubbornly unread. It's a humbling reminder that some puzzles endure.</p>
+
+<p>Yale has the full manuscript available to view online for free. Go look at it. Try to read it. Join the club.</p>
+
+<p style="text-align: center; margin-top: 20px;">
+  <a href="https://beinecke.library.yale.edu/collections/highlights/voynich-manuscript" target="_blank">📖 View the full manuscript at Yale's Beinecke Library →</a>
+</p>
+
+<hr>
+
+<p class="back"><a href="../index.html">← Back to home</a></p>
+
+</body>
+</html>
