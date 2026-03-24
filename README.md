@@ -4,7 +4,7 @@ Static HTML pages hosted via GitHub Pages.
 
 ## URL
 
-<https://alanzoppa.github.io/pages/>
+<https://alanzoppa.github.io/>
 
 ## Structure
 
