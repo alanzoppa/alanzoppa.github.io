@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Man Who Bought a Volcano to Watch the Sky</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#0A0806;color:#F5F0E8;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.hero{position:relative;height:100vh;min-height:600px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.hero-image{position:absolute;inset:0;z-index:0}
+.hero-image img{width:100%;height:100%;object-fit:cover;object-position:center 40%;filter:brightness(0.6) contrast(1.1)}
+.hero-image::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(10,8,6,0.2) 40%,rgba(10,8,6,0.7) 75%,rgba(10,8,6,0.95) 100%)}
+.hero-content{position:relative;z-index:2;max-width:900px;padding:0 2rem 8vh;text-align:center;animation:fadeUp 1.5s ease-out 0.3s both}
+.hero-kicker{font-family:Helvetica,Arial,sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.35em;text-transform:uppercase;color:#D4A574;margin-bottom:1.5rem}
+.hero-title{font-family:Georgia,serif;font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;line-height:1.1;letter-spacing:-0.02em;color:#F5F0E8;margin-bottom:1.5rem;text-shadow:0 2px 40px rgba(0,0,0,0.5)}
+.hero-subtitle{font-family:Georgia,serif;font-size:clamp(1rem,2.2vw,1.35rem);font-style:italic;color:#E8DFD0;line-height:1.6;max-width:700px;margin:0 auto;opacity:0.85}
+.hero-scroll{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:3;animation:bobbing 2s ease-in-out infinite;opacity:0.5}
+.hero-scroll svg{width:24px;height:24px;stroke:#D4A574;stroke-width:2;fill:none}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;transition:background 0.4s,padding 0.4s;background:transparent}
+.topbar.scrolled{background:rgba(10,8,6,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:0.6rem 2rem;border-bottom:1px solid rgba(212,165,116,0.15)}
+.topbar-logo{font-family:Georgia,serif;font-size:1rem;font-weight:700;color:#D4A574;letter-spacing:0.05em;text-decoration:none}
+.topbar-nav{font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#B8A890}
+.article{max-width:760px;margin:0 auto;padding:0 2rem}
+.section{padding:5rem 0;opacity:0;transform:translateY(30px);transition:opacity 0.8s,transform 0.8s}
+.section.visible{opacity:1;transform:translateY(0)}
+.section-number{font-family:Georgia,serif;font-size:0.85rem;letter-spacing:0.15em;color:#8B2500;text-transform:uppercase;margin-bottom:0.75rem;display:flex;align-items:center;gap:1rem}
+.section-number::after{content:'';flex:1;height:1px;background:linear-gradient(to right,#8B2500,transparent)}
+h2{font-family:Georgia,serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;line-height:1.2;color:#F5F0E8;margin-bottom:2rem}
+p{margin-bottom:1.5rem;color:#E8DFD0}
+p+p{text-indent:1.5em}
+p.no-indent{text-indent:0}
+strong{color:#F5F0E8;font-weight:600}
+.pull-quote{margin:4rem -2rem;padding:3rem 2rem 3rem 3rem;position:relative;border-left:3px solid #D4A574;background:linear-gradient(135deg,rgba(139,37,0,0.08),transparent)}
+.pull-quote::before{content:'\201C';position:absolute;top:-0.3rem;left:0.8rem;font-family:Georgia,serif;font-size:6rem;color:#8B2500;opacity:0.3;line-height:1}
+.pull-quote blockquote{font-family:Georgia,serif;font-size:clamp(1.3rem,3vw,1.75rem);font-style:italic;line-height:1.5;color:#F5F0E8;margin-bottom:1rem}
+.pull-quote cite{font-family:Helvetica,sans-serif;font-size:0.8rem;font-style:normal;letter-spacing:0.15em;text-transform:uppercase;color:#D4A574}
+.full-bleed{margin:4rem calc(-50vw + 50%);width:100vw;position:relative;overflow:hidden}
+.full-bleed img{width:100%;display:block;object-fit:cover}
+.full-bleed--medium img{height:50vh;min-height:300px}
+.full-bleed-caption{position:absolute;bottom:0;left:0;right:0;padding:2rem;background:linear-gradient(transparent,rgba(10,8,6,0.85));font-family:Helvetica,sans-serif;font-size:0.8rem;color:#B8A890;letter-spacing:0.05em}
+.full-bleed--satellite img{height:80vh;min-height:500px;filter:grayscale(1) contrast(1.3) brightness(0.7);transition:filter 1s}
+.full-bleed--satellite:hover img{filter:grayscale(0.3) contrast(1.1) brightness(0.8)}
+.image-overlay{position:relative;margin:4rem -2rem;overflow:hidden}
+.image-overlay img{width:100%;height:500px;object-fit:cover;filter:brightness(0.5)}
+.image-overlay-text{position:absolute;bottom:2.5rem;left:2.5rem;right:2.5rem;z-index:2}
+.image-overlay-text p{font-family:Georgia,serif;font-size:1rem;color:#E8DFD0;margin-bottom:0.5rem}
+.timeline-section{padding:5rem 0;background:linear-gradient(180deg,#0A0806,#2C1810 20%,#2C1810 80%,#0A0806);margin:3rem calc(-50vw + 50%);width:100vw}
+.timeline-section .section-number,.timeline-section h2{max-width:760px;margin-left:auto;margin-right:auto;padding:0 2rem}
+.timeline-section h2{margin-bottom:3rem}
+.timeline-section .section-number{margin-bottom:0.75rem}
+.timeline{max-width:760px;margin:0 auto;padding:0 2rem;position:relative}
+.timeline::before{content:'';position:absolute;left:60px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,transparent,#8B2500,#D4A574,#8B2500,transparent)}
+.tl-entry{display:flex;align-items:flex-start;margin-bottom:1.5rem;position:relative;opacity:0;transform:translateX(-20px);transition:opacity 0.6s,transform 0.6s}
+.tl-entry.visible{opacity:1;transform:translateX(0)}
+.tl-year{flex-shrink:0;width:55px;text-align:right;font-family:Georgia,serif;font-size:0.9rem;font-weight:700;color:#D4A574;padding-right:1.5rem;line-height:1.5}
+.tl-dot{flex-shrink:0;width:12px;height:12px;border-radius:50%;background:#8B2500;border:2px solid #D4A574;margin-top:0.35rem;margin-right:1.5rem;position:relative;z-index:2;box-shadow:0 0 12px rgba(139,37,0,0.5)}
+.tl-entry.hl .tl-dot{background:#D4A574;box-shadow:0 0 20px rgba(212,165,116,0.6);transform:scale(1.3)}
+.tl-event{font-family:Georgia,serif;font-size:0.95rem;color:#E8DFD0;line-height:1.6;padding-top:0.1rem}
+.tl-entry.hl .tl-event{color:#F5F0E8;font-weight:600}
+.spaces-grid{display:grid;grid-template-columns:1fr;gap:2rem;margin:3rem 0}
+.space-card{padding:2rem;background:linear-gradient(135deg,rgba(44,24,16,0.6),rgba(10,8,6,0.8));border:1px solid rgba(212,165,116,0.12);border-left:3px solid #8B2500;transition:border-color 0.3s,transform 0.3s}
+.space-card:hover{border-color:#D4A574;transform:translateX(4px)}
+.space-card h3{font-family:Georgia,serif;font-size:1.3rem;font-weight:700;color:#D4A574;margin-bottom:0.75rem}
+.space-card p{font-size:0.95rem;color:#B8A890;margin-bottom:0;line-height:1.65;text-indent:0}
+.sig-list{list-style:none;padding:0;margin:2rem 0}
+.sig-list li{padding:0.75rem 0 0.75rem 2rem;position:relative;font-size:1rem;color:#E8DFD0;line-height:1.6}
+.sig-list li::before{content:'\25C6';position:absolute;left:0;color:#8B2500;font-size:0.7rem;top:1rem}
+.sig-list li strong{color:#D4A574}
+.paradox{padding:6rem 0;position:relative}
+.paradox::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60px;height:3px;background:linear-gradient(to right,transparent,#8B2500,transparent)}
+.paradox h2{text-align:center;font-size:clamp(2rem,5vw,3.2rem);color:#D4A574;margin-bottom:3rem}
+.paradox p{font-size:1.1rem;line-height:1.85}
+.paradox-final{text-align:center;margin-top:3rem;padding:2.5rem 2rem;border-top:1px solid rgba(212,165,116,0.2);border-bottom:1px solid rgba(212,165,116,0.2)}
+.paradox-final p{font-family:Georgia,serif;font-style:italic;font-size:clamp(1.05rem,2vw,1.25rem);color:#E8DFD0;max-width:650px;margin:0 auto;text-indent:0}
+.footer{padding:4rem 2rem;text-align:center;border-top:1px solid rgba(212,165,116,0.1)}
+.footer-div{width:40px;height:1px;background:#D4A574;margin:0 auto 2rem}
+.footer p{font-family:Helvetica,sans-serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:#B8A890;margin-bottom:0.5rem;text-indent:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bobbing{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+@media(min-width:768px){.spaces-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){body{font-size:16px}.hero-content{padding:0 1.5rem 6vh}.article{padding:0 1.25rem}.section{padding:3.5rem 0}.pull-quote{margin:3rem -1.25rem;padding:2rem 1.5rem 2rem 2rem}.full-bleed--satellite img{height:50vh;min-height:300px}.image-overlay img{height:350px}.timeline::before{left:45px}.tl-year{width:40px;font-size:0.8rem}.tl-dot{margin-right:1rem}.timeline-section{padding:3.5rem 0}.paradox{padding:4rem 0}.topbar{padding:0.75rem 1.25rem}}
+</style>
+</head>
+<body>
+<header class="topbar" id="topbar">
+<a href="#" class="topbar-logo">Roden Crater</a>
+<span class="topbar-nav">James Turrell</span>
+</header>
+<section class="hero">
+<div class="hero-image"><img src="hero-aerial.png" alt="Aerial view of Roden Crater"/></div>
+<div class="hero-content">
+<div class="hero-kicker">Art &middot; Obsession &middot; Deep Time</div>
+<h1 class="hero-title">The Man Who Bought a Volcano to Watch the Sky</h1>
+<p class="hero-subtitle">James Turrell has spent nearly 50 years turning an extinct volcano into the world's most ambitious work of art &mdash; and the most patient observatory ever built.</p>
+</div>
+<div class="hero-scroll"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+</section>
+<article class="article">
+<section class="section" id="s1">
+<div class="section-number">I</div>
+<h2>The Man Behind the Mountain</h2>
+<p>James Turrell is not a normal artist. Born in 1943 in Los Angeles, he grew up in a Quaker family where silence was sacred &mdash; Quaker meetings are built around sitting in stillness and waiting for the light. His grandmother told him: <em>&ldquo;Go inside and greet the light.&rdquo;</em> He took it literally.</p>
+<p>He earned a pilot&rsquo;s license at 16. During the Vietnam War, he registered as a conscientious objector &mdash; and flew Buddhist monks out of Chinese-controlled Tibet instead. He studied perceptual psychology at Pomona College (B.A., 1965) before getting his MFA in art from Claremont Graduate School in 1973.</p>
+<p>The psychology degree matters. Turrell doesn&rsquo;t make art <em>about</em> light. He makes art <em>from</em> light. He&rsquo;s spent his career studying how the human eye and brain construct reality &mdash; how what we see is not what&rsquo;s there, but what our perceptual system decides to show us. His medium isn&rsquo;t paint or stone. It&rsquo;s the raw material of vision itself.</p>
+<p>In 1966, he moved into the old Mendota Hotel in Ocean Park, California, and began experimenting with projected light and controlled apertures &mdash; cutting holes in walls and ceilings to frame the sky, then carefully controlling the interior light levels so the sky appeared to be a flat, painted surface rather than an infinite void. People would reach out to touch it, convinced it was a canvas.</p>
+</section>
+<section class="section" id="s2">
+<div class="section-number">II</div>
+<h2>Finding the Crater</h2>
+<p>By the mid-1970s, Turrell had outgrown hotel rooms. He wanted something bigger. Something permanent. Something that would take the sky and <em>hold</em> it.</p>
+<p>He began searching for the perfect natural formation &mdash; a place with pristine dark skies, high altitude, and a concave shape that could frame the celestial dome. He flew over the American Southwest in his small plane, surveying volcanic fields and canyons.</p>
+<p>In the early 1970s, he spent the night in the bowl of an extinct cinder cone in northern Arizona&rsquo;s Painted Desert, about 50 miles northeast of Flagstaff. The crater was roughly 400,000 years old, about 3 miles across. The surrounding desert was essentially untouched &mdash; no light pollution, no development, no civilization for miles. The sky above was one of the darkest remaining in the continental United States.</p>
+<p class="no-indent">He had found it. In 1977, Turrell acquired the land. He has never left.</p>
+</section>
+</article>
+<div class="full-bleed full-bleed--satellite">
+<img src="crater-satellite.jpg" alt="Satellite view of Roden Crater" loading="lazy"/>
+<div class="full-bleed-caption">Satellite view of Roden Crater &mdash; a 400,000-year-old cinder cone in the Painted Desert, roughly 3 miles across.</div>
+</div>
+<article class="article">
+<section class="section" id="s3">
+<div class="section-number">III</div>
+<h2>Carving Light</h2>
+<p>What Turrell has done to the crater over the past five decades is staggering in both ambition and patience.</p>
+<p>He moved <strong>1.3 million cubic yards</strong> of earth &mdash; reshaping the interior of the crater bowl, cutting tunnels through the volcanic rock, carving precise apertures that frame specific celestial events. The longest tunnel, the Alpha (East) Tunnel, stretches 854 feet (260 meters) into the crater.</p>
+<p>The tunnels and chambers are not random. Each one is engineered to capture specific light at specific times. The Sun &amp; Moon Chamber frames both the sun and moon at precise moments. The Crater&rsquo;s Eye &mdash; the natural bowl of the crater itself &mdash; has been reshaped into an elliptical amphitheater of sky. Some spaces are designed to be most accurate in <strong>about 2,000 years</strong>, accounting for the slow drift of Earth&rsquo;s axial precession.</p>
+<p>When complete, the project will contain <strong>24 viewing spaces and six tunnels</strong>. Each space is a controlled environment for experiencing and contemplating light &mdash; where the cycles of geologic and celestial time can be directly perceived.</p>
+</section>
+</article>
+<div class="full-bleed full-bleed--medium">
+<img src="interior-chamber.png" alt="Interior crater chamber with sky opening" loading="lazy"/>
+<div class="full-bleed-caption">An interior chamber of Roden Crater &mdash; where volcanic rock frames a precise window onto the sky.</div>
+</div>
+<article class="article">
+<section class="section" id="s4">
+<div class="section-number">IV</div>
+<h2>The Spaces</h2>
+<p>The completed spaces are individually remarkable. Together, they form a cathedral of light carved from an extinct volcano.</p>
+<div class="spaces-grid">
+<div class="space-card"><h3>The Crater Bowl</h3><p>The natural depression of the volcano, reshaped into an elliptical amphitheater open to the sky. Standing in it, you are inside the earth looking up. The surrounding rim frames the sky in a way that makes it feel close, almost touchable.</p></div>
+<div class="space-card"><h3>The Alpha (East) Tunnel</h3><p>A 854-foot tunnel bored through the eastern rim. Walking through it is a journey from darkness into progressively brighter light, emerging at an opening that frames the eastern sky at a precise angle. The sky at the tunnel&rsquo;s end appears as a flat, luminous plane rather than an infinite distance.</p></div>
+<div class="space-card"><h3>The Sun &amp; Moon Chamber</h3><p>Engineered so that at certain times of year, the sun or moon passes through a small aperture and projects a perfect disc of light onto the opposite wall. It functions like a camera obscura the size of a mountain.</p></div>
+<div class="space-card"><h3>The Crater&rsquo;s Eye</h3><p>At the bottom of the bowl, a shallow pool of water reflects the sky above, creating a disorienting doubling effect where you cannot tell where the earth ends and the sky begins.</p></div>
+</div>
+</section>
+<div class="image-overlay">
+<img src="tunnel-view.png" alt="Tunnel perspective with sky opening" loading="lazy"/>
+<div class="image-overlay-text"><p>The Alpha (East) Tunnel &mdash; 854 feet of journey from darkness into light.</p></div>
+</div>
+<div class="pull-quote">
+<blockquote>My desire is to set up a situation to which I take you and let you see. It becomes your experience.</blockquote>
+<cite>James Turrell</cite>
+</div>
+</article>
+<section class="timeline-section">
+<div class="section-number">V</div>
+<h2>The Timeline of an Obsession</h2>
+<div class="timeline">
+<div class="tl-entry"><span class="tl-year">1943</span><div class="tl-dot"></div><div class="tl-event">James Turrell born in Los Angeles</div></div>
+<div class="tl-entry"><span class="tl-year">1959</span><div class="tl-dot"></div><div class="tl-event">Earns pilot&rsquo;s license at age 16</div></div>
+<div class="tl-entry"><span class="tl-year">1965</span><div class="tl-dot"></div><div class="tl-event">B.A. in perceptual psychology, Pomona College</div></div>
+<div class="tl-entry"><span class="tl-year">1966</span><div class="tl-dot"></div><div class="tl-event">Begins light experiments at the Mendota Hotel, Ocean Park</div></div>
+<div class="tl-entry"><span class="tl-year">1973</span><div class="tl-dot"></div><div class="tl-event">M.F.A. from Claremont Graduate School</div></div>
+<div class="tl-entry hl"><span class="tl-year">~1970s</span><div class="tl-dot"></div><div class="tl-event">Spends the night in Roden Crater for the first time</div></div>
+<div class="tl-entry hl"><span class="tl-year">1977</span><div class="tl-dot"></div><div class="tl-event">Acquires the crater land</div></div>
+<div class="tl-entry"><span class="tl-year">1979</span><div class="tl-dot"></div><div class="tl-event">Official purchase confirmed</div></div>
+<div class="tl-entry hl"><span class="tl-year">80s&ndash;90s</span><div class="tl-dot"></div><div class="tl-event">Excavation of 1.3 million cubic yards of earth; construction of Alpha Tunnel and Crater Bowl</div></div>
+<div class="tl-entry"><span class="tl-year">2000s</span><div class="tl-dot"></div><div class="tl-event">Sun &amp; Moon Chamber, East Portal, and Crater&rsquo;s Eye completed</div></div>
+<div class="tl-entry"><span class="tl-year">2011</span><div class="tl-dot"></div><div class="tl-event">Original target for public opening (missed)</div></div>
+<div class="tl-entry"><span class="tl-year">2015</span><div class="tl-dot"></div><div class="tl-event">One-time fundraising tours offered at $6,500/person</div></div>
+<div class="tl-entry"><span class="tl-year">2018</span><div class="tl-dot"></div><div class="tl-event">Kanye West visits and donates $10 million</div></div>
+<div class="tl-entry"><span class="tl-year">2019</span><div class="tl-dot"></div><div class="tl-event">Arizona State University partners with Turrell; $1.8 million grant</div></div>
+<div class="tl-entry"><span class="tl-year">2024</span><div class="tl-dot"></div><div class="tl-event">Revised target for public opening (missed again)</div></div>
+<div class="tl-entry"><span class="tl-year">2025</span><div class="tl-dot"></div><div class="tl-event"><em>New York Times</em> reports Roden Crater still unfinished</div></div>
+<div class="tl-entry hl"><span class="tl-year">TBD</span><div class="tl-dot"></div><div class="tl-event">Turrell&rsquo;s friends joke the project will be &ldquo;most precise in about 2,000 years&rdquo;</div></div>
+</div>
+</section>
+<article class="article">
+<section class="section" id="s6">
+<div class="section-number">VI</div>
+<h2>Why It Matters</h2>
+<p>Roden Crater occupies a strange position in the art world. It is simultaneously:</p>
+<ul class="sig-list">
+<li>A work of <strong>land art</strong> on the scale of Robert Smithson&rsquo;s <em>Spiral Jetty</em> or Michael Heizer&rsquo;s <em>City</em></li>
+<li>A functioning <strong>observatory</strong> for naked-eye astronomy</li>
+<li>A <strong>perceptual psychology experiment</strong> disguised as architecture</li>
+<li>A <strong>meditation on deep time</strong> &mdash; built to last centuries, optimized for millennia</li>
+<li>An act of <strong>stubbornness</strong> so extreme it borders on something spiritual</li>
+</ul>
+<p>There is nothing else like it. Ancient peoples built observatories &mdash; Stonehenge, Chich&eacute;n Itz&aacute;, Angkor Wat &mdash; but always as communal, religious structures. Turrell has built one as a personal artistic statement, funded by grants, donations, and Kanye West.</p>
+<p>The Dia Art Foundation calls it &ldquo;a controlled environment for the experiencing and contemplation of light.&rdquo; The official site describes it as &ldquo;more akin to the communally developed sites of ancient Incas, than to the conceptions of any individual one can think of in modern times.&rdquo;</p>
+<p>Only a tiny number of people have ever been inside. The crater is closed to the public. Fundraising continues. Construction continues. Turrell, now in his early 80s, continues.</p>
+</section>
+<section class="section paradox" id="s7">
+<h2>The Paradox</h2>
+<p>Here is the paradox at the heart of Roden Crater: it is an artwork made from something that cannot be owned. Turrell doesn&rsquo;t control the sky. He doesn&rsquo;t control the rotation of the Earth, the precession of the equinoxes, or the path of the sun. He can only frame these things &mdash; build apertures and tunnels and chambers that direct your attention.</p>
+<p>And yet, by doing this for fifty years with absolute conviction, he has created something that feels more permanent than the volcano itself. The crater was here for 400,000 years before Turrell arrived. It will be here long after. But the <em>experience</em> of the crater &mdash; the way light enters it, the way the sky is held inside it &mdash; that is entirely his creation.</p>
+<div class="paradox-final"><p>A friend once joked that Roden Crater would be finished &ldquo;when Turrell finishes it.&rdquo; Given that parts of the design are calibrated for celestial events 2,000 years in the future, the joke may be closer to the truth than anyone realizes.</p></div>
+</section>
+</article>
+<footer class="footer">
+<div class="footer-div"></div>
+<p>An essay on light, patience, and a volcano in Arizona</p>
+<p>Sources: Wikipedia, ArchDaily, Smithsonian Magazine, RodenCrater.com, Britannica</p>
+</footer>
+<script>
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add("visible");obs.unobserve(e.target)}})},{threshold:0.1,rootMargin:"0px 0px -60px 0px"});
+document.querySelectorAll(".section").forEach(function(s){obs.observe(s)});
+var tobs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){var d=parseInt(e.target.dataset.i)*80;setTimeout(function(){e.target.classList.add("visible")},d);tobs.unobserve(e.target)}})},{threshold:0.2,rootMargin:"0px 0px -30px 0px"});
+document.querySelectorAll(".tl-entry").forEach(function(e,i){e.dataset.i=i;tobs.observe(e)});
+var tb=document.getElementById("topbar"),tk=false;
+window.addEventListener("scroll",function(){if(!tk){requestAnimationFrame(function(){tb.classList.toggle("scrolled",window.scrollY>100);tk=false});tk=true}});
+</script>
+</body>
+</html>
