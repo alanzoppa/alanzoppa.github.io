@@ -811,4 +811,412 @@
 </div>
 
 </body>
+</html>    .callout {
+      background: linear-gradient(135deg, var(--parchment-dark), var(--parchment));
+      border: 1px solid var(--amber);
+      border-left: 4px solid var(--amber-dark);
+      padding: 1.5rem 2rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+    .callout::before {
+      content: '';
+      position: absolute;
+      top: -5px; left: -5px; right: 5px; bottom: 5px;
+      border: 1px solid var(--amber);
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    .callout h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber-dark);
+      margin-bottom: 0.75rem;
+    }
+    .callout p { margin-bottom: 0; text-align: left; }
+    .callout.stat-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      text-align: center;
+    }
+    .stat-item {
+      border-right: 1px solid var(--amber);
+      padding-right: 1rem;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--thames-brown);
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--soot);
+      opacity: 0.7;
+    }
+    .timeline {
+      position: relative;
+      margin: 3rem 0;
+      padding-left: 2rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--amber), var(--copper), var(--thames-brown));
+    }
+    .timeline-item {
+      position: relative;
+      padding: 0 0 2rem 1.5rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -2rem; top: 0.4rem;
+      width: 12px; height: 12px;
+      background: var(--amber);
+      border: 3px solid var(--parchment);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--amber);
+    }
+    .timeline-item.highlight::before {
+      background: var(--blood);
+      box-shadow: 0 0 0 2px var(--blood);
+    }
+    .timeline-item.highlight .timeline-date { color: var(--blood); font-weight: 600; }
+    .timeline-date {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: var(--amber-dark);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .timeline-content { font-size: 1rem; }
+    .section-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4rem 0;
+      opacity: 0.5;
+    }
+    .section-divider::before, .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--amber), transparent);
+    }
+    .section-divider span { padding: 0 1rem; color: var(--amber-dark); font-size: 1.5rem; }
+    .portrait-section {
+      background: linear-gradient(135deg, var(--soot), var(--thames-brown));
+      padding: 3rem;
+      margin: 3rem -2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .portrait-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('bazalgette-portrait.jpg') center center / contain no-repeat;
+      opacity: 0.15;
+      filter: sepia(1);
+    }
+    .portrait-content {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .portrait-content h2 { color: var(--parchment); border-bottom-color: var(--amber); }
+    .portrait-content p { color: var(--parchment); opacity: 0.9; }
+    .portrait-frame {
+      width: 200px; height: 250px;
+      margin: 0 auto 2rem;
+      border: 8px solid var(--amber);
+      box-shadow: 0 0 0 2px var(--thames-brown), 0 10px 30px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .portrait-frame img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: sepia(0.3);
+    }
+    .credits {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--amber);
+      font-size: 0.9rem;
+      color: var(--soot);
+      opacity: 0.8;
+    }
+    .credits h2 { font-size: 1.3rem; margin-bottom: 1rem; border: none; }
+    .back-link {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--amber);
+    }
+    .back-link a {
+      color: var(--thames-brown);
+      text-decoration: none;
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link a:hover { color: var(--amber-dark); }
+    @media (max-width: 600px) {
+      .image-grid { grid-template-columns: 1fr; }
+      .callout.stat-box { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--amber); padding-bottom: 1rem; padding-right: 0; }
+      .stat-item:last-child { border-bottom: none; }
+      .portrait-section { margin: 2rem -1rem; padding: 2rem 1rem; }
+      .timeline { padding-left: 1rem; }
+      .timeline-item::before { left: -1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-year">MDCCCLVIII</div>
+      <h1>The Great Stink <span>How London's Sewage Built the Modern City</span></h1>
+      <p class="subtitle">Generated by <code>openrouter/qwen/qwen3.6-plus:free</code> · April 2, 2026</p>
+      <p class="hero-tagline">The summer London choked on its own waste—and discovered that engineering could save millions</p>
+    </div>
+    <div class="scroll-indicator">⌄</div>
+  </header>
+
+  <article>
+    <section id="part-i">
+      <h2>I. The Royal River Becomes a Toilet</h2>
+      <figure>
+        <img src="monster-soup.jpg" alt="Monster Soup commonly called Thames Water">
+        <figcaption>"Monster Soup commonly called Thames Water" by William Heath, 1828. A lady of fashion drops her teacup in horror at the microscopic monsters revealed in a drop of Thames water.</figcaption>
+      </figure>
+      <p class="drop-cap">The River Thames had been called the "silver Thames" and the "royal river" for centuries—the pride of England's greatest city. By 1858, it had become a brown, bubbling open sewer.</p>
+      <p>London was the largest city in the world, with a population exceeding 2.5 million, doubled from just 1800. Every human being in that city produced waste. And there was nowhere for it to go.</p>
+      <p>Most houses used cesspits—brick-lined holes in the ground. But the Metropolitan Commission of Sewers had been connecting houses to brick sewers, which emptied directly into the Thames. Then, in the 1850s, flushing toilets exploded in popularity (they were showcased at the Great Exhibition of 1851). Suddenly, thousands of households could flush their waste straight into the city's waterways.</p>
+      <div class="pull-quote">
+        Through the heart of the town a deadly sewer ebbed and flowed, in the place of a fine fresh river.
+        <cite>— Charles Dickens, Little Dorrit (1857)</cite>
+      </div>
+      <div class="image-grid">
+        <figure>
+          <img src="drop-thames-water.jpg" alt="A Drop of Thames Water">
+          <figcaption>"A Drop of Thames Water" — Punch Magazine, 1850</figcaption>
+        </figure>
+        <figure>
+          <img src="faraday-thames.jpg" alt="Michael Faraday giving his card to Father Thames">
+          <figcaption>"Michael Faraday giving his card to Father Thames" — Punch, 1855</figcaption>
+        </figure>
+      </div>
+      <p>In 1855, the scientist Michael Faraday visited the Thames with a simple experiment. He dropped white cards into the river and watched them disappear before they sank even one inch. He wrote to <em>The Times</em>:</p>
+      <div class="callout">
+        <h4>From the Pages of The Times</h4>
+        <p>"Near the bridges the feculence rolled up in clouds so dense that they were visible at the surface, even in water of this kind. The smell was very bad, and common to the whole of the water; it was the same as that which now comes up from the gully-holes in the streets; the whole river was for the time a real sewer."</p>
+      </div>
+      <p>In response, the government did what any rational administration would do: they poured chalk lime, chloride of lime, and carbolic acid into the river. It had no meaningful effect.</p>
+    </section>
+    <div class="section-divider"><span>⁂</span></div>
+    <section id="part-ii">
+      <h2>II. The Cholera Plague</h2>
+      <p>The smell wasn't just disgusting—it was terrifying. Three cholera epidemics had hit London before 1858, killing tens of thousands:</p>
+      <div class="callout stat-box">
+        <div class="stat-item">
+          <span class="stat-number">6,536</span>
+          <span class="stat-label">Dead (1831-32)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">14,137</span>
+          <span class="stat-label">Dead (1848-49)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">10,738</span>
+          <span class="stat-label">Dead (1853-54)</span>
+        </div>
+      </div>
+      <p>Cholera was fast-acting and ghastly. Victims could go from healthy to corpse-blue to dead in hours.</p>
+      <p>In 1854, Dr. John Snow traced a cholera outbreak on Broad Street in Soho to a contaminated water pump. He famously removed the pump's handle, stopping new cases. He had published his theory that cholera spread through contaminated water, not bad air.</p>
+      <p>Virtually nobody believed him.</p>
+      <div class="callout">
+        <h4>The Miasma Theory</h4>
+        <p>The dominant medical theory was <strong>miasma</strong>—the idea that disease was spread through "bad air" or noxious vapors. Social reformer Edwin Chadwick insisted that "all smell is disease" and pushed for flushing sewers into the Thames, thinking running water would carry away the miasma. It made things immeasurably worse.</p>
+      </div>
+      <p>Ironically, Dr. Snow died in 1858, <em>during</em> the Great Stink—the largest "miasmatic" event in London's history, which failed to produce any new cholera outbreak, thereby proving his waterborne theory by the sheer fact that the worst smell ever hadn't killed anyone directly.</p>
+    </section>
+    <div class="section-divider"><span>⁂</span></div>
+    <section id="part-iii">
+      <h2>III. The Summer That Broke</h2>
+      <figure>
+        <img src="silent-highwayman.jpg" alt="The Silent Highwayman">
+        <figcaption>"The Silent Highwayman" — Punch Magazine, 1858. Death himself rows the Thames, demanding "Your money or your life!" from a boatman.</figcaption>
+      </figure>
+      <p class="section-intro">Summer 1858 was hot and dry. London hit temperatures above 30°C (86°F). The Thames dropped to an unusually low level, exposing raw sewage baked into the riverbanks.</p>
+      <p>The stench became inhuman. People reportedly vomited simply by going near the river. Those who could afford to fled the city. Others stayed indoors, soaking their curtains in chloride of lime to filter the air.</p>
+      <p>And it was directly under the windows of the Houses of Parliament.</p>
+      <div class="pull-quote">
+        Your Money or Your Life!
+        <cite>— Punch Magazine, 1858</cite>
+      </div>
+      <p>The cartoon shows Death himself rowing the Thames as the "Silent Highwayman"—a skeleton demanding the lives of Londoners who hadn't paid to clean up their own river.</p>
+      <p>Benjamin Disraeli—yes, <em>that</em> Disraeli, soon-to-be Prime Minister—was in Parliament that summer. He described the Thames as a "Stygian pool, reeking with ineffable and intolerable horrors." Parliament was literally being driven out. The Thames smelled worse than any cesspool.</p>
+      <p>So they did what governments do when they can no longer ignore a crisis: <strong>they passed a bill.</strong> And remarkably, they did it fast.</p>
+      <div class="callout" style="border-left-color: var(--copper);">
+        <h4 style="color: var(--copper);">18 Days</h4>
+        <p>In just <strong>18 days</strong>, Parliament passed the Metropolis Local Management Amendment Act of 1858, providing funding for a new sewer system. Disraeli himself presented the bill. No filibuster, no delay, no committee studies—just 18 days from proposal to law, because the stink was <em>everywhere</em>.</p>
+      </div>
+    </section>
+    <div class="section-divider"><span>⁂</span></div>
+    <section id="part-iv">
+      <div class="portrait-section">
+        <div class="portrait-content">
+          <div class="portrait-frame">
+            <img src="bazalgette-portrait.jpg" alt="Sir Joseph William Bazalgette">
+          </div>
+          <h2>IV. The Man Who Saved London</h2>
+          <p>Enter <strong>Sir Joseph William Bazalgette</strong> (1819–1891)</p>
+        </div>
+      </div>
+      <p>Bazalgette was a civil engineer who had previously worked in the railway industry until overwork caused a serious breakdown in his health. He joined the Metropolitan Commission of Sewers as assistant surveyor, and was promoted to Chief Engineer of the newly-formed Metropolitan Board of Works.</p>
+      <p>By June 1856, Bazalgette had already completed his plan for a revolutionary sewer system—but it had been repeatedly rejected before Parliament. The Great Stink gave it the political will it needed.</p>
+      <h3>His Plan Was Audacious</h3>
+      <div class="callout stat-box" style="border-left-color: var(--copper);">
+        <div class="stat-item">
+          <span class="stat-number">82</span>
+          <span class="stat-label">Miles of Main Sewers</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">1,100</span>
+          <span class="stat-label">Miles of Street Drains</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">318M</span>
+          <span class="stat-label">Bricks Used</span>
+        </div>
+      </div>
+      <p>The system was divided into <strong>high-level, mid-level, and low-level</strong> sewers on both sides of the Thames, feeding waste eastward—away from the city—to outfall points at Barking and Crossness.</p>
+      <p>Bazalgette demanded a consistent fall of just <strong>two feet per mile</strong> (about 38 cm per km) across the entire network—gravity doing the work, no pumps needed in most sections.</p>
+      <p>He insisted on using <strong>Portland cement</strong>—an expensive, water-resistant cement—over cheaper alternatives. The strength of that cement is why his sewers still stand today.</p>
+      <p>He designed the tunnels to handle a population of <strong>4.5 million</strong>. London had roughly 3 million in the 1850s. By the time he died in 1891, the population was 5.5 million. The system <em>still worked</em>. Today it serves over 9.5 million people.</p>
+    </section>
+    <div class="section-divider"><span>⁂</span></div>
+    <section id="part-v">
+      <h2>V. Engineering the Impossible</h2>
+      <p>Construction began in early <strong>1859</strong> and wasn't completed until <strong>1875</strong>—sixteen years of digging.</p>
+      <p>Thousands of laborers excavated the tunnels by hand. The demand was so intense that bricklayers' wages rose by <strong>20%</strong> across London. Entire "lost rivers"—the Fleet, the Tyburn, and others that had once been natural streams running through London—were encased in brick and converted into underground sewage channels.</p>
+      <p>To create the necessary gradient, Bazalgette needed to build massive embankments along the Thames. Three of them rose from the river:</p>
+      <div class="callout">
+        <h4>The Embankments</h4>
+        <p><strong>Victoria Embankment</strong> • <strong>Chelsea Embankment</strong> • <strong>Albert Embankment</strong></p>
+        <p>These stone constructions reclaimed about <strong>22 acres</strong> of land from the Thames and also created space for the new Underground railway lines beneath them. You'd know them today as the walkways along the river on the north and south sides. They exist because of the sewers.</p>
+      </div>
+      <p>Two ornate pumping stations—<strong>Crossness</strong> (on the Erith Marshes) and <strong>Abbey Mills</strong> (in Stratford)—were built to lift the sewage into higher pipes where gravity could carry it further. With architectural designs by Charles Driver, these were no mere utility buildings. They were Victorian cathedrals of engineering—Grade I listed buildings today, protected by English Heritage.</p>
+      <p>The project cost <strong>£6.5 million</strong> (over £650 million in today's money)—and Parliament initially offered only £2.5 million. It ballooned past budget multiple times but was simply too important to stop.</p>
+    </section>
+    <div class="section-divider"><span>⁂</span></div>
+    <section id="part-vi">
+      <h2>VI. The Legacy</h2>
+      <div class="pull-quote">
+        Few people have done more to change the River Thames, or London, than Joseph Bazalgette.
+        <cite>— London Museum</cite>
+      </div>
+      <p>Bazalgette's sewer system has been described by the historian <strong>Peter Ackroyd</strong> as having "saved more lives than any other Victorian official." He was right.</p>
+      <p>After 1858, cholera never returned to London. The system worked so well that for over a century, Londoners walked the Victoria Embankment, took the Underground beneath it, and never gave a thought to the engineering miracle flowing beneath their feet.</p>
+      <p>But Bazalgette's system wasn't perfect. It dumped raw, untreated sewage downstream, beyond London's boundaries. In <strong>1878</strong>, the paddle steamer <em>Princess Alice</em> collided with a coal ship near the Crossness outfall, where raw sewage had just been pumped into the Thames. About <strong>650 people drowned</strong>, but some who survived the drowning also died from swallowing the untreated sewage.</p>
+      <p>The tragedy drove the construction of proper sewage treatment plants, replacing raw discharge with processed effluent.</p>
+      <p>Today, London's sewage system faces a different problem: <strong>fatbergs</strong>—massive congealed masses of discarded cooking oil, wet wipes, and other debris. The Whitechapel Fatberg of 2017 was 250 meters long and weighed 130 tonnes (approximately the weight of 11 double-decker buses).</p>
+      <p>In <strong>2016</strong>, construction began on the <strong>Thames Tideway Tunnel</strong>—a new "super sewer" designed by the same basic principle Bazalgette used: a massive tunnel, running downstream, catching what the old system can't handle. It's <strong>25 km long</strong> and <strong>7 meters wide</strong>. A modern descendant of Bazalgette's original vision, adapted for a 21st-century city.</p>
+      <h3>Timeline of Events</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <span class="timeline-date">~1800</span>
+          <span class="timeline-content">London population: ~1 million</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1828</span>
+          <span class="timeline-content">"Monster Soup commonly called Thames Water" — William Heath's satirizing print</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1831-32</span>
+          <span class="timeline-content">First major cholera epidemic kills 6,536 in London</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1848-49</span>
+          <span class="timeline-content">Second cholera outbreak kills 14,137</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1851</span>
+          <span class="timeline-content">Great Exhibition showcases flushing toilets — making things worse</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1853-54</span>
+          <span class="timeline-content">Third cholera outbreak kills 10,738; Dr. John Snow removes the Broad Street pump handle</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1855</span>
+          <span class="timeline-content">Michael Faraday tests Thames water — "opaque pale brown fluid"</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1856</span>
+          <span class="timeline-content">Bazalgette completes definitive sewer plan (rejected by Parliament)</span>
+        </div>
+        <div class="timeline-item highlight">
+          <span class="timeline-date">July-August 1858</span>
+          <span class="timeline-content"><strong>The Great Stink</strong> — the Thames becomes unbearably foul in extreme heat</span>
+        </div>
+        <div class="timeline-item highlight">
+          <span class="timeline-date">1858</span>
+          <span class="timeline-content">Parliament passes sanitation bill in 18 days — Bazalgette's plan approved</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1859</span>
+          <span class="timeline-content">Construction begins</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1865</span>
+          <span class="timeline-content">System officially opened</span>
+        </div>
+        <div class="timeline-item highlight">
+          <span class="timeline-date">1875</span>
+          <span class="timeline-content"><strong>Construction completed</strong></span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1878</span>
+          <span class="timeline-content">Princess Alice disaster — 650 dead near sewer outfall</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">1891</span>
+          <span class="timeline-content">Bazalgette dies; London population 5.5M — sewers still working</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">2017</span>
+          <span class="timeline-content">Whitechapel Fatberg: 250m long, 130 tonnes</span>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-date">2016-ongoing</span>
+          <span class="timeline-content">Thames Tideway Tunnel: 25km "super sewer"</span>
+        </div>
+      </div>
+    </section>
+    <hr>
+    <div class="credits">
+      <h2>Image Credits</h2>
+      <p>Images sourced from Wikimedia Commons (public domain): "Monster Soup commonly called Thames Water" by William Heath (1828), "The Silent Highwayman" from Punch Magazine (1858), "A Drop of Thames Water" from Punch (1850), "Michael Faraday giving his card to Father Thames" from Punch/Wellcome Collection (1855), portrait of Joseph Bazalgette by Lock &amp; Whitfield (c. 1870s).</p>
+    </div>
+    <div class="back-link">
+      <a href="../">← Back to home</a>
+    </div>
+  </article>
+</body>
 </html>
