@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Great Stink of 1858</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💩</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --thames-brown: #4A3728;
+      --parchment: #F5F0E1;
+      --gaslamp: #D4A574;
+      --soot: #1A1A1A;
+      --copper: #2D6A4F;
+      --copper-dark: #1B4332;
+      --sepia: #704214;
+      --rust: #8B4513;
+      --ink: #2C1810;
+      --faded: #8B7355;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Lora', 'Georgia', serif;
+      background: var(--parchment);
+      color: var(--ink);
+      line-height: 1.8;
+      font-size: 19px;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: var(--gaslamp); color: var(--soot); }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--soot);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('silent-highway-man.jpg') center/cover;
+      opacity: 0.35;
+      filter: sepia(0.3) contrast(1.1);
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(26,26,26,0.4) 0%,
+        rgba(26,26,26,0.6) 50%,
+        rgba(26,26,26,0.95) 100%
+      );
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+      padding: 60px 30px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-family: 'Lora', serif;
+      font-size: 0.85rem;
+      color: var(--gaslamp);
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900;
+      color: var(--parchment);
+      line-height: 1.05;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 40px rgba(0,0,0,0.5);
+    }
+    .hero-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      color: var(--gaslamp);
+      font-weight: 400;
+      font-style: italic;
+      margin-bottom: 36px;
+      line-height: 1.4;
+    }
+    .model-subtitle {
+      color: rgba(212,165,116,0.5);
+      margin-bottom: 24px;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      font-family: monospace;
+    }
+    .scroll-cue {
+      animation: bob 2s ease-in-out infinite;
+      color: var(--gaslamp);
+      font-size: 1.5rem;
+      margin-top: 40px;
+      opacity: 0.6;
+    }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+
+    /* ─── MAIN CONTENT ─── */
+    .article {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+    .article p {
+      margin-bottom: 1.6em;
+      color: var(--ink);
+    }
+    .article h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--thames-brown);
+      margin: 80px 0 24px;
+      position: relative;
+      padding-bottom: 16px;
+    }
+    .article h2::after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--copper);
+    }
+    .article h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--thames-brown);
+      margin: 40px 0 16px;
+    }
+
+    /* ─── FULL-WIDTH IMAGE ─── */
+    .full-width-image {
+      margin: 60px -9999px;
+      padding: 0 9999px;
+      position: relative;
+    }
+    .full-width-image figure {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .full-width-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 2px;
+    }
+    .full-width-image figcaption {
+      font-size: 0.85rem;
+      color: var(--faded);
+      text-align: center;
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* ─── INLINE IMAGE ─── */
+    .inline-image {
+      margin: 40px 0;
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .inline-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .inline-image figcaption {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: var(--faded);
+      font-style: italic;
+      background: rgba(74,55,40,0.05);
+    }
+
+    /* ─── IMAGE ROW ─── */
+    .image-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 48px 0;
+    }
+    .image-row figure {
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .image-row img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .image-row figure:hover img { transform: scale(1.02); }
+    .image-row figcaption {
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      color: var(--faded);
+      font-style: italic;
+      background: rgba(74,55,40,0.04);
+    }
+    @media (max-width: 600px) { 
+      .image-row { grid-template-columns: 1fr; } 
+    }
+
+    /* ─── PULL QUOTE ─── */
+    .pull-quote {
+      margin: 60px 0;
+      padding: 32px 0 32px 32px;
+      border-left: 4px solid var(--copper);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--thames-brown);
+      position: relative;
+    }
+    .pull-quote::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 8px;
+      font-size: 5rem;
+      color: var(--gaslamp);
+      opacity: 0.3;
+      font-family: 'Playfair Display', serif;
+      line-height: 1;
+    }
+    .pull-quote cite {
+      display: block;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      font-style: normal;
+      color: var(--faded);
+      font-family: 'Lora', serif;
+    }
+
+    /* ─── BLOCKQUOTE ─── */
+    blockquote {
+      margin: 32px 0;
+      padding: 20px 28px;
+      background: rgba(74,55,40,0.06);
+      border-left: 3px solid var(--gaslamp);
+      border-radius: 0 4px 4px 0;
+      font-style: italic;
+      color: var(--sepia);
+    }
+    blockquote p { margin-bottom: 0; }
+
+    /* ─── CALLOUT BOX ─── */
+    .callout {
+      background: linear-gradient(135deg, var(--copper-dark), var(--copper));
+      color: var(--parchment);
+      border-radius: 8px;
+      padding: 32px;
+      margin: 48px 0;
+      box-shadow: 0 8px 32px rgba(45,106,79,0.3);
+    }
+    .callout h3 {
+      color: var(--gaslamp);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+    }
+    .callout ul {
+      list-style: none;
+      padding: 0;
+    }
+    .callout ul li {
+      padding: 8px 0 8px 24px;
+      position: relative;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      border-bottom: 1px solid rgba(245,240,225,0.1);
+    }
+    .callout ul li:last-child { border-bottom: none; }
+    .callout ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--gaslamp);
+    }
+    .callout strong {
+      color: var(--gaslamp);
+    }
+
+    /* ─── STATS ROW ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 48px 0;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 24px 16px;
+      background: rgba(74,55,40,0.04);
+      border-radius: 8px;
+      border: 1px solid var(--gaslamp);
+    }
+    .stat-card .num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--thames-brown);
+      line-height: 1.1;
+    }
+    .stat-card .label {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--faded);
+    }
+    @media (max-width: 500px) { 
+      .stats-row { grid-template-columns: 1fr 1fr; } 
+      .stat-card:nth-child(3) { grid-column: 1 / -1; }
+    }
+
+    /* ─── SECTION DIVIDER ─── */
+    .divider {
+      text-align: center;
+      margin: 60px 0;
+      color: var(--gaslamp);
+      font-size: 1.2rem;
+      letter-spacing: 1em;
+      opacity: 0.6;
+    }
+
+    /* ─── PORTRAIT ─── */
+    .portrait-block {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 32px;
+      margin: 48px 0;
+      align-items: start;
+    }
+    .portrait-block img {
+      width: 100%;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      filter: sepia(0.1);
+    }
+    .portrait-block h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--thames-brown);
+      margin-bottom: 8px;
+    }
+    .portrait-block .bio {
+      font-size: 0.9rem;
+      color: var(--faded);
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+    @media (max-width: 600px) { 
+      .portrait-block { grid-template-columns: 1fr; max-width: 300px; } 
+    }
+
+    /* ─── TIMELINE ─── */
+    .timeline {
+      margin: 60px 0;
+      padding-left: 32px;
+      position: relative;
+      counter-reset: timeline;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--gaslamp), var(--copper), var(--copper-dark));
+    }
+    .timeline li {
+      list-style: none;
+      position: relative;
+      padding: 16px 0 24px 28px;
+      counter-increment: timeline;
+    }
+    .timeline li::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 24px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--copper);
+      border: 3px solid var(--parchment);
+      box-shadow: 0 0 0 1px var(--copper);
+    }
+    .timeline li.highlight::before {
+      background: var(--gaslamp);
+      width: 16px;
+      height: 16px;
+      left: -31px;
+      top: 20px;
+      box-shadow: 0 0 0 1px var(--gaslamp), 0 0 12px rgba(212,165,116,0.4);
+    }
+    .timeline .tl-date {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--thames-brown);
+      margin-bottom: 4px;
+    }
+    .timeline .tl-event {
+      font-size: 0.95rem;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .timeline li.highlight .tl-date {
+      color: var(--copper-dark);
+      font-size: 1.05rem;
+    }
+
+    /* ─── SECTION HERO IMAGE (Punch cartoon with overlay) ─── */
+    .section-hero {
+      position: relative;
+      margin: 48px 0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .section-hero img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: sepia(0.15) contrast(1.05);
+    }
+    .section-hero .overlay-text {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px;
+      background: linear-gradient(0deg, rgba(26,26,26,0.85) 0%, transparent 100%);
+      color: var(--parchment);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      font-style: italic;
+    }
+    .section-hero .overlay-text span {
+      display: block;
+      font-family: 'Lora', serif;
+      font-size: 0.8rem;
+      font-style: normal;
+      color: var(--gaslamp);
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer-section {
+      max-width: 720px;
+      margin: 80px auto 0;
+      padding: 0 24px 60px;
+    }
+    .footer-section hr {
+      border: none;
+      height: 1px;
+      background: var(--gaslamp);
+      opacity: 0.3;
+      margin: 0 0 32px;
+    }
+    .footer-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--thames-brown);
+      margin-bottom: 16px;
+    }
+    .footer-section p, .footer-section li {
+      font-size: 0.9rem;
+      color: var(--faded);
+      line-height: 1.7;
+    }
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+    }
+    .footer-section ul li {
+      padding: 4px 0 4px 16px;
+      position: relative;
+    }
+    .footer-section ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15px;
+      width: 6px;
+      height: 1px;
+      background: var(--gaslamp);
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 32px 0;
+    }
+    .back-link a {
+      display: inline-block;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--copper);
+      text-decoration: none;
+      border: 2px solid var(--copper);
+      padding: 12px 32px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    .back-link a:hover {
+      background: var(--copper);
+      color: var(--parchment);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── HERO ─── -->
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">London · Summer 1858</div>
+    <h1>The Great Stink</h1>
+    <p class="hero-subtitle">The summer London choked on its own sewage — and built the greatest engineering triumph the world had ever seen.</p>
+    <p class="model-subtitle">Generated by <code>openrouter/qwen/qwen3.6-plus:free</code> · April 2, 2026</p>
+    <div class="scroll-cue">↓</div>
+  </div>
+</header>
+
+<!-- ─── ARTICLE ─── -->
+<main class="article">
+
+<h2>Part I: The Royal River Becomes a Toilet</h2>
+
+<p>The River Thames had been called the "silver Thames" and the "royal river" for centuries — the pride of England's greatest city. By 1858, it had become a brown, bubbling open sewer.</p>
+
+<p>London was the largest city in the world, with a population exceeding 2.5 million, <strong>doubled</strong> from just 1800. Every human being in that city produced waste. And there was nowhere for it to go.</p>
+
+<p>Most houses used cesspits — brick-lined holes in the ground. But the Metropolitan Commission of Sewers had been connecting houses to brick sewers, which emptied directly into the Thames. Then, in the 1850s, flushing toilets exploded in popularity — they were showcased at the Great Exhibition of 1851. Suddenly, thousands of households could flush their waste straight into the city's waterways.</p>
+
+<p>The Thames became, in the words of Charles Dickens writing in <em>Little Dorrit</em> (1857):</p>
+
+<div class="full-width-image">
+  <figure>
+    <img src="monster-soup.jpg" alt="Monster Soup commonly called Thames Water, satirical print by William Heath, 1828" loading="lazy">
+    <figcaption>"Monster Soup commonly called Thames Water" — William Heath, 1828</figcaption>
+  </figure>
+</div>
+
+<blockquote><p>"Through the heart of the town a deadly sewer ebbed and flowed, in the place of a fine fresh river."</p></blockquote>
+
+<p>In 1855, the scientist <strong>Michael Faraday</strong> visited the Thames with a simple experiment. He dropped white cards into the river and watched them disappear before they sank even one inch. He wrote to <em>The Times</em>:</p>
+
+<blockquote><p>"Near the bridges the feculence rolled up in clouds so dense that they were visible at the surface, even in water of this kind. The smell was very bad, and common to the whole of the water; it was the same as that which now comes up from the gully-holes in the streets; the whole river was for the time a real sewer."</p></blockquote>
+
+<div class="image-row">
+  <figure>
+    <img src="drop-thames-water.jpg" alt="A Drop of Thames Water, Punch magazine, 1850" loading="lazy">
+    <figcaption>"A Drop of Thames Water" — Punch, 1850</figcaption>
+  </figure>
+  <figure>
+    <img src="faraday-thames.jpg" alt="Michael Faraday giving his card to Father Thames, Punch magazine, 1855" loading="lazy">
+    <figcaption>"Michael Faraday giving his card to Father Thames" — Punch/Wellcome, 1855</figcaption>
+  </figure>
+</div>
+
+<p>In response, the government did what any rational administration would do: they poured chalk lime, chloride of lime, and carbolic acid into the river. It had no meaningful effect.</p>
+
+<h2>Part II: The Cholera Plague</h2>
+
+<p>The smell wasn't just disgusting — it was <em>terrifying</em>. Three cholera epidemics had devastated London before 1858, killing tens of thousands:</p>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="num">6,536</div>
+    <span class="label">Dead in 1831–32</span>
+  </div>
+  <div class="stat-card">
+    <div class="num">14,137</div>
+    <span class="label">Dead in 1848–49</span>
+  </div>
+  <div class="stat-card">
+    <div class="num">10,738</div>
+    <span class="label">Dead in 1853–54</span>
+  </div>
+</div>
+
+<p>Cholera was fast-acting and ghastly. Victims could go from healthy to corpse-blue to dead in hours.</p>
+
+<p>In 1854, <strong>Dr. John Snow</strong> traced a cholera outbreak on Broad Street in Soho to a contaminated water pump. He famously removed the pump's handle, stopping new cases. He had published his theory that cholera spread through contaminated water, not bad air.</p>
+
+<p>Virtually <strong>nobody believed him</strong>.</p>
+
+<p>The dominant medical theory was <strong>miasma</strong> — the idea that disease was spread through "bad air" or noxious vapors. Social reformer Edwin Chadwick insisted that "all smell is disease" and pushed for flushing sewers into the Thames, thinking running water would carry away the miasma. It made things immeasurably worse.</p>
+
+<p>Ironically, Dr. Snow died in 1858, <em>during</em> the Great Stink — the largest "miasmatic" event in London's history, which failed to produce any new cholera outbreak, thereby proving his waterborne theory by the sheer fact that the worst smell ever hadn't killed anyone directly.</p>
+
+<h2>Part III: The Summer That Broke</h2>
+
+<p>Summer 1858 was hot and dry. London hit temperatures above <strong>30°C (86°F)</strong>. The Thames dropped to an unusually low level, exposing raw sewage baked into the riverbanks.</p>
+
+<p>The stench became inhuman. People reportedly vomited simply by going near the river. Those who could afford to fled the city. Others stayed indoors, soaking their curtains in chloride of lime to filter the air.</p>
+
+<p>And it was directly under the windows of the Houses of Parliament.</p>
+
+<div class="section-hero">
+  <img src="silent-highway-man.jpg" alt="The Silent Highwayman, Punch magazine, 1858" loading="lazy">
+  <div class="overlay-text">
+    "Your Money or Your Life!"
+    <span>— Punch Magazine, 1858 &nbsp;|&nbsp; Death rows the polluted Thames</span>
+  </div>
+</div>
+
+<p><strong>Benjamin Disraeli</strong> — yes, <em>that</em> Disraeli, soon-to-be Prime Minister — was in Parliament that summer. He described the Thames as a "Stygian pool, reeking with ineffable and intolerable horrors." Parliament was literally being driven out.</p>
+
+<p>So they did what governments do when they can no longer ignore a crisis: <strong>they passed a bill</strong>. And remarkably, they did it fast.</p>
+
+<div class="callout">
+  <h3>🏛️ 18 Days From Crisis to Law</h3>
+  <ul>
+    <li>Parliament passed the <strong>Metropolis Local Management Amendment Act of 1858</strong></li>
+    <li>Provided funding for a new sewer system</li>
+    <li>No filibuster, no delay, no committee studies</li>
+    <li>Benjamin Disraeli presented the bill himself</li>
+  </ul>
+</div>
+
+<div class="divider">⁂</div>
+
+<h2>Part IV: The Man Who Saved London</h2>
+
+<div class="portrait-block">
+  <img src="bazalgette-portrait.jpg" alt="Portrait of Sir Joseph William Bazalgette, c. 1870s" loading="lazy">
+  <div>
+    <h3>Sir Joseph William Bazalgette</h3>
+    <p class="bio">1819–1891 · Chief Engineer, Metropolitan Board of Works</p>
+    <p>A civil engineer who had previously worked in the railway industry until overwork caused a serious breakdown in his health. He joined the Metropolitan Commission of Sewers and was promoted to Chief Engineer.</p>
+  </div>
+</div>
+
+<p>By June 1856, Bazalgette had already completed his plan for a revolutionary sewer system — but it had been repeatedly rejected before Parliament. The Great Stink gave it the political will it needed.</p>
+
+<div class="callout">
+  <h3>📐 The Plan by the Numbers</h3>
+  <ul>
+    <li><strong>82 miles</strong> (132 km) of main brick-lined interceptor sewers</li>
+    <li><strong>1,100 miles</strong> (1,800 km) of street-level drains</li>
+    <li><strong>318 million</strong> bricks</li>
+    <li><strong>2.7 million</strong> cubic meters of excavated earth</li>
+    <li><strong>670,000</strong> cubic meters of concrete</li>
+    <li><strong>Two feet per mile</strong> consistent gradient — gravity doing the work</li>
+    <li>Designed for <strong>4.5 million</strong> people. Today serves <strong>9.5 million</strong>.</li>
+    <li>Cost <strong>£6.5 million</strong> — over £650 million today</li>
+  </ul>
+</div>
+
+<p>He insisted on using <strong>Portland cement</strong> — an expensive, water-resistant cement — over cheaper alternatives. The strength of that cement is why his sewers still stand today.</p>
+
+<blockquote><p>"Few people have done more to change the River Thames, or London, than Joseph Bazalgette." <cite>— London Museum</cite></p></blockquote>
+
+<div class="divider">⁂</div>
+
+<h2>Part V: Engineering the Impossible</h2>
+
+<p>Construction began in early <strong>1859</strong> and wasn't completed until <strong>1875</strong> — sixteen years of digging beneath one of the world's great cities.</p>
+
+<p>Thousands of laborers excavated the tunnels by hand. The demand was so intense that bricklayers' wages rose by <strong>20%</strong> across London. Entire "lost rivers" — the Fleet, the Tyburn, and others that had once been natural streams running through London — were encased in brick and converted into underground sewage channels.</p>
+
+<p>To create the necessary gradient, Bazalgette needed to build massive embankments along the Thames. Three of them rose from the river: <strong>Victoria</strong>, <strong>Chelsea</strong>, and <strong>Albert</strong>. These stone constructions reclaimed about <strong>22 acres</strong> of land from the Thames and also created space for the new Underground railway lines beneath them. You'd know them today as the walkways along the river on the north and south sides.</p>
+
+<p>Two ornate pumping stations — <strong>Crossness</strong> (on the Erith Marshes) and <strong>Abbey Mills</strong> (in Stratford) — were built to lift the sewage into higher pipes. These were no mere utility buildings. They were Victorian cathedrals of engineering — Grade I listed buildings today, protected by English Heritage.</p>
+
+<div class="pull-quote">
+  He who drinks a tumbler of London water has literally in his stomach more animated beings than there are men, women and children on the face of the globe.
+  <cite>— Sydney Smith, humorist cleric, 1834</cite>
+</div>
+
+<div class="divider">⁂</div>
+
+<h2>Part VI: The Legacy</h2>
+
+<p>After 1858, <strong>cholera never returned to London</strong>. The system worked so well that for over a century, Londoners walked the Victoria Embankment, took the Underground beneath it, and never gave a thought to the engineering miracle flowing beneath their feet.</p>
+
+<p>But Bazalgette's system wasn't perfect. It dumped raw, untreated sewage downstream. In <strong>1878</strong>, the paddle steamer <em>Princess Alice</em> collided with a coal ship near the Crossness outfall, where raw sewage had just been pumped into the Thames. About <strong>650 people drowned</strong>, and some who survived the drowning also died from swallowing the untreated sewage. The tragedy drove the construction of proper sewage treatment plants.</p>
+
+<p>Today, London faces a different problem: <strong>fatbergs</strong> — massive congealed masses of discarded cooking oil, wet wipes, and other debris. The Whitechapel Fatberg of 2017 was 250 meters long and weighed 130 tonnes.</p>
+
+<p>In 2016, construction began on the <strong>Thames Tideway Tunnel</strong> — a new "super sewer" at 25 km long and 7 meters wide. A modern descendant of Bazalgette's original vision, adapted for a 21st-century city of 9.5 million people.</p>
+
+<div class="divider">⁂</div>
+
+<h2>The Timeline</h2>
+
+<ul class="timeline">
+  <li>
+    <div class="tl-date">c. 1800</div>
+    <div class="tl-event">London population: ~1 million. The River Thames is still navigable and fishable.</div>
+  </li>
+  <li>
+    <div class="tl-date">1828</div>
+    <div class="tl-event">"Monster Soup commonly called Thames Water" — William Heath's satirizing print of contaminated water.</div>
+  </li>
+  <li>
+    <div class="tl-date">1831–32</div>
+    <div class="tl-event">First major cholera epidemic kills 6,536 in London.</div>
+  </li>
+  <li>
+    <div class="tl-date">1834</div>
+    <div class="tl-event">John Martin proposes a sewer system to preserve sewage for agriculture. Ignored.</div>
+  </li>
+  <li>
+    <div class="tl-date">1848–49</div>
+    <div class="tl-event">Second cholera outbreak kills 14,137. Edwin Chadwick urges "all smell is disease."</div>
+  </li>
+  <li>
+    <div class="tl-date">1851</div>
+    <div class="tl-event">The Great Exhibition showcases flushing toilets — inadvertently making things far worse.</div>
+  </li>
+  <li>
+    <div class="tl-date">1853–54</div>
+    <div class="tl-event">Third cholera outbreak kills 10,738. Dr. John Snow removes the Broad Street pump handle.</div>
+  </li>
+  <li>
+    <div class="tl-date">1855</div>
+    <div class="tl-event">Michael Faraday tests Thames water — "opaque pale brown fluid. The whole river was for the time a real sewer."</div>
+  </li>
+  <li class="highlight">
+    <div class="tl-date">July–August 1858</div>
+    <div class="tl-event"><strong>The Great Stink.</strong> Extreme heat turns the Thames into an unbearable open sewer. Parliament acts in 18 days.</div>
+  </li>
+  <li>
+    <div class="tl-date">1859</div>
+    <div class="tl-event">Construction begins. Thousands of workers dig by hand beneath the city.</div>
+  </li>
+  <li>
+    <div class="tl-date">1865</div>
+    <div class="tl-event">System officially opened.</div>
+  </li>
+  <li class="highlight">
+    <div class="tl-date">1875</div>
+    <div class="tl-event"><strong>Construction completed.</strong> 1,182 miles of sewers. 318 million bricks. Still working.</div>
+  </li>
+  <li>
+    <div class="tl-date">1878</div>
+    <div class="tl-event"><em>Princess Alice</em> disaster — 650 dead near sewer outfall. Drives the creation of sewage treatment plants.</div>
+  </li>
+  <li>
+    <div class="tl-date">1891</div>
+    <div class="tl-event">Bazalgette dies. London population 5.5M — his sewers still easily handle it.</div>
+  </li>
+  <li>
+    <div class="tl-date">2017</div>
+    <div class="tl-event">Whitechapel Fatberg: 250m long, 130 tonnes. The problem hasn't gone away — it's evolved.</div>
+  </li>
+  <li>
+    <div class="tl-date">2016–ongoing</div>
+    <div class="tl-event">Thames Tideway Tunnel: a 25km "super sewer" — Bazalgette's vision, scaled for 9.5 million people.</div>
+  </li>
+</ul>
+
+<div class="back-link">
+  <a href="../">← Back to home</a>
+</div>
+
+</main>
+
+<!-- ─── FOOTER ─── -->
+<div class="footer-section">
+  <hr>
+  <h2>Image Credits</h2>
+  <p>All images sourced from Wikimedia Commons (public domain):</p>
+  <ul>
+    <li><strong>"Monster Soup commonly called Thames Water"</strong> — William Heath, 1828 (Wellcome Collection)</li>
+    <li><strong>"The Silent Highwayman"</strong> — Punch Magazine, July 1858</li>
+    <li><strong>"A Drop of Thames Water"</strong> — Punch Magazine, 1850</li>
+    <li><strong>"Michael Faraday giving his card to Father Thames"</strong> — Punch/Wellcome Collection, 21 July 1855</li>
+    <li><strong>Portrait of Sir Joseph Bazalgette</strong> — Lock &amp; Whitfield, c. 1870s</li>
+  </ul>
+
+  <hr style="margin: 32px 0;">
+  <h2>Sources</h2>
+  <ul>
+    <li>Wikipedia: "Great Stink" — en.wikipedia.org/wiki/Great_Stink</li>
+    <li>London Museum: "The Great Stink of 1858"</li>
+    <li>The Guardian: "London's Great Stink heralds a wonder of the industrial world"</li>
+    <li>Rapid Transition Alliance: "London's Great Stink of 1858"</li>
+    <li>London Museum: "How Bazalgette built London's first super-sewer"</li>
+  </ul>
+</div>
+
+</body>
+</html>
