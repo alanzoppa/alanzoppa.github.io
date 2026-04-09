@@ -3,782 +3,770 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Kronstadt Rebellion of 1921</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☭</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+  <title>The Kronstadt Rebellion of 1921 — When the Revolution Devoured Its Children</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛓️</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Serif+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --blood: #8b1a1a;
-      --blood-deep: #5c0e0e;
-      --blood-light: #c0392b;
-      --ink: #1a1a1a;
-      --paper: #f5f0e8;
-      --paper-dark: #e8e0d0;
-      --gray: #6b6b6b;
-      --gold: #c4a35a;
-      --frost: #d4dce6;
-    }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
+    
+    :root {
+      --blood-red: #8B0000;
+      --deep-red: #5C1A1B;
+      --soviet-red: #CC0000;
+      --charcoal: #1a1a1a;
+      --dark-gray: #2d2d2d;
+      --medium-gray: #666;
+      --light-gray: #e0e0e0;
+      --off-white: #f5f2eb;
+      --gold: #c9a227;
+    }
+    
     body {
-      font-family: 'Source Serif 4', Georgia, serif;
+      font-family: 'Source Serif Pro', Georgia, serif;
+      background: var(--charcoal);
+      color: var(--off-white);
+      line-height: 1.8;
       font-size: 18px;
-      line-height: 1.75;
-      color: var(--ink);
-      background: var(--paper);
     }
-
-    /* === HERO === */
+    
+    /* Hero Section */
     .hero {
-      position: relative;
-      height: 100vh;
-      min-height: 700px;
+      min-height: 100vh;
+      background: linear-gradient(180deg, 
+        rgba(26,26,26,0) 0%,
+        rgba(26,26,26,0.3) 50%,
+        var(--charcoal) 100%
+      ), url('kronstadt-general-view-1921.jpg');
+      background-size: cover;
+      background-position: center;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background: linear-gradient(135deg, var(--ink) 0%, #2a0a0a 50%, var(--blood-deep) 100%);
-      overflow: hidden;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 60px 20px;
+      position: relative;
     }
-
+    
     .hero::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: url('kronstadt-general-view-1921.jpg') center/cover no-repeat;
-      opacity: 0.15;
-      filter: grayscale(100%) contrast(1.2);
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
       right: 0;
-      height: 200px;
-      background: linear-gradient(transparent, var(--paper));
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(139,0,0,0.4) 0%, rgba(26,26,26,0.7) 100%);
     }
-
+    
     .hero-content {
       position: relative;
-      z-index: 2;
-      max-width: 850px;
-      padding: 0 24px;
-      animation: fadeInUp 1.2s ease-out;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero-date {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.9rem;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-      color: var(--blood-light);
-      margin-bottom: 24px;
-    }
-
-    .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.8rem, 6vw, 4.5rem);
-      font-weight: 900;
-      line-height: 1.1;
-      color: var(--paper);
-      margin-bottom: 20px;
-      text-shadow: 2px 4px 12px rgba(0,0,0,0.5);
-    }
-
-    .hero h1 em {
-      color: var(--blood-light);
-      font-style: italic;
-    }
-
-    .hero-subtitle {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      font-style: italic;
-      color: var(--frost);
-      margin-bottom: 32px;
-      opacity: 0.85;
-    }
-
-    .hero-slogan {
-      display: inline-block;
-      font-family: 'Oswald', sans-serif;
-      font-size: 1rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--blood-light);
-      border: 1px solid var(--blood-light);
-      padding: 10px 28px;
-      margin-top: 8px;
-    }
-
-    /* === MAIN === */
-    main {
-      max-width: 780px;
+      z-index: 1;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 60px 24px 80px;
-    }
-
-    .subtitle {
-      color: var(--gray);
-      margin-bottom: 40px;
-      font-size: 0.85em;
       text-align: center;
     }
-
-    .subtitle code {
-      background: var(--paper-dark);
-      padding: 2px 8px;
-      border-radius: 3px;
-      font-size: 0.9em;
+    
+    .hero-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeInUp 1s ease forwards 0.3s;
     }
-
-    /* === SECTIONS === */
-    h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--blood-deep);
-      margin-top: 64px;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--blood);
-      line-height: 1.2;
+    
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 0.95;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 40px rgba(0,0,0,0.8);
+      opacity: 0;
+      animation: fadeInUp 1s ease forwards 0.5s;
     }
-
-    h2::before {
-      content: '';
+    
+    .hero h1 .line1 {
       display: block;
-      width: 60px;
-      height: 3px;
-      background: var(--blood);
-      margin-bottom: -17px;
+      color: var(--off-white);
     }
-
-    h3 {
-      font-family: 'Playfair Display', serif;
+    
+    .hero h1 .line2 {
+      display: block;
+      color: var(--soviet-red);
+    }
+    
+    .hero-tagline {
       font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--blood-deep);
-      margin-top: 40px;
-      margin-bottom: 16px;
+      font-style: italic;
+      color: var(--light-gray);
+      max-width: 700px;
+      margin: 0 auto 40px;
+      opacity: 0;
+      animation: fadeInUp 1s ease forwards 0.7s;
     }
-
-    p { margin-bottom: 20px; }
-
-    /* === LEDE === */
-    .lede {
+    
+    .model-attribution {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--medium-gray);
+      letter-spacing: 0.1em;
+      opacity: 0;
+      animation: fadeInUp 1s ease forwards 0.9s;
+    }
+    
+    /* Slogan Banner */
+    .slogan-banner {
+      background: var(--deep-red);
+      padding: 40px 20px;
+      text-align: center;
+      border-top: 1px solid var(--blood-red);
+      border-bottom: 1px solid var(--blood-red);
+    }
+    
+    .slogan-banner .flag {
+      width: 80px;
+      height: auto;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5));
+    }
+    
+    .slogan-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      letter-spacing: 0.15em;
+      color: var(--off-white);
+      text-transform: uppercase;
+    }
+    
+    .slogan-text .highlight {
+      color: var(--soviet-red);
+    }
+    
+    /* Main Content */
+    .content-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+    
+    .intro {
       font-size: 1.25rem;
-      line-height: 1.8;
-      color: #333;
-      margin-bottom: 32px;
+      line-height: 1.9;
+      margin-bottom: 60px;
     }
-
-    .lede::first-letter {
-      float: left;
-      font-family: 'Playfair Display', serif;
+    
+    .intro::first-letter {
+      font-family: 'Bebas Neue', sans-serif;
       font-size: 4.5rem;
-      font-weight: 900;
+      float: left;
       line-height: 0.8;
-      color: var(--blood);
-      margin: 4px 12px 0 0;
-      padding-right: 4px;
+      margin-right: 15px;
+      color: var(--soviet-red);
     }
-
-    /* === PULL QUOTES === */
+    
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      margin: 80px 0 30px;
+      color: var(--off-white);
+      border-left: 4px solid var(--soviet-red);
+      padding-left: 20px;
+    }
+    
+    h2:first-of-type {
+      margin-top: 0;
+    }
+    
+    p {
+      margin-bottom: 24px;
+      text-align: justify;
+      hyphens: auto;
+    }
+    
+    /* Pull Quotes */
     .pull-quote {
-      margin: 48px 0;
-      padding: 32px 40px;
-      border-left: 4px solid var(--blood);
-      background: linear-gradient(135deg, rgba(139,26,26,0.04), rgba(139,26,26,0.02));
+      background: var(--dark-gray);
+      border-left: 4px solid var(--soviet-red);
+      padding: 30px;
+      margin: 50px -20px;
+      font-size: 1.3rem;
+      font-style: italic;
+      color: var(--light-gray);
       position: relative;
     }
-
+    
     .pull-quote::before {
       content: '"';
-      font-family: 'Playfair Display', serif;
+      font-family: Georgia, serif;
       font-size: 6rem;
-      color: var(--blood);
-      opacity: 0.2;
+      color: var(--deep-red);
       position: absolute;
-      top: -10px;
-      left: 16px;
+      top: -20px;
+      left: 15px;
       line-height: 1;
     }
-
+    
     .pull-quote p {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      font-style: italic;
-      color: var(--blood-deep);
-      line-height: 1.5;
-      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      text-align: left;
+    }
+    
+    .pull-quote cite {
+      display: block;
+      margin-top: 15px;
+      font-size: 0.95rem;
+      font-style: normal;
+      font-family: 'Inter', sans-serif;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+    
+    /* Images */
+    figure {
+      margin: 50px -20px;
       position: relative;
     }
-
-    .pull-quote cite {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.85rem;
-      font-style: normal;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--gray);
-    }
-
-    /* === IMAGES === */
-    figure {
-      margin: 40px 0;
-    }
-
+    
     figure img {
       width: 100%;
       height: auto;
       display: block;
-      border: 1px solid var(--paper-dark);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      filter: grayscale(30%) contrast(1.1);
+      transition: filter 0.5s ease;
     }
-
-    figure img:hover {
-      transform: scale(1.01);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    
+    figure:hover img {
+      filter: grayscale(0%) contrast(1);
     }
-
+    
     figcaption {
-      font-size: 0.85rem;
-      color: var(--gray);
-      margin-top: 10px;
-      padding: 0 4px;
-      font-style: italic;
-      line-height: 1.5;
-    }
-
-    figure.portrait {
-      max-width: 280px;
-      margin: 40px auto;
-    }
-
-    figure.floated-left {
-      float: left;
-      max-width: 45%;
-      margin: 0 32px 24px 0;
-    }
-
-    figure.floated-right {
-      float: right;
-      max-width: 45%;
-      margin: 0 0 24px 32px;
-    }
-
-    figure.hero-figure {
-      margin: 56px -60px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-    }
-
-    figure.hero-figure img {
-      box-shadow: none;
-    }
-
-    figure.hero-figure figcaption {
-      padding: 8px 12px;
-      background: var(--ink);
-      color: var(--frost);
-    }
-
-    /* === CALLOUT BOX === */
-    .callout {
-      margin: 40px 0;
-      padding: 24px 28px;
-      background: var(--ink);
-      color: var(--paper);
-      border-left: 4px solid var(--blood);
-    }
-
-    .callout h4 {
-      font-family: 'Oswald', sans-serif;
+      background: var(--dark-gray);
+      padding: 15px 20px;
       font-size: 0.9rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--blood-light);
-      margin-bottom: 12px;
+      font-style: italic;
+      color: var(--medium-gray);
+      border-bottom: 1px solid var(--deep-red);
     }
-
-    .callout p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 8px;
+    
+    /* Timeline Section */
+    .timeline-section {
+      background: var(--dark-gray);
+      margin: 60px -20px;
+      padding: 60px 20px;
     }
-
-    .callout p:last-child { margin-bottom: 0; }
-
-    /* === DEMANDS LIST === */
-    .demands {
-      margin: 32px 0;
+    
+    .timeline-section h2 {
+      margin-top: 0;
+      text-align: center;
+      border-left: none;
       padding-left: 0;
-      list-style: none;
     }
-
-    .demands li {
-      padding: 10px 0 10px 32px;
-      position: relative;
-      border-bottom: 1px solid rgba(139,26,26,0.12);
-      font-size: 1rem;
-    }
-
-    .demands li::before {
-      content: '—';
-      position: absolute;
-      left: 8px;
-      color: var(--blood);
-      font-weight: 700;
-    }
-
-    .demands li:last-child { border-bottom: none; }
-
-    /* === TIMELINE === */
+    
     .timeline {
-      margin: 48px 0;
-      padding: 0;
-      list-style: none;
+      max-width: 700px;
+      margin: 0 auto;
       position: relative;
     }
-
+    
     .timeline::before {
       content: '';
       position: absolute;
-      left: 24px;
+      left: 120px;
       top: 0;
       bottom: 0;
       width: 2px;
-      background: linear-gradient(var(--blood), var(--blood-deep));
+      background: linear-gradient(180deg, var(--soviet-red), var(--deep-red));
     }
-
-    .timeline li {
-      padding: 12px 0 12px 60px;
+    
+    .timeline-item {
+      display: flex;
+      margin-bottom: 30px;
       position: relative;
     }
-
-    .timeline li::before {
+    
+    .timeline-date {
+      width: 100px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      color: var(--soviet-red);
+      text-align: right;
+      padding-right: 25px;
+      flex-shrink: 0;
+    }
+    
+    .timeline-content {
+      flex: 1;
+      padding-left: 25px;
+      position: relative;
+    }
+    
+    .timeline-content::before {
       content: '';
       position: absolute;
-      left: 19px;
-      top: 18px;
+      left: -6px;
+      top: 8px;
       width: 12px;
       height: 12px;
-      background: var(--blood);
+      background: var(--soviet-red);
       border-radius: 50%;
-      border: 2px solid var(--paper);
-      box-shadow: 0 0 0 2px var(--blood);
+      box-shadow: 0 0 0 4px var(--dark-gray);
     }
-
-    .timeline-date {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--blood);
+    
+    .timeline-content p {
+      margin: 0;
+      text-align: left;
     }
-
-    .timeline-event {
-      font-size: 0.95rem;
-      color: #444;
-      margin-top: 2px;
+    
+    /* Callout Boxes */
+    .callout {
+      background: linear-gradient(135deg, var(--deep-red), var(--charcoal));
+      border: 1px solid var(--blood-red);
+      padding: 30px;
+      margin: 50px 0;
+      border-radius: 4px;
     }
-
-    /* === INTERPRETATION BLOCKS === */
-    .interpretation {
-      margin: 28px 0;
-      padding: 20px 24px;
-      border: 1px solid rgba(139,26,26,0.15);
-      border-radius: 2px;
-      background: rgba(139,26,26,0.02);
-    }
-
-    .interpretation h4 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 500;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--blood);
-      margin-bottom: 10px;
-    }
-
-    .interpretation p {
-      font-size: 0.95rem;
-      margin-bottom: 0;
-    }
-
-    /* === DIVIDER === */
-    .divider {
-      text-align: center;
-      margin: 56px 0;
-      color: var(--blood);
+    
+    .callout h3 {
+      font-family: 'Bebas Neue', sans-serif;
       font-size: 1.5rem;
-      letter-spacing: 12px;
-      opacity: 0.4;
+      letter-spacing: 0.1em;
+      margin-bottom: 15px;
+      color: var(--gold);
     }
-
-    /* === IMAGE ATTRIBUTION === */
-    .image-gen {
-      margin-top: 64px;
-      padding-top: 32px;
-      border-top: 1px solid var(--paper-dark);
+    
+    .callout ul {
+      list-style: none;
+      padding: 0;
     }
-
-    .model-badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 3px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: white;
-      margin-right: 6px;
+    
+    .callout li {
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;
     }
-
-    /* === BACK LINK === */
-    .back {
+    
+    .callout li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--soviet-red);
+    }
+    
+    /* Full Width Image */
+    .full-width {
+      margin-left: -20px;
+      margin-right: -20px;
+    }
+    
+    .full-width img {
+      width: 100%;
+    }
+    
+    /* Interpretations Section */
+    .viewpoint {
+      background: var(--dark-gray);
+      padding: 30px;
+      margin-bottom: 20px;
+      border-left: 4px solid;
+    }
+    
+    .viewpoint.anarchist { border-left-color: #000; }
+    .viewpoint.trotskyist { border-left-color: var(--soviet-red); }
+    .viewpoint.liberal { border-left-color: #4a90d9; }
+    .viewpoint.evidence { border-left-color: var(--gold); }
+    
+    .viewpoint h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 15px;
+    }
+    
+    /* Final Section */
+    .conclusion {
+      background: linear-gradient(180deg, var(--charcoal), var(--deep-red));
+      margin: 80px -20px -60px;
+      padding: 60px 20px;
+    }
+    
+    .conclusion h2 {
+      border-left-color: var(--gold);
+    }
+    
+    .final-quote {
       text-align: center;
-      margin-top: 48px;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--light-gray);
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
-
-    .back a {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.9rem;
-      letter-spacing: 2px;
+    
+    .final-quote cite {
+      display: block;
+      margin-top: 20px;
+      font-size: 1rem;
+      color: var(--gold);
+    }
+    
+    /* Back Link */
+    .back-link {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--charcoal);
+    }
+    
+    .back-link a {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
       text-transform: uppercase;
-      color: var(--blood);
+      letter-spacing: 0.2em;
+      color: var(--medium-gray);
       text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.2s;
+      border: 1px solid var(--medium-gray);
+      padding: 15px 30px;
+      display: inline-block;
+      transition: all 0.3s ease;
     }
-
-    .back a:hover {
-      border-bottom-color: var(--blood);
+    
+    .back-link a:hover {
+      background: var(--soviet-red);
+      border-color: var(--soviet-red);
+      color: var(--off-white);
     }
-
-    /* === CLEARFIX === */
-    .clearfix::after {
-      content: '';
-      display: table;
-      clear: both;
+    
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-
-    /* === RESPONSIVE === */
-    @media (max-width: 768px) {
-      figure.floated-left,
-      figure.floated-right {
-        float: none;
-        max-width: 100%;
-        margin: 32px 0;
+    
+    /* Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+    
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 2.5rem;
       }
-
-      figure.hero-figure {
-        margin: 40px 0;
+      
+      .timeline::before {
+        left: 80px;
       }
-
-      .pull-quote {
-        padding: 24px 20px;
-        margin: 32px 0;
+      
+      .timeline-date {
+        width: 70px;
+        font-size: 0.9rem;
       }
-
-      .hero { min-height: 600px; }
+      
+      h2 {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- HERO -->
-  <div class="hero">
+  <!-- Hero Section -->
+  <header class="hero">
     <div class="hero-content">
-      <div class="hero-date">March 1–18, 1921</div>
-      <h1>The Kronstadt Rebellion<br><em>When the Revolution Devoured Its Children</em></h1>
-      <p class="hero-subtitle">The sailors who made the revolution — and the government that destroyed them for asking it to keep its promises</p>
-      <div class="hero-slogan">All Power to the Soviets, Not to Parties!</div>
+      <p class="hero-subtitle">The Kronstadt Rebellion of 1921</p>
+      <h1>
+        <span class="line1">When the Revolution</span>
+        <span class="line2">Devoured Its Children</span>
+      </h1>
+      <p class="hero-tagline">For sixteen days, the fortress that guarded Petrograd's approaches became the site of the last major internal revolt against Bolshevik rule—and the moment when the revolution's corpse finally stopped twitching.</p>
+      <p class="model-attribution">Generated by openrouter/xiaomi/mimo-v2-pro — April 2, 2026</p>
     </div>
-  </div>
+  </header>
 
-  <main>
-    <p class="subtitle">Generated by <code>openrouter/xiaomi/mimo-v2-pro</code> · April 2, 2026</p>
+  <!-- Rebel Slogan Banner -->
+  <section class="slogan-banner">
+    <img src="petropavlovsk-flag.svg" alt="Kronstadt Rebel Flag" class="flag">
+    <p class="slogan-text">
+      All Power to the <span class="highlight">Soviets</span>,
+      <br>Not to <span class="highlight">Parties!</span>
+    </p>
+  </section>
 
-    <!-- INTRODUCTION -->
-    <p class="lede">In March 1921, sixteen years before Stalin's Great Purge would devour the Old Bolsheviks, the Soviet government faced what Vladimir Lenin would call "undoubtedly more dangerous than Denikin, Yudenich, and Kolchak combined." The threat came not from White armies or foreign interventionists, but from Kronstadt — the island naval fortress that had been, in Leon Trotsky's own words, the "adornment and pride of the revolution."</p>
+  <!-- Main Content -->
+  <main class="content-wrapper">
+    
+    <p class="intro reveal">
+      In March 1921, sixteen years before Stalin's Great Purge would devour the Old Bolsheviks, the Soviet government faced what Vladimir Lenin would call "undoubtedly more dangerous than Denikin, Yudenich, and Kolchak combined." The threat came not from White armies or foreign interventionists, but from Kronstadt—the island naval fortress that had been, in Leon Trotsky's own words, the "adornment and pride of the revolution."
+    </p>
 
-    <p>The Kronstadt sailors, who had fired the shot from the cruiser Aurora that signaled the storming of the Winter Palace in October 1917, had risen against the very government they helped create. For sixteen days, the fortress that guarded Petrograd's approaches became the site of the last major internal revolt against Bolshevik rule during the Russian Civil War. The rebellion's suppression would become one of the most controversial events in Soviet history — a Rorschach test for how one views the Russian Revolution itself.</p>
+    <p class="reveal">The Kronstadt sailors, who had fired the shot from the cruiser Aurora that signaled the storming of the Winter Palace in October 1917, had risen against the very government they helped create. For sixteen days, the fortress that guarded Petrograd's approaches became the site of the last major internal revolt against Bolshevik rule during the Russian Civil War. The rebellion's suppression would become one of the most controversial events in Soviet history—a Rorschach test for how one views the Russian Revolution itself.</p>
 
-    <figure class="hero-figure">
-      <img src="kronstadt-general-view-1921.jpg" alt="General view of Kronstadt naval fortress, 1921" loading="lazy">
+    <figure class="reveal">
+      <img src="kronstadt-general-view-1921.jpg" alt="General view of Kronstadt naval fortress, 1921">
       <figcaption>General view of Kronstadt naval fortress, 1921. The island base controlled approaches to Petrograd.</figcaption>
     </figure>
 
-    <!-- BACKGROUND -->
-    <h2>Who Were the Kronstadt Sailors?</h2>
+    <h2 class="reveal">Who Were the Kronstadt Sailors?</h2>
+    
+    <p class="reveal">To understand Kronstadt, one must first understand the sailors themselves. The naval base on Kotlin Island, thirty-five miles west of Petrograd in the Gulf of Finland, had been Peter the Great's strategic masterpiece—a "Gibraltar of the Baltic" protecting his new capital. By 1917, the sailors stationed there had become legendary for their revolutionary fervor.</p>
 
-    <div class="clearfix">
-      <figure class="floated-left">
-        <img src="red-sailors-1917.jpg" alt="Sailors of the Petropavlovsk, 1917" loading="lazy">
-        <figcaption>Sailors of the Petropavlovsk in Helsinki, 1917 — the "pride and glory of the Russian Revolution" according to Trotsky</figcaption>
-      </figure>
+    <p class="reveal">The Kronstadt sailors had been in the vanguard of both the 1905 and 1917 revolutions. In February 1917, they had declared a "Kronstadt Republic" and defied the Provisional Government. In October 1917, their support was crucial to the Bolshevik seizure of power. As historian Israel Getzler noted, Kronstadt's commune-like self-government represented "the radical, democratic and egalitarian aspirations of its garrison and working people." The island's Anchor Square could hold 30,000 people and served as a genuine public forum for direct democracy.</p>
 
-      <p>To understand Kronstadt, one must first understand the sailors themselves. The naval base on Kotlin Island, thirty-five miles west of Petrograd in the Gulf of Finland, had been Peter the Great's strategic masterpiece — a "Gibraltar of the Baltic" protecting his new capital. By 1917, the sailors stationed there had become legendary for their revolutionary fervor.</p>
-
-      <p>The Kronstadt sailors had been in the vanguard of both the 1905 and 1917 revolutions. In February 1917, they had declared a "Kronstadt Republic" and defied the Provisional Government. In October 1917, their support was crucial to the Bolshevik seizure of power. As historian Israel Getzler noted, Kronstadt's commune-like self-government represented "the radical, democratic and egalitarian aspirations of its garrison and working people." The island's Anchor Square could hold 30,000 people and served as a genuine public forum for direct democracy.</p>
-    </div>
-
-    <div class="callout">
-      <h4>The Composition Myth</h4>
-      <p>Bolshevik apologists later claimed that the original revolutionary sailors had been dispersed during the Civil War and replaced by "raw peasant levies from the Black Sea region." The evidence contradicts this: researcher Paul Avrich found that over <strong>94%</strong> of the Petropavlovsk and Sevastopol crews were veterans who had served before 1917. Roughly <strong>75%</strong> of the entire garrison were veterans of the October Revolution. These were not counter-revolutionary infiltrators — they were the revolution's original shock troops.</p>
-    </div>
-
-    <!-- CRISIS OF WAR COMMUNISM -->
-    <h2>The Crisis of War Communism</h2>
-
-    <div class="clearfix">
-      <figure class="floated-right">
-        <img src="petropavlovsk-battleship.jpg" alt="The battleship Petropavlovsk" loading="lazy">
-        <figcaption>The battleship Petropavlovsk at Helsinki, 1918. The ship's crew initiated the rebellion's demands.</figcaption>
-      </figure>
-
-      <p>By 1921, Russia was collapsing. The Civil War had ended in November 1920 with General Wrangel's defeat, but the Bolsheviks continued the policies of "War Communism" — grain requisitioning from peasants, militarization of labor, and one-party rule. The result was catastrophe: famine, disease, cold, and weariness gripped the nation.</p>
-
-      <p>In February 1921, the Cheka reported 155 peasant uprisings across Russia. Workers in Moscow and Petrograd were striking against reduced bread rations — cut by a third in January 1921 despite the end of hostilities. In Petrograd, martial law was declared on February 26. Factory closures, arrests, and Cheka terror failed to quell the discontent.</p>
-    </div>
-
-    <p>The Kronstadt sailors watched this unfold with growing alarm. Many had recently visited their home villages during temporary leave and returned horrified by what they saw: government requisitioning squads seizing the last grain from starving peasants, roadblock detachments preventing food from reaching cities, and the bureaucratic nightmare of "commissiocracy."</p>
-
-    <!-- THE UPRISING -->
-    <h2>The Uprising: From Resolution to Rebellion</h2>
-
-    <p>On February 26, 1921, in response to events in Petrograd, the crews of the battleships Petropavlovsk and Sevastopol held an emergency meeting. They sent a delegation to investigate conditions in Petrograd firsthand. When the delegates returned two days later, their report was devastating: the Bolsheviks were using armed force against striking workers.</p>
-
-    <div class="clearfix">
-      <figure class="floated-right">
-        <img src="petrichenko.jpg" alt="Stepan Petrichenko" loading="lazy">
-        <figcaption>Stepan Petrichenko, chief clerk of the battleship Petropavlovsk and chairman of the Provisional Revolutionary Committee</figcaption>
-      </figure>
-
-      <p>On February 28, the sailors approved a resolution with fifteen demands — the famous Petropavlovsk Resolution. The next day, March 1, a mass meeting of 15,000 to 16,000 people gathered at Anchor Square. Mikhail Kalinin, chairman of the All-Russian Central Executive Committee, was shouted down when he denounced the sailors as traitors. The Petropavlovsk Resolution was adopted unanimously. Most of the Bolsheviks present voted for it.</p>
-    </div>
-
-    <div class="callout">
-      <h4>The Petropavlovsk Resolution</h4>
-      <p>On February 28, 1921, the crews of the battleships <em>Petropavlovsk</em> and <em>Sevastopol</em> adopted this resolution unanimously. It became the political manifesto of the rebellion.</p>
-      <p style="margin-top:12px; font-style:italic; opacity:0.85; font-size:0.9rem;">"Having heard the representatives of the crews sent by general meeting to Petrograd to investigate the situation, we resolve:</p>
-      <p style="font-style:italic; opacity:0.85; font-size:0.9rem;">In view of the fact that the present soviets do not express the will of the workers and peasants, immediately to hold new elections by secret ballot, with freedom of agitation for all workers and peasants..."</p>
-    </div>
-
-    <p>The demands were revolutionary — but not counter-revolutionary. They called for:</p>
-    <ul class="demands">
-      <li>New, free elections to the Soviets by secret ballot</li>
-      <li>Freedom of speech and press for workers, peasants, anarchists, and left socialist parties</li>
-      <li>Freedom of assembly for labor unions</li>
-      <li>Liberation of all political prisoners</li>
-      <li>Equalization of rations</li>
-      <li>End to the Bolshevik monopoly on power</li>
-      <li>Abolition of roadblock detachments and grain requisitioning</li>
-    </ul>
-
-    <p>The slogan was <strong>"All Power to the Soviets, Not to Parties"</strong> — a return to the promises of 1917.</p>
-
-    <figure class="hero-figure">
-      <img src="kronstadt-03-1921.jpg" alt="Kronstadt harbor in March 1921" loading="lazy">
-      <figcaption>Kronstadt harbor in March 1921, showing the frozen conditions that shaped the military tactics of the rebellion</figcaption>
+    <figure class="reveal">
+      <img src="red-sailors-1917.jpg" alt="Sailors of the Petropavlovsk in Helsinki, 1917">
+      <figcaption>Sailors of the Petropavlovsk in Helsinki, 1917—the "pride and glory of the Russian Revolution" according to Trotsky</figcaption>
     </figure>
 
-    <p>On March 2, tensions exploded. When three Bolshevik officials threatened reprisals, they were arrested. A Provisional Revolutionary Committee (PRC) was elected, chaired by Stepan Petrichenko, a Ukrainian-born chief clerk from the Petropavlovsk. By morning, the town, fleet, and fortifications were in rebel hands. Approximately 326 Bolsheviks were arrested — about a fifth of local party members — though they were treated humanely, receiving the same rations as other prisoners.</p>
+    <p class="reveal">The composition of the garrison in 1921 has been hotly debated. Bolshevik apologists later claimed that the original revolutionary sailors had been dispersed during the Civil War and replaced by "raw peasant levies from the Black Sea region." The evidence contradicts this: researcher Paul Avrich found that over 94% of the Petropavlovsk and Sevastopol crews were veterans who had served before 1917. Roughly 75% of the entire garrison were veterans of the October Revolution. These were not counter-revolutionary infiltrators—they were the revolution's original shock troops.</p>
 
-    <p>The rebellion was initially non-violent. The sailors believed the Bolsheviks would negotiate. They rejected advice from former Tsarist officers at the base — including General Kozlovsky — to attack Oranienbaum or break the ice to free their ships. They expected Russia to rally to their cause. They were tragically wrong.</p>
-
-    <!-- BOLSHEVIK RESPONSE -->
-    <h2>Bolshevik Response: Lies and Ultimatums</h2>
-
-    <figure class="hero-figure">
-      <img src="trotsky-lenin-voroshilov.jpg" alt="Lenin, Trotsky, and Voroshilov at the 10th Party Congress" loading="lazy">
-      <figcaption>Lenin, Trotsky, and Voroshilov with delegates to the 10th Party Congress, March 1921 — the same congress that ordered Kronstadt's suppression</figcaption>
-    </figure>
-
-    <p>The Bolshevik leadership's response was swift and uncompromising. On March 2, Lenin and Trotsky declared the mutiny a "White Guard" plot led by General Kozlovsky with French counterintelligence backing. These claims were fabrications. Victor Serge, a Bolshevik present in Petrograd, recalled: "The man who announced this frightful news was Ilya Ionov, Zinoviev's brother-in-law... But even before I went to the District Committee I met comrades... who claimed that it was an atrocious lie."</p>
-
-    <div class="pull-quote">
-      <p>The sailors did not want the White Guards, and they did not want our power either.</p>
-      <cite>— Vladimir Lenin</cite>
+    <div class="pull-quote reveal">
+      <p>Kronstadt's commune-like self-government represented the radical, democratic and egalitarian aspirations of its garrison and working people.</p>
+      <cite>— Israel Getzler, Historian</cite>
     </div>
 
-    <p>The government took relatives of the sailors hostage. On March 5, Trotsky issued an ultimatum: surrender within 24 hours or be "shot like partridges." When American anarchists Emma Goldman and Alexander Berkman offered to mediate, they were ignored. When a rebel delegation came out to parley after the first assault, they were captured.</p>
+    <h2 class="reveal">The Crisis of War Communism</h2>
 
-    <p>The propaganda campaign was relentless. Radio Moscow denounced the sailors as "White mutineers." The government claimed the revolt had been planned in Paris with foreign funding. These lies served their purpose: they isolated the rebels from potential supporters and justified the coming bloodshed.</p>
+    <p class="reveal">By 1921, Russia was collapsing. The Civil War had ended in November 1920 with General Wrangel's defeat, but the Bolsheviks continued the policies of "War Communism"—grain requisitioning from peasants, militarization of labor, and one-party rule. The result was catastrophe: famine, disease, cold, and weariness gripped the nation.</p>
 
-    <!-- THE SUPPRESSION -->
-    <h2>Blood on the Ice</h2>
+    <figure class="reveal">
+      <img src="petropavlovsk-battleship.jpg" alt="The battleship Petropavlovsk at Helsinki, 1918">
+      <figcaption>The battleship Petropavlovsk at Helsinki, 1918. The ship's crew initiated the rebellion's demands.</figcaption>
+    </figure>
 
-    <figure class="hero-figure">
-      <img src="kronstadt-attack.jpg" alt="Red Army attacking across the ice" loading="lazy">
+    <p class="reveal">In February 1921, the Cheka reported 155 peasant uprisings across Russia. Workers in Moscow and Petrograd were striking against reduced bread rations—cut by a third in January 1921 despite the end of hostilities. In Petrograd, martial law was declared on February 26. Factory closures, arrests, and Cheka terror failed to quell the discontent.</p>
+
+    <p class="reveal">The Kronstadt sailors watched this unfold with growing alarm. Many had recently visited their home villages during temporary leave and returned horrified by what they saw: government requisitioning squads seizing the last grain from starving peasants, roadblock detachments preventing food from reaching cities, and the bureaucratic nightmare of "commissiocracy."</p>
+
+    <h2 class="reveal">The Uprising: From Resolution to Rebellion</h2>
+
+    <p class="reveal">On February 26, 1921, in response to events in Petrograd, the crews of the battleships Petropavlovsk and Sevastopol held an emergency meeting. They sent a delegation to investigate conditions in Petrograd firsthand. When the delegates returned two days later, their report was devastating: the Bolsheviks were using armed force against striking workers.</p>
+
+    <p class="reveal">On February 28, the sailors approved a resolution with fifteen demands—the famous Petropavlovsk Resolution. The next day, March 1, a mass meeting of 15,000 to 16,000 people gathered at Anchor Square. Mikhail Kalinin, chairman of the All-Russian Central Executive Committee, was shouted down when he denounced the sailors as traitors. The Petropavlovsk Resolution was adopted unanimously. Most of the Bolsheviks present voted for it.</p>
+
+    <figure class="reveal">
+      <img src="petrichenko.jpg" alt="Stepan Petrichenko">
+      <figcaption>Stepan Petrichenko, chief clerk of the battleship Petropavlovsk and chairman of the Provisional Revolutionary Committee</figcaption>
+    </figure>
+
+    <div class="callout reveal">
+      <h3>The Fifteen Demands</h3>
+      <ul>
+        <li>New, free elections to the Soviets by secret ballot</li>
+        <li>Freedom of speech and press for workers, peasants, anarchists, and left socialist parties</li>
+        <li>Freedom of assembly for labor unions</li>
+        <li>Liberation of all political prisoners</li>
+        <li>Equalization of rations</li>
+        <li>End to the Bolshevik monopoly on power</li>
+        <li>Abolition of roadblock detachments and grain requisitioning</li>
+      </ul>
+      <p style="margin-top: 15px; font-style: italic; color: var(--light-gray);">The slogan: "All Power to the Soviets, Not to Parties" — a return to the promises of 1917.</p>
+    </div>
+
+    <p class="reveal">On March 2, tensions exploded. When three Bolshevik officials threatened reprisals, they were arrested. A Provisional Revolutionary Committee (PRC) was elected, chaired by Stepan Petrichenko, a Ukrainian-born chief clerk from the Petropavlovsk. By morning, the town, fleet, and fortifications were in rebel hands. Approximately 326 Bolsheviks were arrested—about a fifth of local party members—though they were treated humanely, receiving the same rations as other prisoners.</p>
+
+    <p class="reveal">The rebellion was initially non-violent. The sailors believed the Bolsheviks would negotiate. They rejected advice from former Tsarist officers at the base—including General Kozlovsky—to attack Oranienbaum or break the ice to free their ships. They expected Russia to rally to their cause. They were tragically wrong.</p>
+
+    <h2 class="reveal">Bolshevik Response: Lies and Ultimatums</h2>
+
+    <p class="reveal">The Bolshevik leadership's response was swift and uncompromising. On March 2, Lenin and Trotsky declared the mutiny a "White Guard" plot led by General Kozlovsky with French counterintelligence backing. These claims were fabrications. Victor Serge, a Bolshevik present in Petrograd, recalled: "The man who announced this frightful news was Ilya Ionov, Zinoviev's brother-in-law... But even before I went to the District Committee I met comrades... who claimed that it was an atrocious lie."</p>
+
+    <figure class="reveal">
+      <img src="trotsky-lenin-voroshilov.jpg" alt="Lenin, Trotsky, and Voroshilov at the 10th Party Congress">
+      <figcaption>Lenin, Trotsky, and Voroshilov with delegates to the 10th Party Congress, March 1921—the same congress that ordered Kronstadt's suppression</figcaption>
+    </figure>
+
+    <div class="pull-quote reveal">
+      <p>The man who announced this frightful news was Ilya Ionov, Zinoviev's brother-in-law... But even before I went to the District Committee I met comrades... who claimed that it was an atrocious lie.</p>
+      <cite>— Victor Serge, Bolshevik and Memoirist</cite>
+    </div>
+
+    <p class="reveal">The government took relatives of the sailors hostage. On March 5, Trotsky issued an ultimatum: surrender within 24 hours or be "shot like partridges." When American anarchists Emma Goldman and Alexander Berkman offered to mediate, they were ignored. When a rebel delegation came out to parley after the first assault, they were captured.</p>
+
+    <p class="reveal">The propaganda campaign was relentless. Radio Moscow denounced the sailors as "White mutineers." The government claimed the revolt had been planned in Paris with foreign funding. These lies served their purpose: they isolated the rebels from potential supporters and justified the coming bloodshed.</p>
+
+    <h2 class="reveal">The Suppression: Blood on the Ice</h2>
+
+    <p class="reveal">The military campaign began March 7 with artillery bombardment from Petrograd. The first assault across the frozen Gulf of Finland was a disaster for the attackers. Red Army soldiers—some sympathetic to the rebels—faced machine guns and fell by the hundreds. Government troops had to be driven forward at gunpoint by Cheka machine-gunners positioned behind them.</p>
+
+    <p class="reveal">For ten days, the battle raged. The rebels, despite being outnumbered and outgunned, held their positions. But they were isolated, and their supplies were running low. The government poured in reinforcements, including hundreds of delegates from the 10th Party Congress in Moscow—the same congress that would ban internal party factions and announce the New Economic Policy.</p>
+
+    <figure class="reveal full-width">
+      <img src="kronstadt-attack.jpg" alt="Red Army soldiers attack across the frozen Gulf of Finland">
       <figcaption>Red Army soldiers attack across the frozen Gulf of Finland during the suppression of the Kronstadt rebellion, March 1921</figcaption>
     </figure>
 
-    <p>The military campaign began March 7 with artillery bombardment from Petrograd. The first assault across the frozen Gulf of Finland was a disaster for the attackers. Red Army soldiers — some sympathetic to the rebels — faced machine guns and fell by the hundreds. Government troops had to be driven forward at gunpoint by Cheka machine-gunners positioned behind them.</p>
+    <p class="reveal">The final assault came on March 16-17. Clad in white snow capes, 45,000 Red Army troops attacked from three directions at night. Vicious fighting ensued through the streets of Kronstadt. By March 18—the fiftieth anniversary of the Paris Commune—the fortress had fallen.</p>
 
-    <p>For ten days, the battle raged. The rebels, despite being outnumbered and outgunned, held their positions. But they were isolated, and their supplies were running low. The government poured in reinforcements, including hundreds of delegates from the 10th Party Congress in Moscow — the same congress that would ban internal party factions and announce the New Economic Policy.</p>
+    <p class="reveal">The aftermath was savage. An estimated 1,000 rebels died in the fighting. At least 500 were shot immediately without trial—teenage Komsomols were employed as executioners when the regular executioner refused. According to official statistics, 2,168 rebels were executed (33% of those captured), nearly 2,000 sentenced to forced labor, and 8,000 escaped across the ice to Finland. Many who escaped were later lured back by promises of amnesty—only to be shot or imprisoned.</p>
 
-    <p>The final assault came on March 16–17. Clad in white snow capes, 45,000 Red Army troops attacked from three directions at night. Vicious fighting ensued through the streets of Kronstadt. By March 18 — the fiftieth anniversary of the Paris Commune — the fortress had fallen.</p>
+    <!-- Timeline Section -->
+    <section class="timeline-section reveal">
+      <h2>Timeline of the Rebellion</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">Feb 26</div>
+          <div class="timeline-content">
+            <p>Delegation from battleship Petropavlovsk sent to Petrograd to investigate strikes</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Feb 28</div>
+          <div class="timeline-content">
+            <p>Emergency meeting on Petropavlovsk; 15 demands drafted</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Mar 1</div>
+          <div class="timeline-content">
+            <p>Mass meeting at Anchor Square (15,000+ attendees); Petropavlovsk Resolution adopted unanimously</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Mar 2</div>
+          <div class="timeline-content">
+            <p>Bolshevik officials arrested; Provisional Revolutionary Committee takes control</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Mar 5</div>
+          <div class="timeline-content">
+            <p>Trotsky issues ultimatum threatening rebels "will be shot like partridges"</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Mar 7</div>
+          <div class="timeline-content">
+            <p>Red Army begins bombardment; first assault launched across ice</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Mar 16-17</div>
+          <div class="timeline-content">
+            <p>Final assault begins with 45,000 troops; vicious street fighting</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Mar 18</div>
+          <div class="timeline-content">
+            <p>Kronstadt falls; rebellion crushed—ironically, on the Paris Commune anniversary</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Mar 21</div>
+          <div class="timeline-content">
+            <p>New Economic Policy announced at 10th Party Congress</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="callout">
-      <h4>The Cost in Lives</h4>
-      <p><strong>~1,000</strong> rebels killed in the fighting</p>
-      <p><strong>2,168</strong> executed after capture (33% of those taken prisoner)</p>
-      <p><strong>~2,000</strong> sentenced to forced labor camps</p>
-      <p><strong>8,000+</strong> escaped across the ice to Finland</p>
-      <p>Teenage Komsomols were employed as executioners when the regular firing squad refused.</p>
+    <h2 class="reveal">The New Economic Policy: Reform Through Blood</h2>
+
+    <p class="reveal">The Kronstadt rebellion is inextricably linked to the New Economic Policy (NEP), announced at the 10th Party Congress on March 21, 1921—just three days after the fortress fell. The NEP replaced grain requisitioning with a tax in kind, permitted limited private trade, and restored some market mechanisms.</p>
+
+    <p class="reveal">In economic terms, the NEP went further than anything the Kronstadt rebels had demanded. Yet Lenin privately admitted that Kronstadt was the catalyst: "They did not want the White Guards, and they did not want our power either." The message was clear—economic concessions could be made, but political power would never be shared.</p>
+
+    <p class="reveal">The NEP is often remembered as Lenin's pragmatic retreat, but it's equally important to remember what happened at Kronstadt—the rebellion that made that retreat possible, and the blood that bought it.</p>
+
+    <h2 class="reveal">Legacy and Interpretations</h2>
+
+    <p class="reveal">Kronstadt remains one of the most contested events in revolutionary history. How one interprets it largely depends on one's political framework:</p>
+
+    <div class="viewpoint anarchist reveal">
+      <h3>The Anarchist View</h3>
+      <p>For anarchists like Emma Goldman and Alexander Berkman—who had initially supported the Bolsheviks—Kronstadt was the moment of betrayal. Berkman wrote: "The Communist government would make no concessions to the proletariat, while at the same time they were offering to compromise with the capitalists of Europe and America." Kronstadt proved that Bolshevism was inherently authoritarian, incapable of creating workers' democracy.</p>
     </div>
 
-    <p>The aftermath was savage. An estimated 1,000 rebels died in the fighting. At least 500 were shot immediately without trial. Many who escaped across the ice to Finland were later lured back by promises of amnesty — only to be shot or imprisoned.</p>
-
-    <!-- TIMELINE -->
-    <h2>Timeline of the Rebellion</h2>
-
-    <ul class="timeline">
-      <li>
-        <div class="timeline-date">February 26, 1921</div>
-        <div class="timeline-event">Delegation from battleship Petropavlovsk sent to Petrograd to investigate strikes and unrest</div>
-      </li>
-      <li>
-        <div class="timeline-date">February 28, 1921</div>
-        <div class="timeline-event">Emergency meeting on Petropavlovsk; 15 demands drafted — the Petropavlovsk Resolution</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 1, 1921</div>
-        <div class="timeline-event">Mass meeting at Anchor Square (15,000+ attendees); resolution adopted unanimously; Provisional Revolutionary Committee elected</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 2, 1921</div>
-        <div class="timeline-event">Bolshevik officials arrested; PRC takes control of fortress and fleet</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 5, 1921</div>
-        <div class="timeline-event">Trotsky issues ultimatum: surrender within 24 hours or be "shot like partridges"</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 7, 1921</div>
-        <div class="timeline-event">Red Army begins bombardment; first bloody assault across the ice fails</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 8–16, 1921</div>
-        <div class="timeline-event">Three additional assaults with heavy casualties on both sides</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 16, 1921</div>
-        <div class="timeline-event">Final assault begins with 45,000 troops, including Party Congress delegates</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 18, 1921</div>
-        <div class="timeline-event">Kronstadt falls. Bolsheviks celebrate — on the 50th anniversary of the Paris Commune</div>
-      </li>
-      <li>
-        <div class="timeline-date">March 21, 1921</div>
-        <div class="timeline-event">New Economic Policy announced at 10th Party Congress — 3 days after suppression</div>
-      </li>
-    </ul>
-
-    <!-- NEP -->
-    <h2>The New Economic Policy: Reform Through Blood</h2>
-
-    <p>The Kronstadt rebellion is inextricably linked to the New Economic Policy (NEP), announced at the 10th Party Congress on March 21, 1921 — just three days after the fortress fell. The NEP replaced grain requisitioning with a tax in kind, permitted limited private trade, and restored some market mechanisms.</p>
-
-    <p>In economic terms, the NEP went further than anything the Kronstadt rebels had demanded. Yet Lenin privately admitted that Kronstadt was the catalyst. The message was clear — economic concessions could be made, but political power would never be shared.</p>
-
-    <p>The NEP is often remembered as Lenin's pragmatic retreat, but it's equally important to remember what happened at Kronstadt — the rebellion that made that retreat possible, and the blood that bought it.</p>
-
-    <div class="divider">⁂</div>
-
-    <!-- LEGACY -->
-    <h2>Legacy and Interpretations</h2>
-
-    <p>Kronstadt remains one of the most contested events in revolutionary history. How one interprets it largely depends on one's political framework:</p>
-
-    <div class="interpretation">
-      <h4>The Anarchist View</h4>
-      <p>For anarchists like Emma Goldman and Alexander Berkman — who had initially supported the Bolsheviks — Kronstadt was the moment of betrayal. Berkman wrote: "The Communist government would make no concessions to the proletariat, while at the same time they were offering to compromise with the capitalists of Europe and America." Kronstadt proved that Bolshevism was inherently authoritarian, incapable of creating workers' democracy.</p>
-    </div>
-
-    <div class="interpretation">
-      <h4>The Trotskyist View</h4>
+    <div class="viewpoint trotskyist reveal">
+      <h3>The Trotskyist View</h3>
       <p>Trotsky himself spent years defending the suppression, claiming the sailors had no conscious program, that they were "petty-bourgeois," that the garrison had fundamentally changed since 1917. Each claim has been refuted by historical evidence. Yet many modern Trotskyists still defend the actions as necessary for defending the revolution against a peasant-based counter-revolution.</p>
     </div>
 
-    <div class="interpretation">
-      <h4>The Liberal View</h4>
-      <p>For liberal historians like Richard Pipes, Kronstadt reveals the totalitarian DNA in Bolshevism from the start — proof that Lenin's regime was always destined to become Stalin's dictatorship.</p>
+    <div class="viewpoint liberal reveal">
+      <h3>The Liberal View</h3>
+      <p>For liberal historians like Richard Pipes, Kronstadt reveals the totalitarian DNA in Bolshevism from the start—proof that Lenin's regime was always destined to become Stalin's dictatorship.</p>
     </div>
 
-    <div class="interpretation">
-      <h4>The Evidence-Based View</h4>
+    <div class="viewpoint evidence reveal">
+      <h3>The Evidence-Based View</h3>
       <p>The historical record shows that the rebels were neither White agents nor petty-bourgeois peasants. They were workers and sailors who had made the revolution and watched it betrayed. Their demands were reasonable. Negotiation was possible but rejected. The Bolsheviks chose force over compromise, party power over workers' democracy.</p>
     </div>
 
-    <!-- CONCLUSION -->
-    <h2>The Silence of the Dead</h2>
-
-    <div class="clearfix">
-      <figure class="floated-right">
-        <img src="petropavlovsk-battleship.jpg" alt="The battleship Petropavlovsk" loading="lazy">
-        <figcaption>The Petropavlovsk, later renamed the Marat — after the French revolutionary, in one of history's bitterest ironies</figcaption>
-      </figure>
-
-      <p>Kronstadt was not the end of the Russian Revolution — that had died in the Civil War's crucible. But it was, perhaps, the moment when the revolution's corpse finally stopped twitching. The Bolshevik Party emerged more centralized, more authoritarian, more convinced that only it could speak for the working class. The ban on factions at the 10th Congress would eventually be used to expel Trotsky himself.</p>
-
-      <p>The sailors' slogan — "All Power to the Soviets, Not to Parties" — posed an existential threat not to socialism but to single-party rule. In suppressing Kronstadt, the Bolsheviks established a principle that would haunt the Soviet Union until its collapse: the Party is always right, and the workers must obey.</p>
-    </div>
-
-    <div class="pull-quote">
-      <p>What a pity, that the silence of the dead sometimes speaks louder than the living voice.</p>
-      <cite>— Emma Goldman</cite>
-    </div>
-
-    <p>The Kronstadt sailors died demanding what they had fought for in 1917 — democracy, equality, freedom. Their defeat ensured that the Soviet Union would develop not into a workers' paradise but into the bureaucratic autocracy they had risked everything to prevent.</p>
-
-    <p>The frozen waters of the Gulf of Finland closed over the bodies of the fallen. The battleship Petropavlovsk was renamed the Marat. Anchor Square became "Revolutionary Square." But the memory of what happened there in March 1921 could not be entirely erased. It remains a warning, a tragedy, and a question that no ideology can definitively answer: <em>What happens when the revolutionaries become the oppressors?</em></p>
-
-    <figure class="hero-figure">
-      <img src="kronstadt-03-1921.jpg" alt="Kronstadt harbor" loading="lazy">
-      <figcaption>Kronstadt harbor, silent once more. The island fortress that guarded the revolution — and was destroyed by it.</figcaption>
+    <figure class="reveal full-width">
+      <img src="kronstadt-03-1921.jpg" alt="Kronstadt harbor in March 1921">
+      <figcaption>Kronstadt harbor in March 1921, showing the frozen conditions that shaped the military tactics of the rebellion</figcaption>
     </figure>
 
-    <!-- SOURCES -->
-    <h2 style="margin-top:56px;">Sources & Further Reading</h2>
-    <p><strong>Avrich, Paul.</strong> <em>Kronstadt 1921</em> (Princeton University Press, 1970/1991) — the definitive scholarly account</p>
-    <p><strong>Getzler, Israel.</strong> <em>Kronstadt 1917–1921: The Fate of a Soviet Democracy</em> (1983)</p>
-    <p><strong>Berkman, Alexander.</strong> <em>The Kronstadt Rebellion</em> (1922) — <a href="https://libcom.org/article/kronstadt-rebellion-alexander-berkman" target="_blank">libcom.org</a></p>
-    <p><strong>Trotsky, Leon.</strong> "Hue and Cry Over Kronstadt" (1938) — <a href="https://www.marxists.org/archive/trotsky/1938/01/kronstadt.htm" target="_blank">marxists.org</a></p>
-    <p><strong>Serge, Victor.</strong> <em>Memoirs of a Revolutionary</em> (1951)</p>
-    <p><strong>Goldman, Emma.</strong> <em>Living My Life</em> (1931)</p>
-    <p><strong>Figes, Orlando.</strong> <em>A People's Tragedy</em> (1997)</p>
+    <section class="conclusion">
+      <h2 class="reveal">Conclusion: The Silence of the Dead</h2>
 
-    <!-- IMAGE ATTRIBUTION -->
-    <div class="image-gen">
-      <h2 style="border-bottom: none; margin-top: 32px;">Image Generation</h2>
-      <p>One AI-generated image used in this article:</p>
-      <ul style="margin-top: 12px;">
-        <li><span class="model-badge" style="background:#e74c3c;">OpenRouter</span> "Strategic map showing Kronstadt's location in the Gulf of Finland relative to Petrograd, early 1920s cartographic style"</li>
-      </ul>
-      <p style="margin-top: 16px; font-size: 0.9rem; color: var(--gray);">All other photographs sourced from Wikimedia Commons (public domain).</p>
-    </div>
+      <p class="reveal">Kronstadt was not the end of the Russian Revolution—that had died in the Civil War's crucible. But it was, perhaps, the moment when the revolution's corpse finally stopped twitching. The Bolshevik Party emerged more centralized, more authoritarian, more convinced that only it could speak for the working class. The ban on factions at the 10th Congress would eventually be used to expel Trotsky himself.</p>
 
-    <p class="back"><a href="../">← Back to home</a></p>
+      <p class="reveal">The sailors' slogan—"All Power to the Soviets, Not to Parties"—posed an existential threat not to socialism but to single-party rule. In suppressing Kronstadt, the Bolsheviks established a principle that would haunt the Soviet Union until its collapse: the Party is always right, and the workers must obey.</p>
 
-    <p style="text-align:center; margin-top:1.5rem; padding-top:0.75rem; border-top:1px solid var(--border); font-size:0.8rem; color: var(--gray);">
-      Generated with <a href="https://openrouter.ai/xiaomi/mimo-v2-pro" style="color: var(--gray);">openrouter/xiaomi/mimo-v2-pro</a>
-    </p>
+      <div class="final-quote reveal">
+        <p>What a pity, that the silence of the dead sometimes speaks louder than the living voice.</p>
+        <cite>— Emma Goldman</cite>
+      </div>
+
+      <p class="reveal">The Kronstadt sailors died demanding what they had fought for in 1917—democracy, equality, freedom. Their defeat ensured that the Soviet Union would develop not into a workers' paradise but into the bureaucratic autocracy they had risked everything to prevent.</p>
+
+      <p class="reveal">The frozen waters of the Gulf of Finland closed over the bodies of the fallen. The battleship Petropavlovsk was renamed the Marat—after the French revolutionary martyr, in what must count as one of history's bitterest ironies. Anchor Square became "Revolutionary Square." But the memory of what happened there in March 1921 could not be entirely erased. It remains a warning, a tragedy, and a question that no ideology can definitively answer: What happens when the revolutionaries become the oppressors?</p>
+    </section>
   </main>
 
+  <!-- Back Link -->
+  <div class="back-link">
+    <a href="../index.html">← Back to Home</a>
+  </div>
+
+  <script>
+    // Scroll reveal animation
+    function revealOnScroll() {
+      const reveals = document.querySelectorAll('.reveal');
+      
+      reveals.forEach(element => {
+        const windowHeight = window.innerHeight;
+        const elementTop = element.getBoundingClientRect().top;
+        const elementVisible = 150;
+        
+        if (elementTop < windowHeight - elementVisible) {
+          element.classList.add('active');
+        }
+      });
+    }
+    
+    window.addEventListener('scroll', revealOnScroll);
+    window.addEventListener('load', revealOnScroll);
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
 </body>
 </html>
