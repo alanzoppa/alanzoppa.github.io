@@ -4,233 +4,246 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proto-Indo-European</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗣️</text></svg>">
   <style>
-    :root { --max-w: 760px; --bg: #faf9f6; --text: #1a1a1a; --accent: #2c5f2d; --muted: #555; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--text); line-height: 1.75; padding: 2rem 1rem; }
-    main { max-width: var(--max-w); margin: 0 auto; }
-    h1 { font-size: 2.2rem; margin-bottom: 0.25rem; letter-spacing: -0.5px; color: var(--accent); }
-    .subtitle { color: #666; margin-bottom: 24px; font-size: 0.95em; }
-    h2 { font-size: 1.5rem; margin: 2.5rem 0 0.75rem; border-bottom: 1px solid #ddd; padding-bottom: 0.3rem; color: var(--accent); }
-    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.4rem; }
-    p { margin-bottom: 1rem; }
-    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
-    li { margin-bottom: 0.4rem; }
-    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; font-style: italic; color: var(--muted); }
-    .img-wrap { text-align: center; margin: 1.5rem 0; }
-    .img-wrap img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 2px; }
-    .img-caption { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
-    .timeline { border-left: 2px solid var(--accent); padding-left: 1.5rem; margin: 1rem 0 1.5rem; }
-    .timeline .event { margin-bottom: 1rem; position: relative; }
-    .timeline .year { font-weight: 700; color: var(--accent); }
-    .recon { font-family: 'Courier New', monospace; background: #f0eeea; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.95em; }
-    .family-tree { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem; margin: 1rem 0 1.5rem; }
-    .family-tree .branch { padding: 0.5rem 0.75rem; background: #f0eeea; border-radius: 4px; border-left: 3px solid var(--accent); }
-    .family-tree .branch strong { display: block; font-size: 0.95rem; }
-    .family-tree .branch span { font-size: 0.85rem; color: var(--muted); }
-    .model-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.8em; font-weight: 600; }
-    .attribution { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ddd; font-size: 0.8rem; color: var(--muted); }
-    .attribution h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
-    @media (max-width: 600px) { h1 { font-size: 1.6rem; } .family-tree { grid-template-columns: 1fr; } }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.7;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #333;
+      background: #fafafa;
+    }
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 2.5em;
+      color: #222;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 24px;
+      font-size: 0.95em;
+    }
+    h2 {
+      margin: 36px 0 16px 0;
+      font-size: 1.8em;
+      color: #222;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    h3 {
+      margin: 24px 0 12px 0;
+      font-size: 1.3em;
+      color: #333;
+    }
+    p {
+      margin-bottom: 18px;
+      font-size: 1.05em;
+      line-height: 1.7;
+    }
+    a { color: #0a66c2; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 24px 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .image-caption {
+      font-size: 0.9em;
+      color: #666;
+      margin: -20px 0 24px 0;
+      font-style: italic;
+    }
+    .model-badge {
+      display: inline-block;
+      background: #f0f0f0;
+      color: #666;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      margin-left: 8px;
+    }
+    .image-attribution {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.9em;
+      color: #777;
+    }
+    .image-attribution h3 {
+      font-size: 1.1em;
+      margin-bottom: 12px;
+      color: #555;
+    }
+    .image-attribution ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .image-attribution li {
+      margin-bottom: 8px;
+    }
+    .back { margin-top: 40px; font-size: 1.1em; }
+    ul, ol {
+      margin: 0 0 18px 24px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    .reconstructed-word {
+      font-style: italic;
+      color: #0a66c2;
+    }
+    .example-box {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+      border-left: 4px solid #0a66c2;
+    }
   </style>
 </head>
 <body>
-<main>
+  <h1>Proto-Indo-European</h1>
+  <div class="subtitle">A reconstructed linguistic ancestor that connects 3 billion people today</div>
+  
+  <p class="model-badge">Generated by openrouter/xiaomi/mimo-v2-pro · April 2, 2026</p>
 
-<h1>Proto-Indo-European</h1>
-<p class="subtitle">Generated by <code>openrouter/xiaomi/mimo-v2-pro</code> · April 2, 2026</p>
+  <img src="william-jones.jpg" alt="Sir William Jones">
+  <div class="image-caption">Sir William Jones, who discovered the Indo-European language family in 1786</div>
 
-<p style="font-size:1.15rem;">Somewhere on the windswept steppes north of the Black Sea, roughly six thousand years ago, a people spoke a language that would one day become the ancestor of nearly half the world's population's mother tongue. They left no writing. No monuments bear their words. Yet through the detective work of centuries, linguists have reconstructed this language with remarkable precision. This is the story of Proto-Indo-European — and how a ghost language was brought back to life.</p>
+  <h2>What is Proto-Indo-European?</h2>
+  <p><strong>Proto-Indo-European (PIE)</strong> is the reconstructed common ancestor of the <strong>Indo-European language family</strong>, spoken by an estimated 3.4 billion native speakers worldwide today. No direct evidence of PIE exists—it left no written records.</p>
 
-<div class="img-wrap">
-  <img src="indo-european-map.jpg" alt="Map of Indo-European language expansion" loading="lazy">
-  <p class="img-caption">Expansion of Indo-European languages from the Pontic-Caspian steppe across Eurasia.</p>
-</div>
+  <p>Instead, linguists have painstakingly reconstructed it using the <strong>comparative method</strong>, analyzing hundreds of ancient and modern languages to work backwards to their shared progenitor. This reconstructed language represents one of the greatest intellectual achievements in the history of linguistics.</p>
 
-<h2>The Discovery</h2>
+  <p>PIE is believed to have been spoken between <strong>approximately 4500–2500 BCE</strong> during the Late Neolithic to Early Bronze Age period.</p>
 
-<p>The realization that most European and many Asian languages share a common ancestor is one of the great intellectual achievements of the modern era — and it began, improbably, with a British judge in colonial India.</p>
+  <img src="yamnaya-kurgan.jpg" alt="Yamnaya kurgan burial">
+  <div class="image-caption">Yamnaya kurgan burial mound in Hungary, characteristic of the Pontic-Caspian steppe culture</div>
 
-<p>In <strong>1786</strong>, <strong>Sir William Jones</strong>, a philologist and jurist serving on the Supreme Court of Judicature in Bengal, delivered a lecture to the Asiatic Society of Calcutta that would reshape linguistics forever. He noted that Sanskrit — the classical language of India — bore to both Greek and Latin "a stronger affinity, both in the roots of verbs and the forms of grammar, than could possibly have been produced by accident." He concluded that all three must share "some common source which, perhaps, no longer exists."</p>
+  <h2>Discovery: How We Found Our Linguistic Ancestor</h2>
+  <h3>Sir William Jones (1786)</h3>
+  <p>In 1786, the British philologist <strong>Sir William Jones</strong>, while serving as a judge in Bengal, delivered a lecture to the Asiatic Society that revolutionized linguistics. He observed that Sanskrit, Greek, and Latin shared "a stronger affinity" than could be attributed to chance, proposing they all sprang from "some common source, which, perhaps, no longer exists."</p>
 
-<p>Jones was not the first to notice similarities — earlier scholars had too — but his prestige and clarity of statement gave the idea staying power. The search for that "common source" had begun.</p>
+  <h3>Jacob Grimm & Grimm's Law (1822)</h3>
+  <p>Building on Jones's insights, the German philologist <strong>Jacob Grimm</strong> (of fairy tale fame) discovered systematic sound correspondences between Germanic languages and other Indo-European languages. <strong>Grimm's Law</strong>, published in his <em>Deutsche Grammatik</em> (1822), showed how consonants shifted predictably:</p>
 
-<div class="img-wrap">
-  <img src="william-jones.jpg" alt="Sir William Jones" loading="lazy">
-  <p class="img-caption">Sir William Jones (1746–1794), whose 1786 lecture sparked the search for a common ancestor language.</p>
-</div>
+  <div class="example-box">
+    <ul>
+      <li>PIE *p → Germanic <strong>f</strong> (Latin <em>pater</em>, English <em>father</em>)</li>
+      <li>PIE *t → Germanic <strong>th</strong> (Latin <em>tres</em>, English <strong>three</strong>)</li>
+      <li>PIE *k → Germanic <strong>h</strong> (Latin <em>cornu</em>, English <strong>horn</strong>)</li>
+    </ul>
+  </div>
 
-<p>The next critical leap came in <strong>1822</strong>, when the German scholar <strong>Jacob Grimm</strong> — better known today for collecting fairy tales with his brother Wilhelm — published his demonstration of <strong>systematic sound correspondences</strong> between Germanic languages and their cousins (Greek, Latin, Sanskrit). What looked like random differences turned out to follow predictable rules: Latin <em>p</em> corresponded to Germanic <em>f</em>, Latin <em>t</em> to Germanic <em>þ</em> (as in "think"), and so on. This became known as <strong>Grimm's Law</strong>, and it proved these weren't coincidences — they were family resemblances, distorted by millennia of regular sound change.</p>
+  <h3>Ferdinand de Saussure & the Laryngeal Theory (1878)</h3>
+  <p>The Swiss linguist <strong>Ferdinand de Saussure</strong>, at just 20 years old, proposed the existence of mysterious "laryngeal" sounds in PIE that had disappeared in all known daughter languages but left traces in vowel patterns. This theoretical reconstruction was confirmed in 1906 when the Hittite language was deciphered, revealing actual laryngeal consonants.</p>
 
-<p>By the <strong>1870s</strong>, linguists had mapped out the consonant system with confidence, but the vowels remained a puzzle. In <strong>1878</strong>, a young Swiss linguist named <strong>Ferdinand de Saussure</strong> made a bold proposal: that all verbs in the ancestral language had a single core vowel, and that the vowel alternations seen in daughter languages (like English <em>sing/sang/sung</em>) were systematic developments from that single source.</p>
+  <img src="de-saussure.jpg" alt="Ferdinand de Saussure">
+  <div class="image-caption">Ferdinand de Saussure, whose laryngeal theory revolutionized PIE phonology</div>
 
-<div class="img-wrap">
-  <img src="de-saussure.jpg" alt="Ferdinand de Saussure" loading="lazy">
-  <p class="img-caption">Ferdinand de Saussure (1857–1913), whose 1878 hypothesis about PIE vowels was later confirmed by the decipherment of Hittite.</p>
-</div>
+  <h2>The Homeland Debate: Where Did PIE Originate?</h2>
+  <p>Two major theories compete for PIE's geographic origin, with recent genetic evidence providing new clarity:</p>
 
-<p>De Saussure's hypothesis was considered brilliant but unprovable — until the early 20th century, when scholars deciphered clay tablets written in <strong>Hittite</strong>, an extinct language from ancient Anatolia (modern Turkey) dating to roughly 1600 BCE. Hittite preserved "laryngeal" sounds that had disappeared in every other Indo-European language, and their presence exactly matched what de Saussure had predicted. The reconstruction of Proto-Indo-European was vindicated.</p>
+  <h3>Steppe/Kurgan Hypothesis (Yamnaya)</h3>
+  <p>The <strong>Steppe hypothesis</strong>, championed by archaeologist Marija Gimbutas, places the PIE homeland on the <strong>Pontic-Caspian steppe</strong> (modern Ukraine/southern Russia) around 4000 BCE. This theory identifies the <strong>Yamnaya culture</strong> (3300–2600 BCE) as early Indo-Europeans who spread across Europe and Asia through horse domestication and wagon technology.</p>
 
-<h2>The Homeland Debate</h2>
+  <img src="yamnaya-metal.jpg" alt="Yamnaya metal artifacts">
+  <div class="image-caption">Yamnaya metal artifacts demonstrating advanced Bronze Age technology</div>
 
-<p>Where was Proto-Indo-European spoken? This question has fueled one of the most heated debates in linguistics and archaeology. Two main hypotheses dominate:</p>
+  <h3>Anatolian Hypothesis</h3>
+  <p>Proposed by British archaeologist <strong>Colin Renfrew</strong>, the Anatolian hypothesis suggests PIE originated in Neolithic Anatolia (modern Turkey) around 7000 BCE, spreading with agriculture rather than conquest.</p>
 
-<h3>The Steppe (Kurgan) Hypothesis — The Frontrunner</h3>
+  <h3>2025 Harvard Ancient DNA Study</h3>
+  <p>A landmark <strong>2025 study from Harvard Medical School</strong> provided decisive support for the Steppe hypothesis. By analyzing ancient DNA from over 1,000 individuals, researchers found that Bronze Age Europeans inherited substantial ancestry from Yamnaya pastoralists, and linguistic analysis showed all Indo-European branches (except Anatolian) trace back to steppe populations.</p>
 
-<p>The <strong>Kurgan hypothesis</strong>, developed most thoroughly by Lithuanian-American archaeologist <strong>Marija Gimbutas</strong> in the 1950s and refined by scholars like <strong>David Anthony</strong>, places the PIE homeland in the <strong>Pontic-Caspian steppe</strong> — the vast grasslands stretching across modern Ukraine, southern Russia, and into Kazakhstan.</p>
+  <img src="steppe-migration-map.jpg" alt="Indo-European migrations">
+  <div class="image-caption">Map showing Indo-European migrations from the Pontic-Caspian steppe</div>
 
-<p>The speakers of PIE, according to this view, were the <strong>Yamnaya</strong> (from Russian <em>ямная</em>, meaning "pit" — referring to their burial customs). These were semi-nomadic pastoralists who domesticated horses, built wheeled vehicles, and herded cattle across the steppe beginning around 3300 BCE. They buried their dead in pits beneath earthen mounds called <strong>kurgans</strong>, often with ochre powder and sacrificed animals.</p>
+  <h2>The Language Family Tree</h2>
+  <p>PIE diversified into numerous branches, some extinct and some flourishing:</p>
 
-<div class="img-wrap">
-  <img src="yamnaya-kurgan.jpg" alt="Yamnaya kurgan burial" loading="lazy">
-  <p class="img-caption">A Yamnaya burial kurgan on the Pontic-Caspian steppe. The pit-grave culture gives the Yamnaya their name.</p>
-</div>
+  <img src="indo-european-map.jpg" alt="Indo-European language family distribution">
+  <div class="image-caption">Present-day distribution of Indo-European languages</div>
 
-<p>From the steppe, Indo-European-speaking groups fanned outward in waves: into Europe (bringing what would become Celtic, Germanic, Italic, Baltic, and Slavic languages), into Anatolia (Hittite and its relatives), into Iran and India (Indo-Iranian languages), and even into western China (Tocharian).</p>
-
-<p>A landmark <strong>2025 ancient DNA study</strong> from Harvard Medical School, published in <em>Nature</em>, provided strong genetic confirmation. Researchers identified that the Yamnaya descend from a mixture of <strong>Eastern European Hunter-Gatherers (EHG)</strong> and <strong>Caucasus Hunter-Gatherers (CHG)</strong>, and showed that Yamnaya ancestry spread in concert with Indo-European languages across Eurasia. The study also resolved a long-standing puzzle: the Anatolian branch (the oldest attested IE language family) lacked clear Yamnaya ancestry. The answer — a related but earlier steppe population fed into both the Yamnaya and the Anatolian branch — confirmed the steppe hypothesis while adding nuance.</p>
-
-<div class="img-wrap">
-  <img src="yamnaya-metal.jpg" alt="Yamnaya metalwork" loading="lazy">
-  <p class="img-caption">Copper and gold artifacts from Yamnaya culture, demonstrating the metallurgical sophistication of steppe pastoralists.</p>
-</div>
-
-<h3>The Anatolian Hypothesis</h3>
-
-<p>The main rival theory was proposed by British archaeologist <strong>Colin Renfrew</strong> in 1987. He argued that PIE originated in <strong>Neolithic Anatolia</strong> (modern Turkey) around the 7th millennium BCE, and spread into Europe not with warriors on horseback but with farmers carrying agriculture. As the Neolithic revolution moved northwest from Anatolia into the Balkans, then across Europe, Renfrew argued, it carried languages with it.</p>
-
-<p>Renfrew's hypothesis has the appeal of earlier dates and a peaceful spread model, but it has struggled to account for the linguistic evidence — particularly the reconstructed PIE vocabulary for horses, wheeled vehicles, and pastoral life, which fit the steppe culture far better than early Anatolian farming. The ancient DNA evidence has also increasingly favored the steppe model.</p>
-
-<h2>The Family Tree</h2>
-
-<p>Proto-Indo-European diverged into roughly a dozen major branches, of which some are living languages spoken by billions today and others are known only from ancient texts or archaeological fragments:</p>
-
-<div class="family-tree">
-  <div class="branch"><strong>Indo-Iranian</strong><span>Hindi, Bengali, Punjabi, Persian, Pashto, Kurdish — the largest branch by speakers</span></div>
-  <div class="branch"><strong>Germanic</strong><span>English, German, Dutch, Swedish, Norwegian, Icelandic, Yiddish</span></div>
-  <div class="branch"><strong>Romance (Italic)</strong><span>Spanish, Portuguese, French, Italian, Romanian — all descended from Latin</span></div>
-  <div class="branch"><strong>Slavic</strong><span>Russian, Polish, Czech, Ukrainian, Serbian, Bulgarian</span></div>
-  <div class="branch"><strong>Celtic</strong><span>Irish, Welsh, Scottish Gaelic, Breton — once stretched from Iberia to Anatolia</span></div>
-  <div class="branch"><strong>Greek</strong><span>Modern Greek descends from a continuous tradition back to Mycenaean tablets (~1450 BCE)</span></div>
-  <div class="branch"><strong>Baltic</strong><span>Lithuanian, Latvian — the most conservative living IE languages</span></div>
-  <div class="branch"><strong>Albanian</strong><span>Albanian — heavily influenced by contact but clearly Indo-European</span></div>
-  <div class="branch"><strong>Armenian</strong><span>Armenian — its own branch with deep historical roots</span></div>
-  <div class="branch"><strong>Anatolian</strong> <em>(extinct)</em><span>Hittite, Luwian, Lydian, Palaic — the oldest attested branch</span></div>
-  <div class="branch"><strong>Tocharian</strong> <em>(extinct)</em><span>Once spoken in the Tarim Basin (western China) — bafflingly distant from other IE languages</span></div>
-  <div class="branch"><strong>Indo-Aryan</strong><span>Sanskrit and its descendants — sometimes grouped with Indo-Iranian</span></div>
-</div>
-
-<div class="img-wrap">
-  <img src="indo-european-tree.jpg" alt="Indo-European language family tree" loading="lazy">
-  <p class="img-caption">The Indo-European language family tree, showing major branches and their relationships.</p>
-</div>
-
-<p>Lithuanian deserves special mention. It retains so many archaic features — including a complex case system, pitch accent, and ancient vocabulary — that 19th-century linguists used it as a key tool for reconstructing PIE. The famous quip: <em>"Lithuanian is the Sanskrit of the North."</em></p>
-
-<h2>What PIE Sounded Like</h2>
-
-<p>No one spoke PIE into a microphone, but decades of comparative reconstruction have given linguists a remarkably detailed picture:</p>
-
-<h3>Phonology (Sounds)</h3>
-
-<p>PIE had a rich consonant inventory organized in three series:</p>
-<ul>
-  <li><strong>Voiceless stops:</strong> *p, *t, *ḱ, *k, *kʷ</li>
-  <li><strong>Voiced stops:</strong> *b, *d, *ǵ, *g, *gʷ</li>
-  <li><strong>Voiced aspirated stops:</strong> *bʰ, *dʰ, *ǵʰ, *gʰ, *gʷʰ</li>
-  <li><strong>Laryngeals:</strong> *h₁, *h₂, *h₃ (mysterious sounds that colored vowels and disappeared in most daughter languages — the key to de Saussure's prediction)</li>
-</ul>
-
-<p>The three-way stop distinction (voiceless / voiced / voiced aspirated) is preserved most faithfully in Sanskrit, which is part of why India's classical language was so crucial to the reconstruction.</p>
-
-<h3>Morphology (Word Structure)</h3>
-
-<p>PIE was <strong>highly inflected</strong> — meaning word endings carried grammatical information that English now handles with word order and helper words:</p>
-
-<ul>
-  <li><strong>8 cases:</strong> Nominative, Accusative, Genitive, Dative, Ablative, Instrumental, Locative, Vocative</li>
-  <li><strong>3 genders:</strong> Masculine, Feminine, Neuter</li>
-  <li><strong>3 numbers:</strong> Singular, Dual (exactly two), Plural</li>
-  <li><strong>Basic word order:</strong> Subject-Object-Verb (like Latin or Japanese)</li>
-</ul>
-
-<h3>Ablaut (Vowel Gradation)</h3>
-
-<p>One of PIE's most distinctive features was <strong>ablaut</strong> — systematic vowel alternation within word roots that signaled grammatical changes. The classic example is the vowel triplet <em>e / o / Ø</em> (zero):</p>
-
-<ul>
-  <li><strong>*bʰer-</strong> (full grade: "carry") → Greek <em>phérō</em>, Latin <em>ferō</em>, English <em>bear</em></li>
-  <li><strong>*bʰor-</strong> (o-grade) → Greek <em>phorá</em> ("a carrying"), English <em>borrow</em></li>
-  <li><strong>*bʰr-</strong> (zero grade: vowel dropped) → seen in compounds and derived forms</li>
-</ul>
-
-<p>This same pattern echoes through English: <em>sing/sang/sung</em>, <em>drive/drove/driven</em>, <em>break/broke/broken</em> — all descendants of PIE ablaut.</p>
-
-<h2>Reconstructed Vocabulary</h2>
-
-<p>Through systematic comparison, linguists have reconstructed hundreds of PIE roots. Here are some with clear modern descendants:</p>
-
-<ul>
-  <li><span class="recon">*wĺ̥kʷos</span> "wolf" → Latin <em>lupus</em>, Greek <em>lýkos</em>, Sanskrit <em>vṛ́ka-</em>, English <em>wolf</em>, Persian <em>gorg</em></li>
-  <li><span class="recon">*ph₂tḗr</span> "father" → Latin <em>pater</em>, Greek <em>patḗr</em>, Sanskrit <em>pitṛ́</em>, English <em>father</em></li>
-  <li><span class="recon">*h₁eḗd</span> "to eat" → Latin <em>edō</em>, Greek <em>édō</em>, Sanskrit <em>ádmi</em>, English <em>eat</em></li>
-  <li><span class="recon">*h₂ówiyos</span> "sheep" → Latin <em>ovis</em>, Greek <em>óïs</em>, Sanskrit <em>ávi-</em>, English <em>ewe</em></li>
-  <li><span class="recon">*wódr̥</span> "water" → English <em>water</em>, Russian <em>voda</em>, Greek <em>hýdōr</em>, Latin <em>unda</em> ("wave")</li>
-  <li><span class="recon">*dyḗws</span> "sky / heaven" → Latin <em>Iuppiter</em> (Jupiter = "sky father"), Sanskrit <em>Dyáuṣ</em>, Greek <em>Zeús</em>, Norse <em>Týr</em></li>
-  <li><span class="recon">*h₂eḗs</span> "to burn / ash" → Latin <em>āra</em> ("altar"), English <em>ash</em>, Sanskrit <em>ásma</em> ("hearth")</li>
-  <li><span class="recon">*nókʷts</span> "night" → Latin <em>nox</em>, Greek <em>nýx</em>, English <em>night</em>, Sanskrit <em>nákt-</em></li>
-</ul>
-
-<p>The asterisks (*) before each form indicate that these are <strong>reconstructions</strong> — no one ever wrote them down. They represent the scholarly consensus about what the original forms must have been, derived by working backward from attested daughter languages.</p>
-
-<h2>Key Timeline</h2>
-
-<div class="timeline">
-  <div class="event"><span class="year">~4500–2500 BCE</span><br>Proto-Indo-European spoken as a living language on the Pontic-Caspian steppe</div>
-  <div class="event"><span class="year">~3300 BCE</span><br>Yamnaya culture emerges — horse domestication, wheeled vehicles, kurgan burials</div>
-  <div class="event"><span class="year">~3000–2500 BCE</span><br>Major migrations begin — IE speakers spread into Europe, Anatolia, and Central/South Asia</div>
-  <div class="event"><span class="year">~1600 BCE</span><br>Hittite tablets in Anatolia — oldest attested Indo-European language</div>
-  <div class="event"><span class="year">~1450 BCE</span><br>Mycenaean Greek (Linear B tablets) — earliest Greek writing</div>
-  <div class="event"><span class="year">~1200 BCE</span><br>Sanskrit composed orally (Rigveda) — preserved through oral tradition</div>
-  <div class="event"><span class="year">1786</span><br>Sir William Jones proposes common ancestor for Sanskrit, Greek, and Latin</div>
-  <div class="event"><span class="year">1822</span><br>Jacob Grimm demonstrates systematic sound correspondences (Grimm's Law)</div>
-  <div class="event"><span class="year">1878</span><br>Ferdinand de Saussure hypothesizes laryngeal sounds in PIE</div>
-  <div class="event"><span class="year">1915–1917</span><br>Hittite deciphered — de Saussure's laryngeals confirmed</div>
-  <div class="event"><span class="year">1956</span><br>Marija Gimbutas proposes the Kurgan hypothesis</div>
-  <div class="event"><span class="year">1987</span><br>Colin Renfrew proposes the Anatolian hypothesis</div>
-  <div class="event"><span class="year">2015</span><br>Ancient DNA confirms massive Yamnaya migration into Europe</div>
-  <div class="event"><span class="year">2025</span><br>Harvard study resolves Anatolian branch ancestry, confirms steppe origin of PIE</div>
-</div>
-
-<h2>Why It Matters</h2>
-
-<p>Proto-Indo-European is not merely an academic curiosity. It is the common ancestor of the languages spoken by roughly <strong>3 billion people</strong> today — from English to Hindi, from Spanish to Russian. Understanding PIE means understanding how most of humanity came to speak the way we do.</p>
-
-<p>The reconstruction of PIE is also one of the great triumphs of the scientific method applied to the humanities. No one wrote PIE down. No one recorded it. Yet by applying rigorous comparative methods — treating sound change as a law-like process — linguists built a detailed model of a language that died four millennia before Christ, and then watched as genetics and archaeology progressively confirmed their predictions. It is, in the words of Calvert Watkins, "the most successful theory in the humanities."</p>
-
-<p>Every time you say <em>father</em>, <em>wolf</em>, <em>night</em>, or <em>water</em>, you're speaking Proto-Indo-European — reshaped by six thousand years of human wandering, but recognizably, stubbornly, the same.</p>
-
-<hr>
-
-<div class="attribution">
-  <h4>Sources & Image Credits</h4>
   <ul>
-    <li>Research verified against <a href="https://www.britannica.com/topic/Proto-Indo-European-language">Britannica</a>, <a href="https://en.wikipedia.org/wiki/Proto-Indo-European_language">Wikipedia</a>, and <a href="https://hms.harvard.edu/news/ancient-dna-study-identifies-originators-indo-european-language-family">Harvard Medical School</a></li>
-    <li>Indo-European expansion map: Wikimedia Commons</li>
-    <li>Sir William Jones portrait: Wikimedia Commons</li>
-    <li>Ferdinand de Saussure portrait: Wikimedia Commons</li>
-    <li>Yamnaya kurgan and metalwork images: Wikimedia Commons</li>
-    <li>Language family tree: Wikimedia Commons</li>
+    <li><strong>Anatolian</strong> † (extinct: Hittite, Luwian)</li>
+    <li><strong>Indo-Iranian</strong> (Sanskrit, Persian, Hindi-Urdu, Bengali)</li>
+    <li><strong>Greek</strong> (Ancient and Modern Greek)</li>
+    <li><strong>Italic/Romance</strong> (Latin, Spanish, French, Italian, Portuguese, Romanian)</li>
+    <li><strong>Celtic</strong> (Irish, Welsh - historically Gaulish)</li>
+    <li><strong>Germanic</strong> (English, German, Dutch, Swedish, Norwegian, Danish)</li>
+    <li><strong>Balto-Slavic</strong> (Lithuanian, Latvian, Russian, Polish, Czech)</li>
+    <li><strong>Albanian</strong> (Albanian)</li>
+    <li><strong>Armenian</strong> (Armenian)</li>
+    <li><strong>Tocharian</strong> † (extinct: Tocharian A & B)</li>
   </ul>
-</div>
 
-<p style="text-align: center; margin-top: 2rem;"><a href="../">← Back to home</a></p>
+  <h2>PIE Language Structure</h2>
+  <p>PIE was a highly sophisticated language with features that persist in many of its daughter languages:</p>
 
-<p style="text-align:center; margin-top:1rem; padding-top:0.75rem; border-top:1px solid #ddd; font-size:0.8rem; color:#888;">
-  Generated with <a href="https://openrouter.ai/xiaomi/mimo-v2-pro" style="color:#999;">openrouter/xiaomi/mimo-v2-pro</a> · Built with <a href="https://openrouter.ai/qwen/qwen3.6-plus:free" style="color:#999;">openrouter/qwen/qwen3.6-plus:free</a>
-</p>
+  <h3>Grammar</h3>
+  <ul>
+    <li><strong>Highly inflected:</strong> Eight grammatical cases (nominative, accusative, genitive, dative, ablative, locative, instrumental, vocative)</li>
+    <li><strong>Three genders:</strong> Masculine, feminine, neuter</li>
+    <li><strong>Three numbers:</strong> Singular, dual, plural</li>
+    <li><strong>Word order:</strong> Typically Subject-Object-Verb (SOV)</li>
+  </ul>
 
-</main>
+  <h3>Phonology & Morphology</h3>
+  <ul>
+    <li><strong>Ablaut system:</strong> Vowel alterations to indicate grammatical function (e.g., *sng- → *song- in English)</li>
+    <li><strong>Complex verb conjugations:</strong> Multiple tenses, moods, and voices</li>
+    <li><strong>Extensive use of affixes:</strong> Prefixes, suffixes, and infixes to modify meaning</li>
+  </ul>
+
+  <h2>Reconstructed Words & Living Cognates</h2>
+  <p>By comparing daughter languages, linguists have reconstructed numerous PIE words. The asterisk (*) indicates reconstruction:</p>
+
+  <div class="example-box">
+    <ul>
+      <li><span class="reconstructed-word">*p?-t?r</span> → English <em>father</em>, Latin <em>pater</em>, Greek <em>pat?r</em>, Sanskrit <em>pit??</em></li>
+      <li><span class="reconstructed-word">*m?t?r</span> → English <em>mother</em>, Latin <em>mater</em>, Greek <em>m?t?r</em>, Sanskrit <em>m?t??</em></li>
+      <li><span class="reconstructed-word">*wódr̥</span> → English <em>water</em>, German <em>Wasser</em>, Russian <em>voda</em>, Greek <em>húd?r</em></li>
+      <li><span class="reconstructed-word">*h?n?r</span> → English <em>one</em>, Latin <em>?nus</em>, Greek <em>he?s</em>, Sanskrit <em>eka</em></li>
+      <li><span class="reconstructed-word">*tréyes</span> → English <em>three</em>, Latin <em>tr?s</em>, Greek <em>tre?s</em>, Sanskrit <em>tráya?</em></li>
+      <li><span class="reconstructed-word">*k?rd-</span> → English <em>heart</em>, Latin <em>cor</em>, Greek <em>kardía</em>, Sanskrit <em>h?daya</em></li>
+      <li><span class="reconstructed-word">*dy?ws</span> → Greek <em>Zeus</em>, Latin <em>Jupiter</em> (<em>Ju-piter</em>), Sanskrit <em>Dyaus</em></li>
+    </ul>
+  </div>
+
+  <h2>Why PIE Matters Today</h2>
+  <p>Proto-Indo-European research remains vital for several reasons:</p>
+
+  <ul>
+    <li><strong>Historical linguistics foundation:</strong> PIE reconstruction established the scientific methodology used to study all language families</li>
+    <li><strong>Cultural reconstruction:</strong> By analyzing shared vocabulary, we can infer PIE speakers had words for wheels, horses, cows, and patriarchal social structures</li>
+    <li><strong>Understanding diversity:</strong> PIE studies reveal how languages evolve and diversify over millennia</li>
+    <li><strong>Genetic ancestry:</strong> Modern DNA studies trace population movements during the Bronze Age, correlating with linguistic spread</li>
+    <li><strong>Modern language learning:</strong> Understanding PIE roots helps explain irregularities in modern languages and aids vocabulary acquisition</li>
+    <li><strong>Digital age applications:</strong> Computational linguistics and machine learning models use historical linguistic principles pioneered in PIE research</li>
+  </ul>
+
+  <p>From everyday words like <em>mother</em> and <em>father</em> to mythological figures like Zeus and Jupiter, traces of this ancient language surround us daily, connecting speakers of languages as diverse as Hindi, Icelandic, and Armenian to a shared linguistic heritage.</p>
+
+  <div class="image-attribution">
+    <h3>Image Sources</h3>
+    <ul>
+      <li><strong>Sir William Jones:</strong> Portrait by Joshua Reynolds, Yale Center for British Art (Wikimedia Commons)</li>
+      <li><strong>Ferdinand de Saussure:</strong> Public domain portrait (Wikimedia Commons)</li>
+      <li><strong>Yamnaya kurgan:</strong> Wikimedia Commons, author: Laszlo78</li>
+      <li><strong>Yamnaya metal artifacts:</strong> Wikimedia Commons</li>
+      <li><strong>Indo-European migrations:</strong> Wikimedia Commons, Maximilian Dörrbecker</li>
+      <li><strong>Language distribution map:</strong> Wikimedia Commons, Hayden120</li>
+    </ul>
+  </div>
+
+  <p class="back"><a href="../index.html">← Back to home</a></p>
 </body>
 </html>
