@@ -149,6 +149,14 @@
     .badge-minimax { background: #7b1fa2; color: white; }
     .badge-qwen { background: #c2185b; color: white; }
     .badge-gemma { background: #303030; color: white; }
+    .badge-gpt4 { background: #00bcd4; color: white; }
+    .badge-codex { background: #009688; color: white; }
+    .badge-gemini { background: #f44336; color: white; }
+    .badge-deepseek { background: #795548; color: white; }
+    .badge-gemini { background: #8e24aa; color: white; }
+    .badge-gpt54 { background: #d32f2f; color: white; }
+    .badge-gpt53 { background: #0288d1; color: white; }
+    .badge-minimax-lightning { background: #9c27b0; color: white; }
     
     .note {
       background: #fff3e0;
@@ -271,6 +279,8 @@
       <h2>Key Takeaways</h2>
       <ul>
         <li><strong>GLM-5.1 emerges as the leading open-weight model:</strong> Achieves competitive 76.4% on SWE-bench (third-party verified) and dominates SWE-bench Pro with 58.4%, making it the top scorer for multi-language agentic coding.</li>
+        <li><strong>Gemini 3.1 Pro leads on multiple verified benchmarks:</strong> Tops SWE-bench Verified (78.8%) and LiveCodeBench (2887 Elo), demonstrating Google's continued strength in coding capabilities.</li>
+        <li><strong>GPT-5.4 shows strong performance with excellent speed:</strong> Competitive 78.2% on SWE-bench Verified with fastest-in-class latency (307s), making it ideal for time-sensitive applications.</li>
         <li><strong>The price-performance gap is dramatic:</strong> Gemma 4 31B costs only <strong>$0.13/$0.38 per 1M tokens</strong> compared to Opus 4.6 at <strong>$5/$25</strong>—a 38x price difference—while still delivering excellent performance on live programming benchmarks (80% on LiveCodeBench).</li>
         <li><strong>Chinese open models dominate:</strong> Z.AI (GLM), Moonshot (Kimi), MiniMax, and Alibaba (Qwen) all deliver state-of-the-art coding capabilities at 1/3rd to 1/10th the cost of proprietary models.</li>
         <li><strong>MiniMax M2.7 is the budget champion:</strong> At <strong>$0.30/$1.20 per 1M tokens</strong> with 73.8% SWE-bench Verified, it achieves performance nearly matching models costing 4-8x more.</li>
@@ -278,7 +288,7 @@
     </div>
     
     <div class="section">
-      <h2>The 7 Models Compared</h2>
+      <h2>The 13 Models Compared</h2>
       <div class="models-grid">
         <div class="model-card">
           <h4><span class="model-badge badge-opus">Claude Opus 4.6</span> (Anthropic)</h4>
@@ -290,6 +300,20 @@
         <div class="model-card">
           <h4><span class="model-badge badge-sonnet">Claude Sonnet 4.6</span> (Anthropic)</h4>
           <p><strong>Price:</strong> $3/$15 per 1M tokens</p>
+          <p><strong>Context:</strong> 1M tokens</p>
+          <p><strong>Type:</strong> Proprietary</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-gpt54">GPT-5.4</span> (OpenAI)</h4>
+          <p><strong>Price:</strong> $2.50/$10.00 per 1M tokens</p>
+          <p><strong>Context:</strong> 1M tokens</p>
+          <p><strong>Type:</strong> Proprietary</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-gpt53">GPT-5.3 Codex</span> (OpenAI)</h4>
+          <p><strong>Price:</strong> $1.00/$3.00 per 1M tokens</p>
           <p><strong>Context:</strong> 1M tokens</p>
           <p><strong>Type:</strong> Proprietary</p>
         </div>
@@ -316,6 +340,13 @@
         </div>
         
         <div class="model-card">
+          <h4><span class="model-badge badge-minimax-lightning">MiniMax M2.5 Lightning</span> (MiniMax)</h4>
+          <p><strong>Price:</strong> $0.30/$1.20 per 1M tokens</p>
+          <p><strong>Context:</strong> 196K tokens</p>
+          <p><strong>Type:</strong> Open-source, 230B+ params</p>
+        </div>
+        
+        <div class="model-card">
           <h4><span class="model-badge badge-qwen">Qwen 3.5 397B-A17B</span> (Alibaba)</h4>
           <p><strong>Price:</strong> $0.39/$2.34 per 1M tokens</p>
           <p><strong>Context:</strong> 262K tokens</p>
@@ -327,6 +358,20 @@
           <p><strong>Price:</strong> $0.13/$0.38 per 1M tokens</p>
           <p><strong>Context:</strong> 262K tokens</p>
           <p><strong>Type:</strong> Open-source, 31B dense</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-gemini">Gemini 3.1 Pro</span> (Google)</h4>
+          <p><strong>Price:</strong> $0.50/$2.00 per 1M tokens</p>
+          <p><strong>Context:</strong> 2M tokens</p>
+          <p><strong>Type:</strong> Proprietary</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-deepseek">DeepSeek V3.2</span> (DeepSeek)</h4>
+          <p><strong>Price:</strong> $0.20/$0.80 per 1M tokens</p>
+          <p><strong>Context:</strong> 256K tokens</p>
+          <p><strong>Type:</strong> Open-source, 236B MoE</p>
         </div>
       </div>
     </div>
@@ -352,7 +397,7 @@
             <td>312s</td>
           </tr>
           <tr>
-            <td>GPT-5.4</td>
+            <td><span class="model-badge badge-gpt54">GPT-5.4</span></td>
             <td>78.2%</td>
             <td>$0.80</td>
             <td>307s</td>
@@ -364,7 +409,7 @@
             <td>351s</td>
           </tr>
           <tr>
-            <td>GPT-5.3 Codex</td>
+            <td><span class="model-badge badge-gpt53">GPT-5.3 Codex</span></td>
             <td>78.0%</td>
             <td>$0.46</td>
             <td>247s</td>
@@ -382,7 +427,7 @@
             <td>527s</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-minimax">MiniMax M2.5 Lightning</span></td>
+            <td><span class="model-badge badge-minimax-lightning">MiniMax M2.5 Lightning</span></td>
             <td>74.2%</td>
             <td>$0.46</td>
             <td>403s</td>
@@ -475,7 +520,7 @@
             <td class="highlight"><strong>New #1 (April 2026)</strong></td>
           </tr>
           <tr>
-            <td>GPT-5.4</td>
+            <td><span class="model-badge badge-gpt54">GPT-5.4</span></td>
             <td>57.7%</td>
             <td>Previous #1</td>
           </tr>
@@ -490,7 +535,7 @@
             <td>Matches GPT-5.3 Codex</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-gemma">Gemini 3.1 Pro</span></td>
+            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
             <td>54.2%</td>
             <td></td>
           </tr>
@@ -527,7 +572,7 @@
             <td></td>
           </tr>
           <tr>
-            <td>DeepSeek V3.2</td>
+            <td><span class="model-badge badge-deepseek">DeepSeek V3.2</span></td>
             <td>83.3%</td>
             <td>Reference only</td>
           </tr>
@@ -553,11 +598,11 @@
         </thead>
         <tbody>
           <tr>
-            <td>GPT-5.4</td>
+            <td><span class="model-badge badge-gpt54">GPT-5.4</span></td>
             <td>75.1%</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-gemma">Gemini 3.1 Pro</span></td>
+            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
             <td>68.5%</td>
           </tr>
           <tr>
@@ -574,6 +619,33 @@
     
     <div class="section">
       <h2>Other Notable Benchmarks</h2>
+      
+      <div class="model-card">
+        <h4><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></h4>
+        <ul>
+          <li>SWE-bench Verified #1 — <strong>78.8%</strong> (third-party verified)</li>
+          <li>LiveCodeBench — <strong>2887 Elo</strong> (#1 on LCB Pro)</li>
+          <li>Terminal-Bench 2.0 — <strong>68.5%</strong></li>
+          <li>SWE-bench Pro — <strong>54.2%</strong></li>
+        </ul>
+      </div>
+      
+      <div class="model-card">
+        <h4><span class="model-badge badge-gpt54">GPT-5.4</span></h4>
+        <ul>
+          <li>SWE-bench Verified — <strong>78.2%</strong> with fastest latency (307s)</li>
+          <li>SWE-bench Pro — <strong>57.7%</strong> (previous #1)</li>
+          <li>Terminal-Bench 2.0 — <strong>75.1%</strong> (DevOps/CLI leader)</li>
+        </ul>
+      </div>
+      
+      <div class="model-card">
+        <h4><span class="model-badge badge-gpt53">GPT-5.3 Codex</span></h4>
+        <ul>
+          <li>SWE-bench Verified — <strong>78.0%</strong></li>
+          <li>Cost-effective performance at <strong>$0.46/test</strong></li>
+        </ul>
+      </div>
       
       <div class="model-card">
         <h4><span class="model-badge badge-glm">GLM-5.1</span></h4>
@@ -599,6 +671,22 @@
         <ul>
           <li>Arena AI chat preference — <strong>1449 ± 6</strong></li>
           <li>Plus variant offers <strong>1M context</strong> and built-in tools</li>
+        </ul>
+      </div>
+      
+      <div class="model-card">
+        <h4><span class="model-badge badge-deepseek">DeepSeek V3.2</span></h4>
+        <ul>
+          <li>LiveCodeBench — <strong>83.3%</strong> (reference benchmark)</li>
+          <li>Strong competitive programming performance</li>
+        </ul>
+      </div>
+      
+      <div class="model-card">
+        <h4><span class="model-badge badge-minimax-lightning">MiniMax M2.5 Lightning</span></h4>
+        <ul>
+          <li>SWE-bench Verified — <strong>74.2%</strong> (third-party)</li>
+          <li>High performance-to-cost ratio</li>
         </ul>
       </div>
       
@@ -642,6 +730,20 @@
             <td>$0.13</td>
             <td>$0.38</td>
             <td>262K</td>
+            <td class="highlight">Open</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
+            <td>$0.50</td>
+            <td>$2.00</td>
+            <td>2M</td>
+            <td>Proprietary</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-glm">GLM-5.1</span></td>
+            <td>$0.95</td>
+            <td>$3.15</td>
+            <td>200K</td>
             <td class="highlight">Open</td>
           </tr>
           <tr>
