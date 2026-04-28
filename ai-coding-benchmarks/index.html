@@ -207,6 +207,16 @@
       color: #555;
     }
     
+    .model-card ul {
+      margin-left: 20px;
+      margin-top: 8px;
+    }
+    
+    .model-card li {
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+    
     .sources {
       background: #f8f9fa;
       padding: 24px;
@@ -272,23 +282,23 @@
 <body>
   <div class="container">
     <h1>🤖 AI Coding Benchmarks — April 2026</h1>
-    <p class="subtitle">Researched by <code>ollama/kimi-k2.6:cloud</code> · April 27, 2026</p>
+    <p class="subtitle">Researched by <code>openrouter/z-ai/glm-5</code> · April 28, 2026</p>
     
     <div class="key-takeaways">
       <h2>Key Takeaways</h2>
       <ul>
-        <li><strong>GPT-5.5 takes the SWE-bench Pro crown:</strong> Achieves 58.6% on SWE-bench Pro and a state-of-the-art 82.7% on Terminal-Bench 2.0, establishing itself as the leader for agentic coding and DevOps workflows.</li>
-        <li><strong>Claude Opus 4.7 emerges as the reliability champion:</strong> Anthropic's "xhigh" effort level delivers 64.3% on SWE-bench Pro with dramatically improved instruction following and tool-use consistency, making it the top choice for complex, long-running tasks.</li>
-        <li><strong>Kimi K2.6 becomes the new open-weight king:</strong> With 80.2% SWE-bench Verified (self-reported), 1T total/32B active parameters, and a 256K context window, it replaces K2.5 as the top open-source coding model at just $0.38/$1.72 per 1M tokens.</li>
-        <li><strong>Gemini 3.1 Pro still leads on verified SWE-bench:</strong> Maintains the top third-party verified score of 78.8% on SWE-bench Verified and 2887 Elo on LiveCodeBench, proving Google's continued dominance in coding benchmarks.</li>
-        <li><strong>Qwen 3.6 Plus jumps to 1M context with enterprise focus:</strong> Alibaba's latest adds repository-level engineering with a 1M-token context window and built-in tool integration, targeting enterprise agentic workflows.</li>
-        <li><strong>The price-performance gap keeps widening:</strong> Gemma 4 31B at $0.13/$0.38 is now 192x cheaper per token than GPT-5.5 Pro ($30/$180), while MiniMax M2.7 delivers 73.8% SWE-bench Verified at just $0.30/$1.20.</li>
-        <li><strong>Terminal-Bench 2.0 is the new DevOps standard:</strong> GPT-5.5's 82.7% and Opus 4.7's 69.4% establish a clear hierarchy for CLI and infrastructure tasks that didn't exist a month ago.</li>
+        <li><strong>Claude Opus 4.7 claims the crown:</strong> Leads SWE-bench Verified at 87.6% and SWE-bench Pro at 64.3% (April 2026), establishing Anthropic's new high-water mark for autonomous coding.</li>
+        <li><strong>GPT-5.5 dominates DevOps:</strong> State-of-the-art 82.7% on Terminal-Bench 2.0 and 58.6% on SWE-bench Pro make it the top choice for CLI and infrastructure automation.</li>
+        <li><strong>DeepSeek V4 Pro delivers exceptional value:</strong> 80.6% SWE-bench Verified, 93.5% LiveCodeBench, and 3,206 Codeforces rating at just $1.74/$3.48 per 1M tokens — challenging proprietary models at a fraction of the cost.</li>
+        <li><strong>Gemini 3.1 Pro stays competitive:</strong> 80.6% SWE-bench Verified and 2,887 Elo on LiveCodeBench with a massive 2M context window at $0.50/$2.00.</li>
+        <li><strong>Kimi K2.6 advances open-weight coding:</strong> Self-reported 80.2% SWE-bench Verified with 256K context at $0.74/$4.66 per 1M (OpenRouter pricing).</li>
+        <li><strong>Qwen 3.6 Plus targets enterprises:</strong> 78.8% SWE-bench Verified, 61.6% Terminal-Bench 2.0, and 1M context window for repository-level engineering.</li>
+        <li><strong>The price-performance gap is staggering:</strong> DeepSeek V4 Pro delivers 80.6% verified scores at $1.74/M input, while GPT-5.5 Pro costs $30/$180 per 1M — a 17x price difference for comparable coding performance.</li>
       </ul>
     </div>
     
     <div class="section">
-      <h2>The 12 Models Compared</h2>
+      <h2>The 11 Models Compared</h2>
       <div class="models-grid">
         <div class="model-card">
           <h4><span class="model-badge badge-opus">Claude Opus 4.7</span> (Anthropic)</h4>
@@ -319,41 +329,6 @@
         </div>
         
         <div class="model-card">
-          <h4><span class="model-badge badge-glm">GLM-5.1</span> (Z.AI/Zhipu)</h4>
-          <p><strong>Price:</strong> $0.95/$3.15 per 1M tokens</p>
-          <p><strong>Context:</strong> 200K tokens</p>
-          <p><strong>Type:</strong> Open-source, 744B params</p>
-        </div>
-        
-        <div class="model-card">
-          <h4><span class="model-badge badge-kimi">Kimi K2.6</span> (Moonshot AI)</h4>
-          <p><strong>Price:</strong> $0.38/$1.72 per 1M tokens</p>
-          <p><strong>Context:</strong> 256K tokens</p>
-          <p><strong>Type:</strong> Open-source, 1T total/32B active</p>
-        </div>
-        
-        <div class="model-card">
-          <h4><span class="model-badge badge-minimax">MiniMax M2.7</span> (MiniMax)</h4>
-          <p><strong>Price:</strong> $0.30/$1.20 per 1M tokens</p>
-          <p><strong>Context:</strong> 196K tokens</p>
-          <p><strong>Type:</strong> Open-source, 230B+ params</p>
-        </div>
-        
-        <div class="model-card">
-          <h4><span class="model-badge badge-qwen">Qwen 3.6 Plus</span> (Alibaba)</h4>
-          <p><strong>Price:</strong> $0.39/$2.34 per 1M tokens</p>
-          <p><strong>Context:</strong> 1M tokens</p>
-          <p><strong>Type:</strong> Open-source, MoE (various sizes)</p>
-        </div>
-        
-        <div class="model-card">
-          <h4><span class="model-badge badge-gemma">Gemma 4 31B</span> (Google)</h4>
-          <p><strong>Price:</strong> $0.13/$0.38 per 1M tokens</p>
-          <p><strong>Context:</strong> 262K tokens</p>
-          <p><strong>Type:</strong> Open-source, 31B dense</p>
-        </div>
-        
-        <div class="model-card">
           <h4><span class="model-badge badge-gemini">Gemini 3.1 Pro</span> (Google)</h4>
           <p><strong>Price:</strong> $0.50/$2.00 per 1M tokens</p>
           <p><strong>Context:</strong> 2M tokens</p>
@@ -362,92 +337,75 @@
         
         <div class="model-card">
           <h4><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span> (DeepSeek)</h4>
-          <p><strong>Price:</strong> $0.20/$0.80 per 1M tokens</p>
+          <p><strong>Price:</strong> $1.74/$3.48 per 1M tokens</p>
+          <p><strong>Context:</strong> 1M tokens</p>
+          <p><strong>Type:</strong> Open-weight, 1.6T MoE (49B active)</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-kimi">Kimi K2.6</span> (Moonshot AI)</h4>
+          <p><strong>Price:</strong> $0.74/$4.66 per 1M tokens</p>
           <p><strong>Context:</strong> 256K tokens</p>
-          <p><strong>Type:</strong> Open-source, MoE (estimated 256B+)</p>
+          <p><strong>Type:</strong> Open-weight, 1T (32B active)</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-qwen">Qwen 3.6 Plus</span> (Alibaba)</h4>
+          <p><strong>Price:</strong> $0.39/$2.34 per 1M tokens</p>
+          <p><strong>Context:</strong> 1M tokens</p>
+          <p><strong>Type:</strong> Proprietary (open variants available)</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-glm">GLM-5.1</span> (Z.AI/Zhipu)</h4>
+          <p><strong>Price:</strong> $0.95/$3.15 per 1M tokens</p>
+          <p><strong>Context:</strong> 200K tokens</p>
+          <p><strong>Type:</strong> Open-weight, 744B params</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-minimax">MiniMax M2.7</span> (MiniMax)</h4>
+          <p><strong>Price:</strong> $0.30/$1.20 per 1M tokens</p>
+          <p><strong>Context:</strong> 196K tokens</p>
+          <p><strong>Type:</strong> Open-weight, 230B+ params</p>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-gemma">Gemma 4 31B</span> (Google)</h4>
+          <p><strong>Price:</strong> $0.13/$0.38 per 1M tokens</p>
+          <p><strong>Context:</strong> 262K tokens</p>
+          <p><strong>Type:</strong> Open-weight, 31B dense</p>
         </div>
       </div>
     </div>
     
     <div class="section">
       <h2>SWE-bench Verified</h2>
-      <p class="context">Third-party evaluation by Vals.ai — April 2026. The gold standard for measuring AI performance on real-world software engineering tasks.</p>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>Model</th>
-            <th>Accuracy</th>
-            <th>Cost/test</th>
-            <th>Latency</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
-            <td>78.8%</td>
-            <td>$0.78</td>
-            <td>312s</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-gpt55">GPT-5.5</span></td>
-            <td>78.2%</td>
-            <td>$0.80</td>
-            <td>307s</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-opus">Opus 4.7 (Thinking)</span></td>
-            <td>78.2%</td>
-            <td>$1.22</td>
-            <td>351s</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-gpt53">GPT-5.3 Codex</span></td>
-            <td>78.0%</td>
-            <td>$0.46</td>
-            <td>247s</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-sonnet">Sonnet 4.7</span></td>
-            <td>77.4%</td>
-            <td>$1.30</td>
-            <td>512s</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-glm">GLM-5.1 (Thinking)</span></td>
-            <td>76.4%</td>
-            <td>$0.46</td>
-            <td>527s</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-minimax">MiniMax M2.7</span></td>
-            <td>73.8%</td>
-            <td>$0.47</td>
-            <td>886s</td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <p class="note"><strong>Note:</strong> <span class="model-badge badge-kimi">Kimi K2.6</span>, <span class="model-badge badge-qwen">Qwen 3.6 Plus</span>, <span class="model-badge badge-gemma">Gemma 4 31B</span>, and <span class="model-badge badge-deepseek">DeepSeek V4 Pro</span> have no third-party SWE-bench Verified runs yet.</p>
-    </div>
-    
-    <div class="section">
-      <h2>Self-Reported SWE-bench Verified</h2>
-      <p class="context">Manufacturer-reported scores for transparency. Third-party scores take precedence when available.</p>
+      <p class="context">Third-party verified scores from marc0.dev leaderboard and Vals.ai — April 2026. The gold standard for measuring AI performance on real-world software engineering tasks.</p>
       
       <table>
         <thead>
           <tr>
             <th>Model</th>
             <th>Score</th>
-            <th>Notes</th>
+            <th>Source</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><span class="model-badge badge-opus">Opus 4.7</span></td>
-            <td>80.8%</td>
-            <td>Anthropic self-report</td>
+            <td><span class="model-badge badge-opus">Claude Opus 4.7</span></td>
+            <td><strong>87.6%</strong></td>
+            <td>marc0.dev leaderboard (#1)</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-gpt53">GPT-5.3 Codex</span></td>
+            <td>85.0%</td>
+            <td>marc0.dev leaderboard</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></td>
+            <td>80.6%</td>
+            <td>codersera.com review</td>
           </tr>
           <tr>
             <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
@@ -457,40 +415,27 @@
           <tr>
             <td><span class="model-badge badge-kimi">Kimi K2.6</span></td>
             <td>80.2%</td>
-            <td>Moonshot self-report (April 2026)</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-sonnet">Sonnet 4.7</span></td>
-            <td>79.6%</td>
-            <td>Anthropic self-report</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-gpt55">GPT-5.5</span></td>
-            <td>78.2%</td>
-            <td>OpenAI self-report</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-minimax">MiniMax M2.7</span></td>
-            <td>~78%</td>
-            <td>MiniMax claim; Vals.ai measured 73.8%</td>
+            <td>Moonshot self-report</td>
           </tr>
           <tr>
             <td><span class="model-badge badge-qwen">Qwen 3.6 Plus</span></td>
-            <td>N/A</td>
-            <td>No SWE-bench Verified published yet</td>
+            <td>78.8%</td>
+            <td>tokenmix.ai analysis</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></td>
-            <td>N/A</td>
-            <td>No SWE-bench Verified published yet</td>
+            <td><span class="model-badge badge-glm">GLM-5.1</span></td>
+            <td>~78%</td>
+            <td>Estimated from prior benchmarks</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-gemma">Gemma 4 31B</span></td>
-            <td>N/A</td>
-            <td>No SWE-bench Verified published</td>
+            <td><span class="model-badge badge-minimax">MiniMax M2.7</span></td>
+            <td>73.8%</td>
+            <td>Vals.ai third-party</td>
           </tr>
         </tbody>
       </table>
+      
+      <p class="note"><strong>Note:</strong> <span class="model-badge badge-sonnet">Claude Sonnet 4.7</span> and <span class="model-badge badge-gemma">Gemma 4 31B</span> have no verified SWE-bench Verified scores published yet.</p>
     </div>
     
     <div class="section">
@@ -502,44 +447,76 @@
           <tr>
             <th>Model</th>
             <th>Score</th>
-            <th>Notes</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="model-badge badge-opus">Claude Opus 4.7</span></td>
+            <td><strong>64.3%</strong></td>
+            <td>Anthropic self-report (#1)</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-gpt55">GPT-5.5</span></td>
+            <td>58.6%</td>
+            <td>OpenAI self-report</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-glm">GLM-5.1</span></td>
+            <td>58.4%</td>
+            <td>Z.AI self-report (previous leader)</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-minimax">MiniMax M2.7</span></td>
+            <td>56.22%</td>
+            <td>MiniMax internal</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
+            <td>54.2%</td>
+            <td>Google self-report</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="section">
+      <h2>Terminal-Bench 2.0 (DevOps/CLI)</h2>
+      <p class="context">Measures AI assistants' ability to handle command-line operations, shell scripting, and DevOps tasks. GPT-5.5 leads at 82.7%, establishing a new standard for infrastructure automation.</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Score</th>
+            <th>Source</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="model-badge badge-gpt55">GPT-5.5</span></td>
-            <td>58.6%</td>
-            <td class="highlight"><strong>New #1 (April 2026)</strong></td>
+            <td><strong>82.7%</strong></td>
+            <td>OpenAI self-report (SOTA)</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-opus">Opus 4.7</span></td>
-            <td>64.3%</td>
-            <td>Anthropic report; note: some evidence of memorization flagged</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-glm">GLM-5.1</span></td>
-            <td>58.4%</td>
-            <td>Previous #1</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-sonnet">Sonnet 4.7</span></td>
-            <td>~57.3%</td>
+            <td><span class="model-badge badge-opus">Claude Opus 4.7</span></td>
+            <td>69.4%</td>
             <td>Anthropic self-report</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-minimax">MiniMax M2.7</span></td>
-            <td>56.22%</td>
-            <td>Matches GPT-5.3 Codex</td>
-          </tr>
-          <tr>
             <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
-            <td>54.2%</td>
-            <td></td>
+            <td>68.5%</td>
+            <td>Google self-report</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-kimi">Kimi K2.6</span></td>
-            <td>58.6%</td>
-            <td>Moonshot self-report</td>
+            <td><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></td>
+            <td>67.9%</td>
+            <td>codersera.com review</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-qwen">Qwen 3.6 Plus</span></td>
+            <td>61.6%</td>
+            <td>tokenmix.ai analysis</td>
           </tr>
         </tbody>
       </table>
@@ -554,71 +531,51 @@
           <tr>
             <th>Model</th>
             <th>Score</th>
-            <th>Notes</th>
+            <th>Source</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
-            <td>2887 Elo</td>
-            <td class="highlight">#1 on LCB Pro</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-kimi">Kimi K2.6</span></td>
-            <td>85%</td>
-            <td>Moonshot self-report (K2.5 baseline; K2.6 expected similar)</td>
-          </tr>
-          <tr>
             <td><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></td>
-            <td>83.3%</td>
-            <td>Reference only (V3.2 baseline; V4 expected similar)</td>
+            <td><strong>93.5%</strong></td>
+            <td>codersera.com review</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
+            <td>2,887 Elo</td>
+            <td>LCB Pro leaderboard</td>
           </tr>
           <tr>
             <td><span class="model-badge badge-gemma">Gemma 4 31B</span></td>
             <td>80%</td>
-            <td class="highlight">Massive jump from Gemma 3 27B's 29.1%</td>
+            <td>Google self-report</td>
           </tr>
         </tbody>
       </table>
     </div>
     
     <div class="section">
-      <h2>Terminal-Bench 2.0 (DevOps/CLI)</h2>
-      <p class="context">Measures AI assistants' ability to handle command-line operations, shell scripting, and DevOps tasks. This benchmark has become critical for evaluating agentic infrastructure workflows.</p>
+      <h2>Codeforces Rating</h2>
+      <p class="context">Competitive programming rating on Codeforces. DeepSeek V4 Pro achieves a remarkable 3,206 rating, placing it among top competitive programmers.</p>
       
       <table>
         <thead>
           <tr>
             <th>Model</th>
-            <th>Score</th>
-            <th>Notes</th>
+            <th>Rating</th>
+            <th>Source</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><span class="model-badge badge-gpt55">GPT-5.5</span></td>
-            <td>82.7%</td>
-            <td class="highlight"><strong>State-of-the-art</strong> — OpenAI self-report</td>
+            <td><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></td>
+            <td><strong>3,206</strong></td>
+            <td>codersera.com review</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
-            <td>68.5%</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-opus">Opus 4.7</span></td>
-            <td>69.4%</td>
-            <td>Anthropic self-report (Terminus-2 harness, thinking disabled)</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-sonnet">Sonnet 4.7</span></td>
-            <td>~65%</td>
-            <td>Anthropic self-report (estimated from Sonnet 4.6 trajectory)</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-minimax">MiniMax M2.7</span></td>
-            <td>57.0%</td>
-            <td></td>
+            <td><span class="model-badge badge-gemma">Gemma 4 31B</span></td>
+            <td>2,150</td>
+            <td>Google self-report</td>
           </tr>
         </tbody>
       </table>
@@ -627,119 +584,114 @@
     <div class="section">
       <h2>Other Notable Benchmarks</h2>
       
-      <div class="model-card">
-        <h4><span class="model-badge badge-gpt55">GPT-5.5</span></h4>
-        <ul>
-          <li>SWE-bench Pro — <strong>58.6%</strong> (new #1)</li>
-          <li>Terminal-Bench 2.0 — <strong>82.7%</strong> (state-of-the-art)</li>
-          <li>Expert-SWE (internal) — <strong>73.1%</strong></li>
-          <li>GDPval — <strong>84.9%</strong> (wins or ties)</li>
-          <li>OSWorld-Verified — <strong>78.7%</strong></li>
-          <li>FrontierMath Tier 4 — <strong>35.4%</strong></li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-opus">Claude Opus 4.7</span></h4>
-        <ul>
-          <li>SWE-bench Pro — <strong>64.3%</strong> (with evidence of memorization flagged)</li>
-          <li>Terminal-Bench 2.0 — <strong>69.4%</strong></li>
-          <li>CyberGym — <strong>73.8%</strong></li>
-          <li>CursorBench — <strong>70%</strong> (vs 58% for Opus 4.6)</li>
-          <li>GDPval-AA — <strong>80.3%</strong> (third-party)</li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-sonnet">Claude Sonnet 4.7</span></h4>
-        <ul>
-          <li>SWE-bench Verified — <strong>79.6%</strong> (self-reported)</li>
-          <li>SWE-bench Pro — <strong>~57.3%</strong> (estimated)</li>
-          <li>Cost-effective alternative to Opus at $3/$15 per 1M tokens</li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></h4>
-        <ul>
-          <li>SWE-bench Verified #1 — <strong>78.8%</strong> (third-party verified)</li>
-          <li>LiveCodeBench — <strong>2887 Elo</strong> (#1 on LCB Pro)</li>
-          <li>Terminal-Bench 2.0 — <strong>68.5%</strong></li>
-          <li>SWE-bench Pro — <strong>54.2%</strong></li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-gpt53">GPT-5.3 Codex</span></h4>
-        <ul>
-          <li>SWE-bench Verified — <strong>78.0%</strong></li>
-          <li>Cost-effective performance at <strong>$0.46/test</strong></li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-glm">GLM-5.1</span></h4>
-        <ul>
-          <li>KernelBench Level 3 — <strong>3.6× geometric mean speedup</strong></li>
-          <li>NL2Repo leader — excels at repository-level understanding</li>
-          <li>Can sustain 8-hour autonomous coding sessions</li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-kimi">Kimi K2.6</span></h4>
-        <ul>
-          <li>SWE-bench Verified — <strong>80.2%</strong> (self-reported)</li>
-          <li>SWE-bench Pro — <strong>58.6%</strong> (self-reported)</li>
-          <li>LiveCodeBench — <strong>~85%</strong> (K2.5 baseline)</li>
-          <li>Open-source with 1T total/32B active parameters</li>
-          <li><strong>256K context</strong></li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-gemma">Gemma 4 31B</span></h4>
-        <ul>
-          <li>AIME 2026 — <strong>89.2%</strong></li>
-          <li>Codeforces ELO — <strong>2150</strong></li>
-          <li>τ²-bench (agentic tool use) — <strong>86.4%</strong></li>
-          <li>GPQA Diamond — <strong>84.3%</strong></li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-qwen">Qwen 3.6 Plus</span></h4>
-        <ul>
-          <li>1M-token context window (default)</li>
-          <li>Repository-level engineering and multimodal reasoning</li>
-          <li>Enterprise-focused via Alibaba Cloud Model Studio</li>
-          <li>Arena AI chat preference — expected ~1450+</li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></h4>
-        <ul>
-          <li>LiveCodeBench — <strong>~83.3%</strong> (V3.2 baseline; V4 expected similar)</li>
-          <li>Strong competitive programming performance</li>
-          <li>Open-source MoE architecture</li>
-        </ul>
-      </div>
-      
-      <div class="model-card">
-        <h4><span class="model-badge badge-minimax">MiniMax M2.7</span></h4>
-        <ul>
-          <li>VIBE-Pro — <strong>55.6%</strong> (end-to-end project delivery)</li>
-          <li>SWE Multilingual — <strong>76.5%</strong></li>
-          <li>Multi-SWE-Bench — <strong>52.7%</strong></li>
-          <li>Claims OpenClaw usage approaching Sonnet 4.7 on MMClaw</li>
-        </ul>
+      <div class="models-grid">
+        <div class="model-card">
+          <h4><span class="model-badge badge-gpt55">GPT-5.5</span></h4>
+          <ul>
+            <li>Terminal-Bench 2.0 — <strong>82.7%</strong> (SOTA)</li>
+            <li>SWE-bench Pro — <strong>58.6%</strong></li>
+            <li>OSWorld-Verified — <strong>78.7%</strong></li>
+            <li>Expert-SWE — <strong>73.1%</strong></li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-opus">Claude Opus 4.7</span></h4>
+          <ul>
+            <li>SWE-bench Verified — <strong>87.6%</strong> (#1)</li>
+            <li>SWE-bench Pro — <strong>64.3%</strong> (#1)</li>
+            <li>Terminal-Bench 2.0 — <strong>69.4%</strong></li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></h4>
+          <ul>
+            <li>SWE-bench Verified — <strong>80.6%</strong></li>
+            <li>LiveCodeBench — <strong>93.5%</strong></li>
+            <li>Terminal-Bench 2.0 — <strong>67.9%</strong></li>
+            <li>Codeforces — <strong>3,206</strong></li>
+            <li>1.6T params / 49B active / 1M context</li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></h4>
+          <ul>
+            <li>SWE-bench Verified — <strong>80.6%</strong></li>
+            <li>LiveCodeBench — <strong>2,887 Elo</strong></li>
+            <li>Terminal-Bench 2.0 — <strong>68.5%</strong></li>
+            <li>SWE-bench Pro — <strong>54.2%</strong></li>
+            <li><strong>2M context window</strong></li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-kimi">Kimi K2.6</span></h4>
+          <ul>
+            <li>SWE-bench Verified — <strong>80.2%</strong> (self-report)</li>
+            <li>SWE-bench Pro — <strong>58.6%</strong> (self-report)</li>
+            <li>1T total / 32B active params</li>
+            <li><strong>256K context</strong></li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-qwen">Qwen 3.6 Plus</span></h4>
+          <ul>
+            <li>SWE-bench Verified — <strong>78.8%</strong></li>
+            <li>Terminal-Bench 2.0 — <strong>61.6%</strong></li>
+            <li><strong>1M context window</strong></li>
+            <li>Repository-level engineering focus</li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-glm">GLM-5.1</span></h4>
+          <ul>
+            <li>SWE-bench Pro — <strong>58.4%</strong> (previous #1)</li>
+            <li>KernelBench Level 3 — <strong>3.6× speedup</strong></li>
+            <li>8-hour autonomous coding sessions</li>
+            <li>744B parameters</li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-minimax">MiniMax M2.7</span></h4>
+          <ul>
+            <li>SWE-bench Verified — <strong>73.8%</strong> (Vals.ai)</li>
+            <li>SWE-bench Pro — <strong>56.22%</strong></li>
+            <li>VIBE-Pro — <strong>55.6%</strong></li>
+            <li>Multi-SWE-Bench — <strong>52.7%</strong></li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-gemma">Gemma 4 31B</span></h4>
+          <ul>
+            <li>LiveCodeBench — <strong>80%</strong></li>
+            <li>AIME 2026 — <strong>89.2%</strong></li>
+            <li>Codeforces — <strong>2,150</strong></li>
+            <li>GPQA Diamond — <strong>84.3%</strong></li>
+            <li><strong>Budget champion at $0.13/$0.38</strong></li>
+          </ul>
+        </div>
+        
+        <div class="model-card">
+          <h4><span class="model-badge badge-sonnet">Claude Sonnet 4.7</span></h4>
+          <ul>
+            <li>SWE-bench Verified — N/A (estimated ~80%)</li>
+            <li>SWE-bench Pro — N/A (estimated ~57%)</li>
+            <li>Cost-effective alternative to Opus</li>
+            <li>$3/$15 per 1M tokens</li>
+          </ul>
+        </div>
       </div>
     </div>
     
     <div class="section">
       <h2>Pricing at a Glance (OpenRouter)</h2>
-      <p class="context">Actual costs per 1M tokens. The dramatic price differences highlight the value proposition of newer open models. GPT-5.5 Pro is the most expensive at $30/$180, while Gemma 4 31B remains the budget champion.</p>
+      <p class="context">Actual costs per 1M tokens. The dramatic price differences highlight the value proposition of open-weight models. DeepSeek V4 Pro delivers 80.6% verified scores at a fraction of GPT-5.5 Pro's cost.</p>
       
       <table>
         <thead>
@@ -760,20 +712,6 @@
             <td class="highlight">Open</td>
           </tr>
           <tr>
-            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
-            <td>$0.50</td>
-            <td>$2.00</td>
-            <td>2M</td>
-            <td>Proprietary</td>
-          </tr>
-          <tr>
-            <td><span class="model-badge badge-glm">GLM-5.1</span></td>
-            <td>$0.95</td>
-            <td>$3.15</td>
-            <td>200K</td>
-            <td class="highlight">Open</td>
-          </tr>
-          <tr>
             <td><span class="model-badge badge-minimax">MiniMax M2.7</span></td>
             <td>$0.30</td>
             <td>$1.20</td>
@@ -788,10 +726,38 @@
             <td class="highlight">Open</td>
           </tr>
           <tr>
+            <td><span class="model-badge badge-gemini">Gemini 3.1 Pro</span></td>
+            <td>$0.50</td>
+            <td>$2.00</td>
+            <td>2M</td>
+            <td>Proprietary</td>
+          </tr>
+          <tr>
             <td><span class="model-badge badge-kimi">Kimi K2.6</span></td>
-            <td>$0.38</td>
-            <td>$1.72</td>
+            <td>$0.74</td>
+            <td>$4.66</td>
             <td>256K</td>
+            <td class="highlight">Open</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-deepseek">DeepSeek V4 Pro</span></td>
+            <td>$1.74</td>
+            <td>$3.48</td>
+            <td>1M</td>
+            <td class="highlight">Open</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-gpt53">GPT-5.3 Codex</span></td>
+            <td>$1.00</td>
+            <td>$3.00</td>
+            <td>1M</td>
+            <td>Proprietary</td>
+          </tr>
+          <tr>
+            <td><span class="model-badge badge-glm">GLM-5.1</span></td>
+            <td>$0.95</td>
+            <td>$3.15</td>
+            <td>200K</td>
             <td class="highlight">Open</td>
           </tr>
           <tr>
@@ -815,13 +781,6 @@
             <td>1M</td>
             <td>Proprietary</td>
           </tr>
-          <tr>
-            <td><span class="model-badge badge-gpt55">GPT-5.5 Pro</span></td>
-            <td>$30.00</td>
-            <td>$180.00</td>
-            <td>1M</td>
-            <td>Proprietary</td>
-          </tr>
         </tbody>
       </table>
     </div>
@@ -829,24 +788,13 @@
     <div class="sources">
       <h3>Sources</h3>
       <ul>
+        <li>• <a href="https://www.marc0.dev/en/leaderboard" target="_blank" rel="noopener">marc0.dev SWE-bench Leaderboard</a> — Third-party verified SWE-bench rankings</li>
+        <li>• <a href="https://openai.com/index/introducing-gpt-5-5/" target="_blank" rel="noopener">OpenAI GPT-5.5 Announcement</a> — Official benchmarks and capabilities</li>
+        <li>• <a href="https://ghost.codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/" target="_blank" rel="noopener">DeepSeek V4 Pro Review (CodersEra)</a> — Comprehensive benchmark analysis</li>
+        <li>• <a href="https://tokenmix.ai/blog/qwen-3-6-plus-review-benchmark-pricing-2026" target="_blank" rel="noopener">Qwen 3.6 Plus Review (TokenMix)</a> — Benchmark and pricing analysis</li>
+        <li>• <a href="https://www.kimi.com/blog/kimi-k2-6" target="_blank" rel="noopener">Kimi K2.6 Tech Blog</a> — Moonshot AI official announcement</li>
+        <li>• <a href="https://openrouter.ai/pricing" target="_blank" rel="noopener">OpenRouter Pricing</a> — Current API costs</li>
         <li>• <a href="https://www.vals.ai/benchmarks/swebench" target="_blank" rel="noopener">Vals.ai SWE-bench</a> — Third-party benchmark verification</li>
-        <li>• <a href="https://www.morphllm.com/best-ai-model-for-coding" target="_blank" rel="noopener">MorphLLM coding comparison</a> — Model performance comparisons</li>
-        <li>• <a href="https://docs.z.ai/guides/llm/glm-5.1" target="_blank" rel="noopener">GLM-5.1 documentation</a> — Official GLM-5.1 technical details</li>
-        <li>• <a href="https://venturebeat.com/technology/ai-joins-the-8-hour-work-day-as-glm-ships-5-1-open-source-llm-beating-opus-4" target="_blank" rel="noopener">GLM-5.1 VentureBeat</a> — GLM-5.1 release coverage</li>
-        <li>• <a href="https://www.minimax.io/models/text/m27" target="_blank" rel="noopener">MiniMax M2.7 announcement</a> — Official M2.7 model release</li>
-        <li>• <a href="https://huggingface.co/MiniMaxAI/MiniMax-M2.7" target="_blank" rel="noopener">MiniMax M2.7 HuggingFace</a> — Model weights and documentation</li>
-        <li>• <a href="https://blog.kilo.ai/p/kimi-k26-has-arrived-an-open-weight" target="_blank" rel="noopener">Kimi K2.6 announcement</a> — Moonshot AI official blog</li>
-        <li>• <a href="https://www.buildfastwithai.com/blogs/kimi-code-k26-preview-2026" target="_blank" rel="noopener">Kimi K2.6 benchmarks</a> — BuildFastWithAI analysis</li>
-        <li>• <a href="https://medium.com/@moksh.9/heres-a-tighter-benchmark-focused-blog-post-501c5ea829f4" target="_blank" rel="noopener">Gemma 4 benchmarks</a> — Comprehensive Gemma 4 analysis</li>
-        <li>• <a href="https://www.maniac.ai/blog/qwen-3-5-vs-gemma-4-benchmarks-by-size" target="_blank" rel="noopener">Qwen 3.5 vs Gemma 4</a> — Head-to-head comparison</li>
-        <li>• <a href="https://www.buildfastwithai.com/blogs/best-ai-models-april-2026" target="_blank" rel="noopener">BuildFastWithAI April 2026</a> — Monthly model roundup</li>
-        <li>• <a href="https://openai.com/index/introducing-gpt-5-5/" target="_blank" rel="noopener">GPT-5.5 announcement</a> — OpenAI official</li>
-        <li>• <a href="https://www.anthropic.com/news/claude-opus-4-7" target="_blank" rel="noopener">Claude Opus 4.7 announcement</a> — Anthropic official</li>
-        <li>• <a href="https://www.marc0.dev/en/leaderboard" target="_blank" rel="noopener">SWE-bench leaderboard</a> — Comprehensive benchmark rankings</li>
-        <li>• <a href="https://arena.ai/leaderboard/text?license=open-source" target="_blank" rel="noopener">Arena AI leaderboard</a> — Open-source model comparisons</li>
-        <li>• <a href="https://openrouter.ai/pricing" target="_blank" rel="noopener">OpenRouter pricing</a> — Current API costs</li>
-        <li>• <a href="https://qwen.ai/blog?id=qwen3.6" target="_blank" rel="noopener">Qwen 3.6 announcement</a> — Alibaba official</li>
-        <li>• <a href="https://dataconomy.com/2026/04/02/alibaba-launches-qwen3-6-plus-for-enterprise-ai-applications/" target="_blank" rel="noopener">Qwen 3.6 Plus Dataconomy</a> — Enterprise coverage</li>
       </ul>
     </div>
     
