@@ -40,6 +40,13 @@
     #info .meta {
       color: #a0a0b0;
     }
+    #info .blurb {
+      color: #808090;
+      margin-top: 6px;
+      font-size: 11px;
+      max-width: 260px;
+      line-height: 1.4;
+    }
     #info .legend {
       margin-top: 12px;
       display: flex;
@@ -203,6 +210,7 @@
       <h1>Word Embeddings in 3D</h1>
       <div class="meta">12 words across 3 languages</div>
       <div class="meta" id="projection-info">PCA projection (78.4% variance explained)</div>
+      <div class="blurb" id="projection-blurb">PCA finds the directions of maximum variance. Good for seeing which words differ the most, but it can squeeze similar words together and only shows linear relationships.</div>
       <div class="legend" id="color-legend">
         <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> English</span>
         <span><span class="dot" style="background:#ffb74d;box-shadow:0 0 6px #ffb74d;"></span> Spanish</span>
@@ -715,14 +723,18 @@
 
       // Update info text
       const info = document.getElementById('projection-info');
+      const blurb = document.getElementById('projection-blurb');
       if (state.projection === 'pca') {
         const ev = proj.explained_variance_ratio;
         const total = ev.reduce((a,b)=>a+b,0);
         info.textContent = `PCA projection (${(total*100).toFixed(1)}% variance explained)`;
+        blurb.textContent = "PCA finds the directions of maximum variance. Good for seeing which words differ the most, but it can squeeze similar words together and only shows linear relationships.";
       } else if (state.projection === 'tsne') {
         info.textContent = `t-SNE projection (perplexity=5)`;
+        blurb.textContent = "t-SNE preserves local neighborhoods: if two words are close in the original high-dimensional space, they stay close here. Great for finding clusters, but distances between clusters are mostly meaningless.";
       } else {
         info.textContent = `UMAP projection (n_neighbors=3)`;
+        blurb.textContent = "UMAP balances local clusters with global structure better than t-SNE. With only 3 neighbors it stays tight to local similarities—useful for seeing how translation groups relate across the whole embedding.";
       }
 
       // Update legend
