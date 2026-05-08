@@ -208,13 +208,14 @@
     <div id="loading">Loading embeddings...</div>
     <div id="info">
       <h1>Word Embeddings in 3D</h1>
-      <div class="meta">12 words across 3 languages</div>
+      <div class="meta">16 words across 4 languages</div>
       <div class="meta" id="projection-info">PCA projection (78.4% variance explained)</div>
       <div class="blurb" id="projection-blurb">PCA finds the directions of maximum variance. Good for seeing which words differ the most, but it can squeeze similar words together and only shows linear relationships.</div>
       <div class="legend" id="color-legend">
         <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> English</span>
         <span><span class="dot" style="background:#ffb74d;box-shadow:0 0 6px #ffb74d;"></span> Spanish</span>
         <span><span class="dot" style="background:#ff8a80;box-shadow:0 0 6px #ff8a80;"></span> Chinese</span>
+        <span><span class="dot" style="background:#aed581;box-shadow:0 0 6px #aed581;"></span> Hindi</span>
       </div>
       <div class="hint">Drag to orbit · Scroll to zoom · Right-drag to pan</div>
     </div>
@@ -278,147 +279,1154 @@
 
     // ── Inline data (embeddings excluded to keep file size reasonable) ──
     const DATA = {
-      "words": ["man","woman","uncle","aunt","hombre","mujer","tío","tía","男人","女人","叔叔","阿姨"],
-      "norms": {"man":1.0,"woman":1.0,"uncle":1.0,"aunt":1.0,"hombre":1.0,"mujer":1.0,"tío":1.0,"tía":1.0,"男人":1.0,"女人":1.0,"叔叔":1.0,"阿姨":1.0},
-      "similarities": [
-        {"word1":"man","word2":"woman","cosine":0.742415,"euclidean":0.717753},
-        {"word1":"man","word2":"uncle","cosine":0.720482,"euclidean":0.747687},
-        {"word1":"man","word2":"aunt","cosine":0.606663,"euclidean":0.886946},
-        {"word1":"man","word2":"hombre","cosine":0.936831,"euclidean":0.355442},
-        {"word1":"man","word2":"mujer","cosine":0.720063,"euclidean":0.748247},
-        {"word1":"man","word2":"tío","cosine":0.699983,"euclidean":0.774618},
-        {"word1":"man","word2":"tía","cosine":0.640529,"euclidean":0.847904},
-        {"word1":"man","word2":"男人","cosine":0.771610,"euclidean":0.675855},
-        {"word1":"man","word2":"女人","cosine":0.562325,"euclidean":0.935601},
-        {"word1":"man","word2":"叔叔","cosine":0.572706,"euclidean":0.924439},
-        {"word1":"man","word2":"阿姨","cosine":0.488145,"euclidean":1.011785},
-        {"word1":"woman","word2":"uncle","cosine":0.616038,"euclidean":0.876313},
-        {"word1":"woman","word2":"aunt","cosine":0.704406,"euclidean":0.768888},
-        {"word1":"woman","word2":"hombre","cosine":0.721946,"euclidean":0.745727},
-        {"word1":"woman","word2":"mujer","cosine":0.953786,"euclidean":0.304019},
-        {"word1":"woman","word2":"tío","cosine":0.625405,"euclidean":0.865558},
-        {"word1":"woman","word2":"tía","cosine":0.722216,"euclidean":0.745364},
-        {"word1":"woman","word2":"男人","cosine":0.544278,"euclidean":0.954696},
-        {"word1":"woman","word2":"女人","cosine":0.772320,"euclidean":0.674804},
-        {"word1":"woman","word2":"叔叔","cosine":0.440874,"euclidean":1.057474},
-        {"word1":"woman","word2":"阿姨","cosine":0.568565,"euclidean":0.928907},
-        {"word1":"uncle","word2":"aunt","cosine":0.870212,"euclidean":0.509487},
-        {"word1":"uncle","word2":"hombre","cosine":0.698164,"euclidean":0.776963},
-        {"word1":"uncle","word2":"mujer","cosine":0.602151,"euclidean":0.892019},
-        {"word1":"uncle","word2":"tío","cosine":0.896715,"euclidean":0.454500},
-        {"word1":"uncle","word2":"tía","cosine":0.788929,"euclidean":0.649725},
-        {"word1":"uncle","word2":"男人","cosine":0.531453,"euclidean":0.968036},
-        {"word1":"uncle","word2":"女人","cosine":0.455438,"euclidean":1.043611},
-        {"word1":"uncle","word2":"叔叔","cosine":0.792268,"euclidean":0.644565},
-        {"word1":"uncle","word2":"阿姨","cosine":0.632568,"euclidean":0.857242},
-        {"word1":"aunt","word2":"hombre","cosine":0.573590,"euclidean":0.923483},
-        {"word1":"aunt","word2":"mujer","cosine":0.681275,"euclidean":0.798405},
-        {"word1":"aunt","word2":"tío","cosine":0.814863,"euclidean":0.608502},
-        {"word1":"aunt","word2":"tía","cosine":0.849080,"euclidean":0.549400},
-        {"word1":"aunt","word2":"男人","cosine":0.427770,"euclidean":1.069794},
-        {"word1":"aunt","word2":"女人","cosine":0.546951,"euclidean":0.951892},
-        {"word1":"aunt","word2":"叔叔","cosine":0.667499,"euclidean":0.815476},
-        {"word1":"aunt","word2":"阿姨","cosine":0.729396,"euclidean":0.735669},
-        {"word1":"hombre","word2":"mujer","cosine":0.748263,"euclidean":0.709560},
-        {"word1":"hombre","word2":"tío","cosine":0.685025,"euclidean":0.793694},
-        {"word1":"hombre","word2":"tía","cosine":0.610092,"euclidean":0.883072},
-        {"word1":"hombre","word2":"男人","cosine":0.764750,"euclidean":0.685931},
-        {"word1":"hombre","word2":"女人","cosine":0.561203,"euclidean":0.936800},
-        {"word1":"hombre","word2":"叔叔","cosine":0.547208,"euclidean":0.951621},
-        {"word1":"hombre","word2":"阿姨","cosine":0.446789,"euclidean":1.051866},
-        {"word1":"mujer","word2":"tío","cosine":0.635419,"euclidean":0.853910},
-        {"word1":"mujer","word2":"tía","cosine":0.731211,"euclidean":0.733197},
-        {"word1":"mujer","word2":"男人","cosine":0.550976,"euclidean":0.947653},
-        {"word1":"mujer","word2":"女人","cosine":0.768311,"euclidean":0.680719},
-        {"word1":"mujer","word2":"叔叔","cosine":0.430008,"euclidean":1.067700},
-        {"word1":"mujer","word2":"阿姨","cosine":0.542686,"euclidean":0.956362},
-        {"word1":"tío","word2":"tía","cosine":0.904383,"euclidean":0.437304},
-        {"word1":"tío","word2":"男人","cosine":0.528525,"euclidean":0.971056},
-        {"word1":"tío","word2":"女人","cosine":0.496654,"euclidean":1.003340},
-        {"word1":"tío","word2":"叔叔","cosine":0.741032,"euclidean":0.719678},
-        {"word1":"tío","word2":"阿姨","cosine":0.594686,"euclidean":0.900349},
-        {"word1":"tía","word2":"男人","cosine":0.478635,"euclidean":1.021141},
-        {"word1":"tía","word2":"女人","cosine":0.601947,"euclidean":0.892248},
-        {"word1":"tía","word2":"叔叔","cosine":0.634245,"euclidean":0.855284},
-        {"word1":"tía","word2":"阿姨","cosine":0.666095,"euclidean":0.817196},
-        {"word1":"男人","word2":"女人","cosine":0.749963,"euclidean":0.707159},
-        {"word1":"男人","word2":"叔叔","cosine":0.652217,"euclidean":0.834006},
-        {"word1":"男人","word2":"阿姨","cosine":0.579520,"euclidean":0.917039},
-        {"word1":"女人","word2":"叔叔","cosine":0.539582,"euclidean":0.959602},
-        {"word1":"女人","word2":"阿姨","cosine":0.698838,"euclidean":0.776096},
-        {"word1":"叔叔","word2":"阿姨","cosine":0.779308,"euclidean":0.664368}
+  "words": [
+    "man",
+    "woman",
+    "uncle",
+    "aunt",
+    "hombre",
+    "mujer",
+    "tío",
+    "tía",
+    "男人",
+    "女人",
+    "叔叔",
+    "阿姨",
+    "आदमी",
+    "औरत",
+    "चाचा",
+    "चाची"
+  ],
+  "norms": {
+    "man": 1.0,
+    "woman": 1.0,
+    "uncle": 1.0,
+    "aunt": 1.0,
+    "hombre": 1.0,
+    "mujer": 1.0,
+    "tío": 1.0,
+    "tía": 1.0,
+    "男人": 1.0,
+    "女人": 1.0,
+    "叔叔": 1.0,
+    "阿姨": 1.0,
+    "आदमी": 1.0,
+    "औरत": 1.0,
+    "चाचा": 1.0,
+    "चाची": 1.0
+  },
+  "similarities": [
+    {
+      "word1": "man",
+      "word2": "woman",
+      "cosine": 0.74182,
+      "euclidean": 0.718582
+    },
+    {
+      "word1": "man",
+      "word2": "uncle",
+      "cosine": 0.719867,
+      "euclidean": 0.74851
+    },
+    {
+      "word1": "man",
+      "word2": "aunt",
+      "cosine": 0.606491,
+      "euclidean": 0.88714
+    },
+    {
+      "word1": "man",
+      "word2": "hombre",
+      "cosine": 0.936471,
+      "euclidean": 0.356453
+    },
+    {
+      "word1": "man",
+      "word2": "mujer",
+      "cosine": 0.719483,
+      "euclidean": 0.749022
+    },
+    {
+      "word1": "man",
+      "word2": "tío",
+      "cosine": 0.699242,
+      "euclidean": 0.775574
+    },
+    {
+      "word1": "man",
+      "word2": "tía",
+      "cosine": 0.640642,
+      "euclidean": 0.847771
+    },
+    {
+      "word1": "man",
+      "word2": "男人",
+      "cosine": 0.771455,
+      "euclidean": 0.676085
+    },
+    {
+      "word1": "man",
+      "word2": "女人",
+      "cosine": 0.563271,
+      "euclidean": 0.934589
+    },
+    {
+      "word1": "man",
+      "word2": "叔叔",
+      "cosine": 0.573499,
+      "euclidean": 0.923581
+    },
+    {
+      "word1": "man",
+      "word2": "阿姨",
+      "cosine": 0.488748,
+      "euclidean": 1.01119
+    },
+    {
+      "word1": "man",
+      "word2": "आदमी",
+      "cosine": 0.817855,
+      "euclidean": 0.603565
+    },
+    {
+      "word1": "man",
+      "word2": "औरत",
+      "cosine": 0.693811,
+      "euclidean": 0.782545
+    },
+    {
+      "word1": "man",
+      "word2": "चाचा",
+      "cosine": 0.654589,
+      "euclidean": 0.831157
+    },
+    {
+      "word1": "man",
+      "word2": "चाची",
+      "cosine": 0.631162,
+      "euclidean": 0.858881
+    },
+    {
+      "word1": "woman",
+      "word2": "uncle",
+      "cosine": 0.615391,
+      "euclidean": 0.87705
+    },
+    {
+      "word1": "woman",
+      "word2": "aunt",
+      "cosine": 0.704324,
+      "euclidean": 0.768994
+    },
+    {
+      "word1": "woman",
+      "word2": "hombre",
+      "cosine": 0.722702,
+      "euclidean": 0.744712
+    },
+    {
+      "word1": "woman",
+      "word2": "mujer",
+      "cosine": 0.953995,
+      "euclidean": 0.303333
+    },
+    {
+      "word1": "woman",
+      "word2": "tío",
+      "cosine": 0.625214,
+      "euclidean": 0.865779
+    },
+    {
+      "word1": "woman",
+      "word2": "tía",
+      "cosine": 0.722518,
+      "euclidean": 0.744959
+    },
+    {
+      "word1": "woman",
+      "word2": "男人",
+      "cosine": 0.544381,
+      "euclidean": 0.954588
+    },
+    {
+      "word1": "woman",
+      "word2": "女人",
+      "cosine": 0.773367,
+      "euclidean": 0.67325
+    },
+    {
+      "word1": "woman",
+      "word2": "叔叔",
+      "cosine": 0.440914,
+      "euclidean": 1.057437
+    },
+    {
+      "word1": "woman",
+      "word2": "阿姨",
+      "cosine": 0.568175,
+      "euclidean": 0.929327
+    },
+    {
+      "word1": "woman",
+      "word2": "आदमी",
+      "cosine": 0.667544,
+      "euclidean": 0.815422
+    },
+    {
+      "word1": "woman",
+      "word2": "औरत",
+      "cosine": 0.86295,
+      "euclidean": 0.523545
+    },
+    {
+      "word1": "woman",
+      "word2": "चाचा",
+      "cosine": 0.582633,
+      "euclidean": 0.913638
+    },
+    {
+      "word1": "woman",
+      "word2": "चाची",
+      "cosine": 0.688334,
+      "euclidean": 0.789513
+    },
+    {
+      "word1": "uncle",
+      "word2": "aunt",
+      "cosine": 0.869789,
+      "euclidean": 0.510315
+    },
+    {
+      "word1": "uncle",
+      "word2": "hombre",
+      "cosine": 0.698625,
+      "euclidean": 0.776369
+    },
+    {
+      "word1": "uncle",
+      "word2": "mujer",
+      "cosine": 0.601962,
+      "euclidean": 0.89223
+    },
+    {
+      "word1": "uncle",
+      "word2": "tío",
+      "cosine": 0.898109,
+      "euclidean": 0.451423
+    },
+    {
+      "word1": "uncle",
+      "word2": "tía",
+      "cosine": 0.789448,
+      "euclidean": 0.648925
+    },
+    {
+      "word1": "uncle",
+      "word2": "男人",
+      "cosine": 0.53125,
+      "euclidean": 0.968246
+    },
+    {
+      "word1": "uncle",
+      "word2": "女人",
+      "cosine": 0.456074,
+      "euclidean": 1.043002
+    },
+    {
+      "word1": "uncle",
+      "word2": "叔叔",
+      "cosine": 0.791817,
+      "euclidean": 0.645264
+    },
+    {
+      "word1": "uncle",
+      "word2": "阿姨",
+      "cosine": 0.632449,
+      "euclidean": 0.857381
+    },
+    {
+      "word1": "uncle",
+      "word2": "आदमी",
+      "cosine": 0.632434,
+      "euclidean": 0.857399
+    },
+    {
+      "word1": "uncle",
+      "word2": "औरत",
+      "cosine": 0.597548,
+      "euclidean": 0.897164
+    },
+    {
+      "word1": "uncle",
+      "word2": "चाचा",
+      "cosine": 0.767251,
+      "euclidean": 0.682274
+    },
+    {
+      "word1": "uncle",
+      "word2": "चाची",
+      "cosine": 0.781035,
+      "euclidean": 0.661763
+    },
+    {
+      "word1": "aunt",
+      "word2": "hombre",
+      "cosine": 0.574607,
+      "euclidean": 0.922381
+    },
+    {
+      "word1": "aunt",
+      "word2": "mujer",
+      "cosine": 0.682144,
+      "euclidean": 0.797315
+    },
+    {
+      "word1": "aunt",
+      "word2": "tío",
+      "cosine": 0.816198,
+      "euclidean": 0.606303
+    },
+    {
+      "word1": "aunt",
+      "word2": "tía",
+      "cosine": 0.850392,
+      "euclidean": 0.547006
+    },
+    {
+      "word1": "aunt",
+      "word2": "男人",
+      "cosine": 0.428255,
+      "euclidean": 1.069341
+    },
+    {
+      "word1": "aunt",
+      "word2": "女人",
+      "cosine": 0.548127,
+      "euclidean": 0.950655
+    },
+    {
+      "word1": "aunt",
+      "word2": "叔叔",
+      "cosine": 0.666665,
+      "euclidean": 0.816498
+    },
+    {
+      "word1": "aunt",
+      "word2": "阿姨",
+      "cosine": 0.729498,
+      "euclidean": 0.73553
+    },
+    {
+      "word1": "aunt",
+      "word2": "आदमी",
+      "cosine": 0.567483,
+      "euclidean": 0.930072
+    },
+    {
+      "word1": "aunt",
+      "word2": "औरत",
+      "cosine": 0.66623,
+      "euclidean": 0.817032
+    },
+    {
+      "word1": "aunt",
+      "word2": "चाचा",
+      "cosine": 0.697591,
+      "euclidean": 0.7777
+    },
+    {
+      "word1": "aunt",
+      "word2": "चाची",
+      "cosine": 0.82076,
+      "euclidean": 0.598733
+    },
+    {
+      "word1": "hombre",
+      "word2": "mujer",
+      "cosine": 0.748823,
+      "euclidean": 0.708769
+    },
+    {
+      "word1": "hombre",
+      "word2": "tío",
+      "cosine": 0.685485,
+      "euclidean": 0.793114
+    },
+    {
+      "word1": "hombre",
+      "word2": "tía",
+      "cosine": 0.611378,
+      "euclidean": 0.881614
+    },
+    {
+      "word1": "hombre",
+      "word2": "男人",
+      "cosine": 0.76474,
+      "euclidean": 0.685944
+    },
+    {
+      "word1": "hombre",
+      "word2": "女人",
+      "cosine": 0.56291,
+      "euclidean": 0.934976
+    },
+    {
+      "word1": "hombre",
+      "word2": "叔叔",
+      "cosine": 0.548687,
+      "euclidean": 0.950067
+    },
+    {
+      "word1": "hombre",
+      "word2": "阿姨",
+      "cosine": 0.448442,
+      "euclidean": 1.050294
+    },
+    {
+      "word1": "hombre",
+      "word2": "आदमी",
+      "cosine": 0.811872,
+      "euclidean": 0.613397
+    },
+    {
+      "word1": "hombre",
+      "word2": "औरत",
+      "cosine": 0.690068,
+      "euclidean": 0.787314
+    },
+    {
+      "word1": "hombre",
+      "word2": "चाचा",
+      "cosine": 0.621776,
+      "euclidean": 0.86974
+    },
+    {
+      "word1": "hombre",
+      "word2": "चाची",
+      "cosine": 0.593836,
+      "euclidean": 0.901293
+    },
+    {
+      "word1": "mujer",
+      "word2": "tío",
+      "cosine": 0.635371,
+      "euclidean": 0.853966
+    },
+    {
+      "word1": "mujer",
+      "word2": "tía",
+      "cosine": 0.731801,
+      "euclidean": 0.732392
+    },
+    {
+      "word1": "mujer",
+      "word2": "男人",
+      "cosine": 0.550598,
+      "euclidean": 0.948052
+    },
+    {
+      "word1": "mujer",
+      "word2": "女人",
+      "cosine": 0.769323,
+      "euclidean": 0.67923
+    },
+    {
+      "word1": "mujer",
+      "word2": "叔叔",
+      "cosine": 0.430516,
+      "euclidean": 1.067224
+    },
+    {
+      "word1": "mujer",
+      "word2": "阿姨",
+      "cosine": 0.543537,
+      "euclidean": 0.955472
+    },
+    {
+      "word1": "mujer",
+      "word2": "आदमी",
+      "cosine": 0.676854,
+      "euclidean": 0.803923
+    },
+    {
+      "word1": "mujer",
+      "word2": "औरत",
+      "cosine": 0.872312,
+      "euclidean": 0.505348
+    },
+    {
+      "word1": "mujer",
+      "word2": "चाचा",
+      "cosine": 0.584668,
+      "euclidean": 0.911408
+    },
+    {
+      "word1": "mujer",
+      "word2": "चाची",
+      "cosine": 0.683626,
+      "euclidean": 0.795455
+    },
+    {
+      "word1": "tío",
+      "word2": "tía",
+      "cosine": 0.90423,
+      "euclidean": 0.437654
+    },
+    {
+      "word1": "tío",
+      "word2": "男人",
+      "cosine": 0.528638,
+      "euclidean": 0.97094
+    },
+    {
+      "word1": "tío",
+      "word2": "女人",
+      "cosine": 0.497644,
+      "euclidean": 1.002354
+    },
+    {
+      "word1": "tío",
+      "word2": "叔叔",
+      "cosine": 0.742399,
+      "euclidean": 0.717775
+    },
+    {
+      "word1": "tío",
+      "word2": "阿姨",
+      "cosine": 0.596333,
+      "euclidean": 0.898518
+    },
+    {
+      "word1": "tío",
+      "word2": "आदमी",
+      "cosine": 0.65924,
+      "euclidean": 0.825543
+    },
+    {
+      "word1": "tío",
+      "word2": "औरत",
+      "cosine": 0.647453,
+      "euclidean": 0.839699
+    },
+    {
+      "word1": "tío",
+      "word2": "चाचा",
+      "cosine": 0.779356,
+      "euclidean": 0.664295
+    },
+    {
+      "word1": "tío",
+      "word2": "चाची",
+      "cosine": 0.798536,
+      "euclidean": 0.634766
+    },
+    {
+      "word1": "tía",
+      "word2": "男人",
+      "cosine": 0.478868,
+      "euclidean": 1.020914
+    },
+    {
+      "word1": "tía",
+      "word2": "女人",
+      "cosine": 0.603123,
+      "euclidean": 0.890929
+    },
+    {
+      "word1": "tía",
+      "word2": "叔叔",
+      "cosine": 0.634656,
+      "euclidean": 0.854802
+    },
+    {
+      "word1": "tía",
+      "word2": "阿姨",
+      "cosine": 0.667453,
+      "euclidean": 0.815533
+    },
+    {
+      "word1": "tía",
+      "word2": "आदमी",
+      "cosine": 0.633298,
+      "euclidean": 0.85639
+    },
+    {
+      "word1": "tía",
+      "word2": "औरत",
+      "cosine": 0.733621,
+      "euclidean": 0.729903
+    },
+    {
+      "word1": "tía",
+      "word2": "चाचा",
+      "cosine": 0.75494,
+      "euclidean": 0.700085
+    },
+    {
+      "word1": "tía",
+      "word2": "चाची",
+      "cosine": 0.848691,
+      "euclidean": 0.550108
+    },
+    {
+      "word1": "男人",
+      "word2": "女人",
+      "cosine": 0.750134,
+      "euclidean": 0.706917
+    },
+    {
+      "word1": "男人",
+      "word2": "叔叔",
+      "cosine": 0.653922,
+      "euclidean": 0.83196
+    },
+    {
+      "word1": "男人",
+      "word2": "阿姨",
+      "cosine": 0.580598,
+      "euclidean": 0.915862
+    },
+    {
+      "word1": "男人",
+      "word2": "आदमी",
+      "cosine": 0.671413,
+      "euclidean": 0.810663
+    },
+    {
+      "word1": "男人",
+      "word2": "औरत",
+      "cosine": 0.543071,
+      "euclidean": 0.955959
+    },
+    {
+      "word1": "男人",
+      "word2": "चाचा",
+      "cosine": 0.508161,
+      "euclidean": 0.991805
+    },
+    {
+      "word1": "男人",
+      "word2": "चाची",
+      "cosine": 0.476207,
+      "euclidean": 1.023517
+    },
+    {
+      "word1": "女人",
+      "word2": "叔叔",
+      "cosine": 0.541026,
+      "euclidean": 0.958097
+    },
+    {
+      "word1": "女人",
+      "word2": "阿姨",
+      "cosine": 0.699554,
+      "euclidean": 0.775172
+    },
+    {
+      "word1": "女人",
+      "word2": "आदमी",
+      "cosine": 0.57712,
+      "euclidean": 0.919652
+    },
+    {
+      "word1": "女人",
+      "word2": "औरत",
+      "cosine": 0.726578,
+      "euclidean": 0.739489
+    },
+    {
+      "word1": "女人",
+      "word2": "चाचा",
+      "cosine": 0.480002,
+      "euclidean": 1.019802
+    },
+    {
+      "word1": "女人",
+      "word2": "चाची",
+      "cosine": 0.5794,
+      "euclidean": 0.917169
+    },
+    {
+      "word1": "叔叔",
+      "word2": "阿姨",
+      "cosine": 0.77877,
+      "euclidean": 0.665177
+    },
+    {
+      "word1": "叔叔",
+      "word2": "आदमी",
+      "cosine": 0.499426,
+      "euclidean": 1.000574
+    },
+    {
+      "word1": "叔叔",
+      "word2": "औरत",
+      "cosine": 0.46038,
+      "euclidean": 1.038865
+    },
+    {
+      "word1": "叔叔",
+      "word2": "चाचा",
+      "cosine": 0.675579,
+      "euclidean": 0.805508
+    },
+    {
+      "word1": "叔叔",
+      "word2": "चाची",
+      "cosine": 0.645073,
+      "euclidean": 0.842528
+    },
+    {
+      "word1": "阿姨",
+      "word2": "आदमी",
+      "cosine": 0.460499,
+      "euclidean": 1.03875
+    },
+    {
+      "word1": "阿姨",
+      "word2": "औरत",
+      "cosine": 0.55332,
+      "euclidean": 0.945177
+    },
+    {
+      "word1": "阿姨",
+      "word2": "चाचा",
+      "cosine": 0.562671,
+      "euclidean": 0.935232
+    },
+    {
+      "word1": "阿姨",
+      "word2": "चाची",
+      "cosine": 0.685514,
+      "euclidean": 0.793077
+    },
+    {
+      "word1": "आदमी",
+      "word2": "औरत",
+      "cosine": 0.768704,
+      "euclidean": 0.680141
+    },
+    {
+      "word1": "आदमी",
+      "word2": "चाचा",
+      "cosine": 0.678205,
+      "euclidean": 0.80224
+    },
+    {
+      "word1": "आदमी",
+      "word2": "चाची",
+      "cosine": 0.661704,
+      "euclidean": 0.822553
+    },
+    {
+      "word1": "औरत",
+      "word2": "चाचा",
+      "cosine": 0.71779,
+      "euclidean": 0.751279
+    },
+    {
+      "word1": "औरत",
+      "word2": "चाची",
+      "cosine": 0.779852,
+      "euclidean": 0.663548
+    },
+    {
+      "word1": "चाचा",
+      "word2": "चाची",
+      "cosine": 0.911608,
+      "euclidean": 0.420456
+    }
+  ],
+  "groups": {
+    "male_adult": [
+      "man",
+      "hombre",
+      "男人",
+      "uncle",
+      "tío",
+      "叔叔"
+    ],
+    "female_adult": [
+      "woman",
+      "mujer",
+      "女人",
+      "aunt",
+      "tía",
+      "阿姨"
+    ],
+    "parent_generation": [
+      "man",
+      "woman",
+      "hombre",
+      "mujer",
+      "男人",
+      "女人"
+    ],
+    "older_generation": [
+      "uncle",
+      "aunt",
+      "tío",
+      "tía",
+      "叔叔",
+      "阿姨"
+    ]
+  },
+  "gender_vectors": {
+    "man->woman": {
+      "from": "man",
+      "to": "woman",
+      "norm": 0.718582,
+      "parallelism_to_first": 1.0
+    },
+    "hombre->mujer": {
+      "from": "hombre",
+      "to": "mujer",
+      "norm": 0.708769,
+      "parallelism_to_first": 0.880173
+    },
+    "男人->女人": {
+      "from": "男人",
+      "to": "女人",
+      "norm": 0.706917,
+      "parallelism_to_first": 0.860606
+    },
+    "uncle->aunt": {
+      "from": "uncle",
+      "to": "aunt",
+      "norm": 0.510315,
+      "parallelism_to_first": 0.551695
+    },
+    "tío->tía": {
+      "from": "tío",
+      "to": "tía",
+      "norm": 0.437654,
+      "parallelism_to_first": 0.495737
+    },
+    "叔叔->阿姨": {
+      "from": "叔叔",
+      "to": "阿姨",
+      "norm": 0.665177,
+      "parallelism_to_first": 0.443556
+    }
+  },
+  "projections": {
+    "pca": {
+      "components": 3,
+      "explained_variance_ratio": [
+        0.280316,
+        0.204211,
+        0.188908
       ],
-      "groups": {
-        "male_adult": ["man","hombre","男人","uncle","tío","叔叔"],
-        "female_adult": ["woman","mujer","女人","aunt","tía","阿姨"],
-        "parent_generation": ["man","woman","hombre","mujer","男人","女人"],
-        "older_generation": ["uncle","aunt","tío","tía","叔叔","阿姨"]
-      },
-      "gender_vectors": {
-        "man->woman": {"from":"man","to":"woman","norm":0.717753,"parallelism_to_first":1.0},
-        "hombre->mujer": {"from":"hombre","to":"mujer","norm":0.709560,"parallelism_to_first":0.880851},
-        "男人->女人": {"from":"男人","to":"女人","norm":0.707159,"parallelism_to_first":0.861616},
-        "uncle->aunt": {"from":"uncle","to":"aunt","norm":0.509487,"parallelism_to_first":0.552898},
-        "tío->tía": {"from":"tío","to":"tía","norm":0.437304,"parallelism_to_first":0.497857},
-        "叔叔->阿姨": {"from":"叔叔","to":"阿姨","norm":0.664368,"parallelism_to_first":0.445111}
-      },
-      "projections": {
-        "pca": {
-          "explained_variance_ratio": [0.317421,0.241141,0.225168],
-          "points": [
-            {"word":"man","x":-0.262019,"y":-0.063246,"z":-0.383550},
-            {"word":"woman","x":-0.306763,"y":-0.298579,"z":0.234510},
-            {"word":"uncle","x":0.362487,"y":-0.103745,"z":-0.215597},
-            {"word":"aunt","x":0.347615,"y":-0.203520,"z":0.138847},
-            {"word":"hombre","x":-0.306893,"y":-0.077905,"z":-0.396912},
-            {"word":"mujer","x":-0.324553,"y":-0.310228,"z":0.217468},
-            {"word":"tío","x":0.330474,"y":-0.171115,"z":-0.165952},
-            {"word":"tía","x":0.248275,"y":-0.246368,"z":0.114938},
-            {"word":"男人","x":-0.337718,"y":0.465470,"z":-0.204257},
-            {"word":"女人","x":-0.340463,"y":0.236668,"z":0.406342},
-            {"word":"叔叔","x":0.360921,"y":0.411594,"z":-0.093313},
-            {"word":"阿姨","x":0.228637,"y":0.360975,"z":0.347476}
-          ]
+      "points": [
+        {
+          "word": "man",
+          "x": 0.270477,
+          "y": 0.158347,
+          "z": 0.325162
         },
-        "tsne": {
-          "points": [
-            {"word":"man","x":144.008301,"y":-9.814517,"z":-4.778310},
-            {"word":"woman","x":-48.025547,"y":38.921150,"z":-5.394081},
-            {"word":"uncle","x":-115.020386,"y":-92.833366,"z":-142.279984},
-            {"word":"aunt","x":-157.059372,"y":-66.745224,"z":-34.897480},
-            {"word":"hombre","x":-19.382174,"y":169.425522,"z":-44.109131},
-            {"word":"mujer","x":8.529677,"y":21.429504,"z":-85.387642},
-            {"word":"tío","x":124.087936,"y":136.131149,"z":-39.252426},
-            {"word":"tía","x":-41.161217,"y":-119.614578,"z":-21.116774},
-            {"word":"男人","x":94.603485,"y":-151.759338,"z":60.479294},
-            {"word":"女人","x":99.658890,"y":-31.649384,"z":-161.050018},
-            {"word":"叔叔","x":-29.771355,"y":-31.622499,"z":156.547867},
-            {"word":"阿姨","x":73.632607,"y":7.895143,"z":139.163834}
-          ]
+        {
+          "word": "woman",
+          "x": 0.306666,
+          "y": -0.309915,
+          "z": -0.141932
         },
-        "umap": {
-          "points": [
-            {"word":"man","x":10.983663,"y":9.396471,"z":-11.658087},
-            {"word":"woman","x":-12.120119,"y":21.449083,"z":1.738062},
-            {"word":"uncle","x":-11.301126,"y":-2.753609,"z":6.618765},
-            {"word":"aunt","x":-11.384025,"y":-2.185143,"z":7.132301},
-            {"word":"hombre","x":11.375023,"y":9.787843,"z":-12.049446},
-            {"word":"mujer","x":-12.357004,"y":21.678617,"z":1.502972},
-            {"word":"tío","x":-11.859932,"y":-2.206666,"z":6.456400},
-            {"word":"tía","x":-11.947373,"y":-1.758314,"z":6.802420},
-            {"word":"男人","x":11.141785,"y":9.554587,"z":-11.816200},
-            {"word":"女人","x":-12.581367,"y":21.906942,"z":1.277623},
-            {"word":"叔叔","x":-10.716920,"y":-2.825326,"z":6.972393},
-            {"word":"阿姨","x":-10.613706,"y":-2.368050,"z":7.368616}
-          ]
+        {
+          "word": "uncle",
+          "x": -0.348174,
+          "y": 0.05592,
+          "z": 0.201693
+        },
+        {
+          "word": "aunt",
+          "x": -0.333365,
+          "y": -0.179617,
+          "z": -0.072561
+        },
+        {
+          "word": "hombre",
+          "x": 0.318634,
+          "y": 0.154892,
+          "z": 0.335877
+        },
+        {
+          "word": "mujer",
+          "x": 0.324607,
+          "y": -0.317282,
+          "z": -0.120483
+        },
+        {
+          "word": "tío",
+          "x": -0.314672,
+          "y": -0.033189,
+          "z": 0.196459
+        },
+        {
+          "word": "tía",
+          "x": -0.243248,
+          "y": -0.228187,
+          "z": -0.015383
+        },
+        {
+          "word": "男人",
+          "x": 0.321735,
+          "y": 0.542759,
+          "z": -0.052987
+        },
+        {
+          "word": "女人",
+          "x": 0.319463,
+          "y": 0.076829,
+          "z": -0.496163
+        },
+        {
+          "word": "叔叔",
+          "x": -0.363306,
+          "y": 0.44231,
+          "z": -0.112478
+        },
+        {
+          "word": "阿姨",
+          "x": -0.237836,
+          "y": 0.213058,
+          "z": -0.481931
+        },
+        {
+          "word": "आदमी",
+          "x": 0.263105,
+          "y": 0.038374,
+          "z": 0.289365
+        },
+        {
+          "word": "औरत",
+          "x": 0.235139,
+          "y": -0.320386,
+          "z": -0.055309
+        },
+        {
+          "word": "चाचा",
+          "x": -0.255171,
+          "y": -0.076502,
+          "z": 0.192209
+        },
+        {
+          "word": "चाची",
+          "x": -0.264052,
+          "y": -0.217411,
+          "z": 0.008463
         }
-      }
-    };
+      ]
+    },
+    "tsne": {
+      "perplexity": 5.0,
+      "points": [
+        {
+          "word": "man",
+          "x": 10.305891,
+          "y": 19.086573,
+          "z": 119.182945
+        },
+        {
+          "word": "woman",
+          "x": 0.027758,
+          "y": 143.813492,
+          "z": -30.724236
+        },
+        {
+          "word": "uncle",
+          "x": -68.950462,
+          "y": -11.987674,
+          "z": -62.909561
+        },
+        {
+          "word": "aunt",
+          "x": -100.537926,
+          "y": 10.658154,
+          "z": 5.838232
+        },
+        {
+          "word": "hombre",
+          "x": -23.422762,
+          "y": -40.507149,
+          "z": 119.249245
+        },
+        {
+          "word": "mujer",
+          "x": -15.343262,
+          "y": 126.447151,
+          "z": 35.800182
+        },
+        {
+          "word": "tío",
+          "x": 0.81409,
+          "y": 12.225483,
+          "z": -44.380611
+        },
+        {
+          "word": "tía",
+          "x": 58.597309,
+          "y": 31.58404,
+          "z": -1.65284
+        },
+        {
+          "word": "男人",
+          "x": -142.480423,
+          "y": 137.022293,
+          "z": -26.327251
+        },
+        {
+          "word": "女人",
+          "x": 92.45108,
+          "y": -119.493965,
+          "z": 102.151817
+        },
+        {
+          "word": "叔叔",
+          "x": -84.535507,
+          "y": 26.698046,
+          "z": -139.458649
+        },
+        {
+          "word": "阿姨",
+          "x": -155.745331,
+          "y": 7.01629,
+          "z": 90.805321
+        },
+        {
+          "word": "आदमी",
+          "x": 77.59256,
+          "y": -46.733868,
+          "z": -131.227753
+        },
+        {
+          "word": "औरत",
+          "x": -4.119156,
+          "y": -131.656143,
+          "z": -96.485916
+        },
+        {
+          "word": "चाचा",
+          "x": 44.057468,
+          "y": -87.755028,
+          "z": -4.653869
+        },
+        {
+          "word": "चाची",
+          "x": -24.014063,
+          "y": -92.483047,
+          "z": 6.098444
+        }
+      ]
+    },
+    "umap": {
+      "n_neighbors": 3,
+      "min_dist": 0.1,
+      "points": [
+        {
+          "word": "man",
+          "x": 13.017694,
+          "y": 6.178363,
+          "z": 0.369626
+        },
+        {
+          "word": "woman",
+          "x": 4.840781,
+          "y": 26.076014,
+          "z": -1.968449
+        },
+        {
+          "word": "uncle",
+          "x": 3.184198,
+          "y": 0.643985,
+          "z": 12.53417
+        },
+        {
+          "word": "aunt",
+          "x": 3.453998,
+          "y": 0.24794,
+          "z": 12.282542
+        },
+        {
+          "word": "hombre",
+          "x": 12.957742,
+          "y": 5.707648,
+          "z": 0.30907
+        },
+        {
+          "word": "mujer",
+          "x": 5.043705,
+          "y": 25.872917,
+          "z": -2.171236
+        },
+        {
+          "word": "tío",
+          "x": 3.371665,
+          "y": 1.183993,
+          "z": 11.918345
+        },
+        {
+          "word": "tía",
+          "x": 3.57658,
+          "y": 0.843972,
+          "z": 11.685813
+        },
+        {
+          "word": "男人",
+          "x": 13.289437,
+          "y": 5.95381,
+          "z": 0.640956
+        },
+        {
+          "word": "女人",
+          "x": 4.564204,
+          "y": 26.352413,
+          "z": -1.69173
+        },
+        {
+          "word": "叔叔",
+          "x": 3.317516,
+          "y": 0.347675,
+          "z": 13.210494
+        },
+        {
+          "word": "阿姨",
+          "x": 3.568795,
+          "y": 0.040912,
+          "z": 13.135466
+        },
+        {
+          "word": "आदमी",
+          "x": 12.786262,
+          "y": 6.206507,
+          "z": 0.138515
+        },
+        {
+          "word": "औरत",
+          "x": 5.148721,
+          "y": 25.767941,
+          "z": -2.276284
+        },
+        {
+          "word": "चाचा",
+          "x": 3.973027,
+          "y": 1.700133,
+          "z": 11.763869
+        },
+        {
+          "word": "चाची",
+          "x": 4.141645,
+          "y": 1.377321,
+          "z": 11.553442
+        }
+      ]
+    }
+  }
+};
 
     const TRANSLATIONS = {
       en: ["man","woman","uncle","aunt"],
       es: ["hombre","mujer","tío","tía"],
       zh: ["男人","女人","叔叔","阿姨"],
+      hi: ["आदमी","औरत","चाचा","चाची"],
     };
 
     const GENDER_PAIRS = [
@@ -487,6 +1495,7 @@
     function getLanguage(word) {
       if (TRANSLATIONS.en.includes(word)) return 'en';
       if (TRANSLATIONS.es.includes(word)) return 'es';
+      if (TRANSLATIONS.hi.includes(word)) return 'hi';
       return 'zh';
     }
     function getGender(word) {
@@ -503,7 +1512,7 @@
     }
 
     const COLORS = {
-      language: { en: 0x4fc3f7, es: 0xffb74d, zh: 0xff8a80 },
+      language: { en: 0x4fc3f7, es: 0xffb74d, zh: 0xff8a80, hi: 0xaed581 },
       gender:   { male: 0x4fc3f7, female: 0xff8a80, other: 0xaaaaaa },
       generation:{ parent: 0x81c784, older: 0xba68c8, other: 0xaaaaaa },
     };
@@ -613,10 +1622,10 @@
       // When cluster members are very close (UMAP), fan them apart slightly;
       // when they're already spread (PCA/t-SNE), keep labels near their own points.
       const clusters = [
-        ["man","hombre","男人"],
-        ["woman","mujer","女人"],
-        ["uncle","tío","叔叔"],
-        ["aunt","tía","阿姨"],
+        ["man","hombre","男人","आदमी"],
+        ["woman","mujer","女人","औरत"],
+        ["uncle","tío","叔叔","चाचा"],
+        ["aunt","tía","阿姨","चाची"],
       ];
       const labelOffsets = {};
       function dist(a,b) {
@@ -691,10 +1700,10 @@
         if (state.edges === 'translations') {
           // connect translations across languages
           const meaningGroups = [
-            ["man","hombre","男人"],
-            ["woman","mujer","女人"],
-            ["uncle","tío","叔叔"],
-            ["aunt","tía","阿姨"],
+            ["man","hombre","男人","आदमी"],
+            ["woman","mujer","女人","औरत"],
+            ["uncle","tío","叔叔","चाचा"],
+            ["aunt","tía","阿姨","चाची"],
           ];
           for (const g of meaningGroups) {
             for (let i = 0; i < g.length; i++) {
@@ -757,7 +1766,8 @@
         legend.innerHTML = `
           <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> English</span>
           <span><span class="dot" style="background:#ffb74d;box-shadow:0 0 6px #ffb74d;"></span> Spanish</span>
-          <span><span class="dot" style="background:#ff8a80;box-shadow:0 0 6px #ff8a80;"></span> Chinese</span>`;
+          <span><span class="dot" style="background:#ff8a80;box-shadow:0 0 6px #ff8a80;"></span> Chinese</span>
+          <span><span class="dot" style="background:#aed581;box-shadow:0 0 6px #aed581;"></span> Hindi</span>`;
       } else if (state.color === 'gender') {
         legend.innerHTML = `
           <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> Male</span>
