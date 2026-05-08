@@ -121,14 +121,19 @@
 
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.3,  // strength (gentle)
-      0.3,  // radius
-      0.7   // threshold (only very bright things bloom)
+      0.6,  // strength (emissive objects provide the glow now)
+      0.5,  // radius
+      0.3   // threshold (bloom on bright emissive cores)
     );
     composer.addPass(bloomPass);
 
+    // Lights: ambient base + center point light
+    scene.add(new THREE.AmbientLight(0x404060, 0.6));
+    const pointLight = new THREE.PointLight(0xffffff, 1.2, 20);
+    pointLight.position.set(0, 0, 0);
+    scene.add(pointLight);
+
     // Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.autoRotate = true;
@@ -271,22 +276,17 @@
       for (const p of normalized) {
         const color = getLanguageColor(p.word);
 
-        // Core sphere
-        const mat = new THREE.MeshBasicMaterial({ color });
+        // Emissive core sphere — bloom creates the halo naturally
+        const mat = new THREE.MeshStandardMaterial({
+          color: color,
+          emissive: color,
+          emissiveIntensity: 2.5,
+          roughness: 0.4,
+          metalness: 0.1,
+        });
         const mesh = new THREE.Mesh(sphereGeo, mat);
         mesh.position.set(p.x, p.y, p.z);
         scene.add(mesh);
-
-        // Outer glow (subtle halo)
-        const glowGeo = new THREE.SphereGeometry(0.15, 16, 16);
-        const glowMat = new THREE.MeshBasicMaterial({
-          color,
-          transparent: true,
-          opacity: 0.06,
-        });
-        const glow = new THREE.Mesh(glowGeo, glowMat);
-        glow.position.copy(mesh.position);
-        scene.add(glow);
 
         // Label
         const colorHex = '#' + color.getHexString();
