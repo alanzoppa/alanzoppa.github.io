@@ -636,7 +636,7 @@
         const avgDist = count ? sumDist / count : 0;
         const isTight = avgDist < 0.15;  // UMAP clusters are ~0.02-0.06 apart
         // Nudge radius: larger for tight clusters, tiny for loose ones
-        const nudge = isTight ? 0.42 : 0.06;
+        const nudge = isTight ? 0.42 : 0.20;
         members.forEach((m, i) => {
           const angle = (2 * Math.PI * i) / members.length;
           labelOffsets[m.word] = {
