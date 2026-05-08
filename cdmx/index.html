@@ -646,9 +646,9 @@
         const colorHex = '#' + color.getHexString();
 
         // Leader line from sphere toward label
-        const midX = p.x + off.x * 0.55;
-        const midY = p.y + off.y * 0.55;
-        const midZ = p.z + off.z * 0.55;
+        const midX = p.x + off.x * 0.92;
+        const midY = p.y + off.y * 0.92;
+        const midZ = p.z + off.z * 0.92;
         const leaderGeo = new THREE.BufferGeometry().setFromPoints([
           new THREE.Vector3(p.x, p.y, p.z),
           new THREE.Vector3(midX, midY, midZ),
