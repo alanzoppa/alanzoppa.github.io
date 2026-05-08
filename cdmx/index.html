@@ -609,30 +609,41 @@
       const normalized = normalizePoints(proj.points);
       const posMap = Object.fromEntries(normalized.map(p => [p.word, p]));
 
-      // Precompute label offsets to avoid overlap — cluster-aware spreading
-      // Group words by meaning cluster
+      // Precompute label offsets to avoid overlap — per-point with cluster-aware nudging
+      // When cluster members are very close (UMAP), fan them apart slightly;
+      // when they're already spread (PCA/t-SNE), keep labels near their own points.
       const clusters = [
         ["man","hombre","男人"],
         ["woman","mujer","女人"],
         ["uncle","tío","叔叔"],
         ["aunt","tía","阿姨"],
       ];
-      const labelAnchors = {};  // where label is placed
-      const labelOffsets = {};  // offset from sphere to label
+      const labelOffsets = {};
+      function dist(a,b) {
+        return Math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2 + (a.z-b.z)**2);
+      }
       for (const cluster of clusters) {
         const members = cluster.filter(w => w in posMap).map(w => ({word:w, p:posMap[w]}));
         if (members.length === 0) continue;
-        const ccx = members.reduce((s,m)=>s+m.p.x,0)/members.length;
-        const ccy = members.reduce((s,m)=>s+m.p.y,0)/members.length;
-        const ccz = members.reduce((s,m)=>s+m.p.z,0)/members.length;
-        const gap = 0.52;
+        // Compute cluster tightness: avg pairwise distance
+        let sumDist = 0, count = 0;
+        for (let i = 0; i < members.length; i++) {
+          for (let j = i+1; j < members.length; j++) {
+            sumDist += dist(members[i].p, members[j].p);
+            count++;
+          }
+        }
+        const avgDist = count ? sumDist / count : 0;
+        const isTight = avgDist < 0.15;  // UMAP clusters are ~0.02-0.06 apart
+        // Nudge radius: larger for tight clusters, tiny for loose ones
+        const nudge = isTight ? 0.42 : 0.12;
         members.forEach((m, i) => {
           const angle = (2 * Math.PI * i) / members.length;
-          const anchorX = ccx + Math.cos(angle) * gap;
-          const anchorY = ccy + Math.sin(angle) * gap * 0.7;
-          const anchorZ = ccz;
-          labelAnchors[m.word] = {x: anchorX, y: anchorY, z: anchorZ};
-          labelOffsets[m.word] = {x: anchorX - m.p.x, y: anchorY - m.p.y, z: anchorZ - m.p.z};
+          labelOffsets[m.word] = {
+            x: Math.cos(angle) * nudge,
+            y: Math.sin(angle) * nudge * 0.7,
+            z: 0,
+          };
         });
       }
 
