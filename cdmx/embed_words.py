@@ -59,8 +59,7 @@ def embed_texts(texts: list[str], api_key: str) -> list[list[float]]:
 
 
 def main() -> None:
-    out_dir = Path.home() / ".openclaw" / "workspace" / "external"
-    out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = Path.cwd()
     out_path = out_dir / "word_embeddings.json"
 
     # Get words from CLI arg or stdin
