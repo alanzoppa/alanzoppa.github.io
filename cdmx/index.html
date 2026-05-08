@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Embeddings in 3D</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #050508;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    canvas { display: block; }
+    #info {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      color: #a0a0b0;
+      font-size: 13px;
+      line-height: 1.6;
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
+    }
+    #info h1 {
+      color: #e8e8f0;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    #info .legend {
+      margin-top: 12px;
+      display: flex;
+      gap: 16px;
+    }
+    #info .legend span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    #info .legend .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #606070;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      z-index: 20;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="canvas-container">
+    <div id="loading">Loading embeddings...</div>
+    <div id="info">
+      <h1>Word Embeddings in 3D</h1>
+      <div>12 words across 3 languages</div>
+      <div>PCA projection (78.4% variance explained)</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> English</span>
+        <span><span class="dot" style="background:#ffb74d;box-shadow:0 0 6px #ffb74d;"></span> Spanish</span>
+        <span><span class="dot" style="background:#ff8a80;box-shadow:0 0 6px #ff8a80;"></span> Chinese</span>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:#606070;">
+        Drag to orbit · Scroll to zoom · Right-drag to pan
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    const container = document.getElementById('canvas-container');
+    const loading = document.getElementById('loading');
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050508);
+    scene.fog = new THREE.FogExp2(0x050508, 0.02);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(4, 3, 5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    container.appendChild(renderer.domElement);
+
+    // Post-processing (bloom)
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      1.5,  // strength
+      0.4,  // radius
+      0.1   // threshold
+    );
+    composer.addPass(bloomPass);
+
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.8;
+    controls.minDistance = 1;
+    controls.maxDistance = 15;
+
+    // Load data
+    async function loadData() {
+      const response = await fetch('word_embeddings.json');
+      const data = await response.json();
+      return data.pca.points;
+    }
+
+    function getLanguageColor(word) {
+      const en = ['man','woman','uncle','aunt'];
+      const es = ['hombre','mujer','tío','tía'];
+      if (en.includes(word)) return new THREE.Color(0x4fc3f7);  // cyan-blue
+      if (es.includes(word)) return new THREE.Color(0xffb74d);  // orange
+      return new THREE.Color(0xff8a80);  // pink-red for Chinese
+    }
+
+    function getLanguageGroup(word) {
+      const en = ['man','woman','uncle','aunt'];
+      const es = ['hombre','mujer','tío','tía'];
+      if (en.includes(word)) return 'en';
+      if (es.includes(word)) return 'es';
+      return 'zh';
+    }
+
+    function getSemanticGroup(word) {
+      const male = ['man','hombre','tío','男人','uncle','叔叔'];
+      const female = ['woman','mujer','tía','女人','aunt','阿姨'];
+      if (male.includes(word)) return 'male';
+      if (female.includes(word)) return 'female';
+      return 'other';
+    }
+
+    function createLabelSprite(text, color) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const fontSize = 48;
+      ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+      const metrics = ctx.measureText(text);
+      const width = metrics.width + 32;
+      const height = fontSize + 24;
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Glow effect
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = color;
+      ctx.fillText(text, width / 2, height / 2);
+
+      // Core text
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(text, width / 2, height / 2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const sprite = new THREE.Sprite(material);
+      const scale = 0.004;
+      sprite.scale.set(width * scale, height * scale, 1);
+      return sprite;
+    }
+
+    async function init() {
+      const points = await loadData();
+      loading.style.display = 'none';
+
+      // Find bounds for normalization
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
+      let minZ = Infinity, maxZ = -Infinity;
+      for (const p of points) {
+        minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+        minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+        minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z);
+      }
+
+      // Normalize to roughly -2 to 2 range
+      const scale = 2.5 / Math.max(maxX - minX, maxY - minY, maxZ - minZ);
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      const cz = (minZ + maxZ) / 2;
+
+      const normalized = points.map(p => ({
+        word: p.word,
+        x: (p.x - cx) * scale,
+        y: (p.y - cy) * scale,
+        z: (p.z - cz) * scale,
+      }));
+
+      // Group by semantic meaning for connections
+      const groups = { male: [], female: [] };
+      for (const p of normalized) {
+        const sg = getSemanticGroup(p.word);
+        if (sg === 'male') groups.male.push(p);
+        else if (sg === 'female') groups.female.push(p);
+      }
+
+      // Create spheres and labels
+      const sphereGeo = new THREE.SphereGeometry(0.08, 32, 32);
+
+      for (const p of normalized) {
+        const color = getLanguageColor(p.word);
+
+        // Glow sphere (emissive core)
+        const mat = new THREE.MeshBasicMaterial({ color: color });
+        const mesh = new THREE.Mesh(sphereGeo, mat);
+        mesh.position.set(p.x, p.y, p.z);
+        scene.add(mesh);
+
+        // Outer glow (larger, semi-transparent)
+        const glowGeo = new THREE.SphereGeometry(0.15, 16, 16);
+        const glowMat = new THREE.MeshBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 0.15,
+        });
+        const glow = new THREE.Mesh(glowGeo, glowMat);
+        glow.position.copy(mesh.position);
+        scene.add(glow);
+
+        // Label
+        const colorHex = '#' + color.getHexString();
+        const label = createLabelSprite(p.word, colorHex);
+        label.position.set(p.x, p.y + 0.35, p.z);
+        scene.add(label);
+      }
+
+      // Connecting lines between same-meaning words
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0x404050,
+        transparent: true,
+        opacity: 0.25,
+      });
+
+      for (const groupName of Object.keys(groups)) {
+        const group = groups[groupName];
+        for (let i = 0; i < group.length; i++) {
+          for (let j = i + 1; j < group.length; j++) {
+            const a = group[i];
+            const b = group[j];
+            // Only connect different languages
+            if (getLanguageGroup(a.word) !== getLanguageGroup(b.word)) {
+              const geo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(a.x, a.y, a.z),
+                new THREE.Vector3(b.x, b.y, b.z),
+              ]);
+              const line = new THREE.Line(geo, lineMat);
+              scene.add(line);
+            }
+          }
+        }
+      }
+
+      // Starfield background
+      const starGeo = new THREE.BufferGeometry();
+      const starCount = 800;
+      const starPositions = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount * 3; i++) {
+        starPositions[i] = (Math.random() - 0.5) * 40;
+      }
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+      const starMat = new THREE.PointsMaterial({ color: 0x505060, size: 0.02 });
+      const stars = new THREE.Points(starGeo, starMat);
+      scene.add(stars);
+    }
+
+    init().catch(err => {
+      loading.textContent = 'Error loading data: ' + err.message;
+      console.error(err);
+    });
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      composer.render();
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
