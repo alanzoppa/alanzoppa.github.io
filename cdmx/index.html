@@ -114,16 +114,16 @@
     renderer.toneMapping = THREE.ReinhardToneMapping;
     container.appendChild(renderer.domElement);
 
-    // Post-processing (bloom)
+    // Post-processing: subtle bloom only
     const composer = new EffectComposer(renderer);
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
 
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-      1.5,  // strength
-      0.4,  // radius
-      0.1   // threshold
+      0.3,  // strength (gentle)
+      0.3,  // radius
+      0.7   // threshold (only very bright things bloom)
     );
     composer.addPass(bloomPass);
 
@@ -136,12 +136,21 @@
     controls.minDistance = 1;
     controls.maxDistance = 15;
 
-    // Load data
-    async function loadData() {
-      const response = await fetch('word_embeddings.json');
-      const data = await response.json();
-      return data.pca.points;
-    }
+    // Inline data — no web server needed
+    const points = [
+      {"word":"man","x":-0.261448,"y":-0.055642,"z":-0.385663},
+      {"word":"woman","x":-0.307028,"y":-0.303211,"z":0.227338},
+      {"word":"uncle","x":0.363269,"y":-0.099579,"z":-0.216688},
+      {"word":"aunt","x":0.347049,"y":-0.206396,"z":0.135377},
+      {"word":"hombre","x":-0.30541,"y":-0.071066,"z":-0.399092},
+      {"word":"mujer","x":-0.324482,"y":-0.31484,"z":0.210732},
+      {"word":"tío","x":0.331585,"y":-0.166382,"z":-0.168},
+      {"word":"tía","x":0.247764,"y":-0.247873,"z":0.111107},
+      {"word":"男人","x":-0.336855,"y":0.470976,"z":-0.195762},
+      {"word":"女人","x":-0.342505,"y":0.227481,"z":0.410506},
+      {"word":"叔叔","x":0.361001,"y":0.413586,"z":-0.084446},
+      {"word":"阿姨","x":0.227061,"y":0.352947,"z":0.354591}
+    ];
 
     function getLanguageColor(word) {
       const en = ['man','woman','uncle','aunt'];
@@ -170,11 +179,13 @@
     function createLabelSprite(text, color) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      const fontSize = 48;
+      const fontSize = 56;
       ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
       const metrics = ctx.measureText(text);
-      const width = metrics.width + 32;
-      const height = fontSize + 24;
+      const padX = 20;
+      const padY = 12;
+      const width = metrics.width + padX * 2;
+      const height = fontSize + padY * 2;
       canvas.width = width;
       canvas.height = height;
 
@@ -182,28 +193,45 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Glow effect
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 20;
-      ctx.fillStyle = color;
-      ctx.fillText(text, width / 2, height / 2);
+      // Dark rounded backing for contrast
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.82)';
+      roundRect(ctx, 0, 0, width, height, 8);
+      ctx.fill();
 
-      // Core text
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#ffffff';
+      // Language-colored underline strip
+      ctx.fillStyle = color;
+      roundRect(ctx, 4, height - 6, width - 8, 4, 2);
+      ctx.fill();
+
+      // Text
+      ctx.fillStyle = '#e8e8f0';
       ctx.fillText(text, width / 2, height / 2);
 
       const texture = new THREE.CanvasTexture(canvas);
       texture.minFilter = THREE.LinearFilter;
       const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
       const sprite = new THREE.Sprite(material);
-      const scale = 0.004;
+      const scale = 0.005;
       sprite.scale.set(width * scale, height * scale, 1);
       return sprite;
     }
 
-    async function init() {
-      const points = await loadData();
+    function roundRect(ctx, x, y, w, h, r) {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.lineTo(x + w - rr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+      ctx.lineTo(x + w, y + h - rr);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+      ctx.lineTo(x + rr, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+      ctx.lineTo(x, y + rr);
+      ctx.quadraticCurveTo(x, y, x + rr, y);
+      ctx.closePath();
+    }
+
+    function init() {
       loading.style.display = 'none';
 
       // Find bounds for normalization
@@ -243,18 +271,18 @@
       for (const p of normalized) {
         const color = getLanguageColor(p.word);
 
-        // Glow sphere (emissive core)
-        const mat = new THREE.MeshBasicMaterial({ color: color });
+        // Core sphere
+        const mat = new THREE.MeshBasicMaterial({ color });
         const mesh = new THREE.Mesh(sphereGeo, mat);
         mesh.position.set(p.x, p.y, p.z);
         scene.add(mesh);
 
-        // Outer glow (larger, semi-transparent)
+        // Outer glow (subtle halo)
         const glowGeo = new THREE.SphereGeometry(0.15, 16, 16);
         const glowMat = new THREE.MeshBasicMaterial({
-          color: color,
+          color,
           transparent: true,
-          opacity: 0.15,
+          opacity: 0.06,
         });
         const glow = new THREE.Mesh(glowGeo, glowMat);
         glow.position.copy(mesh.position);
@@ -263,7 +291,7 @@
         // Label
         const colorHex = '#' + color.getHexString();
         const label = createLabelSprite(p.word, colorHex);
-        label.position.set(p.x, p.y + 0.35, p.z);
+        label.position.set(p.x, p.y + 0.4, p.z);
         scene.add(label);
       }
 
@@ -306,10 +334,7 @@
       scene.add(stars);
     }
 
-    init().catch(err => {
-      loading.textContent = 'Error loading data: ' + err.message;
-      console.error(err);
-    });
+    init();
 
     // Animation loop
     function animate() {
