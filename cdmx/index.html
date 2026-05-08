@@ -625,7 +625,7 @@
         const ccx = members.reduce((s,m)=>s+m.p.x,0)/members.length;
         const ccy = members.reduce((s,m)=>s+m.p.y,0)/members.length;
         const ccz = members.reduce((s,m)=>s+m.p.z,0)/members.length;
-        const gap = 0.85;
+        const gap = 0.52;
         members.forEach((m, i) => {
           const angle = (2 * Math.PI * i) / members.length;
           const anchorX = ccx + Math.cos(angle) * gap;
