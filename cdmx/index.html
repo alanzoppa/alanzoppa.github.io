@@ -10,6 +10,7 @@
       background: #050508;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #a0a0b0;
     }
     #canvas-container {
       width: 100vw;
@@ -17,11 +18,12 @@
       position: relative;
     }
     canvas { display: block; }
+
+    /* Info panel */
     #info {
       position: absolute;
       top: 16px;
       left: 16px;
-      color: #a0a0b0;
       font-size: 13px;
       line-height: 1.6;
       pointer-events: none;
@@ -34,6 +36,9 @@
       font-weight: 600;
       margin-bottom: 8px;
       letter-spacing: 0.02em;
+    }
+    #info .meta {
+      color: #a0a0b0;
     }
     #info .legend {
       margin-top: 12px;
@@ -52,6 +57,125 @@
       border-radius: 50%;
       display: inline-block;
     }
+    #info .hint {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #606070;
+    }
+
+    /* Controls panel */
+    #controls {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 20;
+      background: rgba(8, 8, 14, 0.92);
+      border: 1px solid #2a2a35;
+      border-radius: 10px;
+      padding: 14px 16px;
+      width: 220px;
+      font-size: 12px;
+      line-height: 1.5;
+      backdrop-filter: blur(6px);
+    }
+    #controls h2 {
+      color: #e8e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+    }
+    .control-row {
+      margin-bottom: 10px;
+    }
+    .control-row label {
+      display: block;
+      color: #808090;
+      font-size: 11px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .btn-group {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .btn-group button {
+      background: #1a1a24;
+      border: 1px solid #2a2a35;
+      color: #a0a0b0;
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-group button:hover {
+      border-color: #4a4a55;
+      color: #e8e8f0;
+    }
+    .btn-group button.active {
+      background: #2a2a3a;
+      border-color: #4fc3f7;
+      color: #4fc3f7;
+    }
+    .btn-group button.active-warm {
+      background: #2a2a3a;
+      border-color: #ffb74d;
+      color: #ffb74d;
+    }
+    .btn-group button.active-accent {
+      background: #2a2a3a;
+      border-color: #ff8a80;
+      color: #ff8a80;
+    }
+
+    /* Heatmap overlay */
+    #heatmap-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      background: rgba(5, 5, 8, 0.95);
+      border: 1px solid #2a2a35;
+      border-radius: 12px;
+      padding: 20px;
+      display: none;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    #heatmap-overlay.visible {
+      display: block;
+    }
+    #heatmap-overlay h3 {
+      color: #e8e8f0;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    #heatmap-overlay .close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      color: #606070;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #heatmap-overlay .close:hover {
+      color: #e8e8f0;
+    }
+    #heatmap-canvas {
+      display: block;
+    }
+    #heatmap-note {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #505060;
+    }
+
     #loading {
       position: absolute;
       top: 50%;
@@ -77,16 +201,63 @@
     <div id="loading">Loading embeddings...</div>
     <div id="info">
       <h1>Word Embeddings in 3D</h1>
-      <div>12 words across 3 languages</div>
-      <div>PCA projection (78.4% variance explained)</div>
-      <div class="legend">
+      <div class="meta">12 words across 3 languages</div>
+      <div class="meta" id="projection-info">PCA projection (78.4% variance explained)</div>
+      <div class="legend" id="color-legend">
         <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> English</span>
         <span><span class="dot" style="background:#ffb74d;box-shadow:0 0 6px #ffb74d;"></span> Spanish</span>
         <span><span class="dot" style="background:#ff8a80;box-shadow:0 0 6px #ff8a80;"></span> Chinese</span>
       </div>
-      <div style="margin-top:12px;font-size:11px;color:#606070;">
-        Drag to orbit · Scroll to zoom · Right-drag to pan
+      <div class="hint">Drag to orbit · Scroll to zoom · Right-drag to pan</div>
+    </div>
+
+    <div id="controls">
+      <h2>View</h2>
+      <div class="control-row">
+        <label>Projection</label>
+        <div class="btn-group" id="projection-btns">
+          <button data-val="pca" class="active">PCA</button>
+          <button data-val="tsne">t-SNE</button>
+          <button data-val="umap">UMAP</button>
+        </div>
       </div>
+      <div class="control-row">
+        <label>Edges</label>
+        <div class="btn-group" id="edge-btns">
+          <button data-val="translations" class="active">Translations</button>
+          <button data-val="gender">Gender</button>
+          <button data-val="generation">Generation</button>
+          <button data-val="none">Off</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Color</label>
+        <div class="btn-group" id="color-btns">
+          <button data-val="language" class="active">Language</button>
+          <button data-val="gender">Gender</button>
+          <button data-val="generation">Generation</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Size</label>
+        <div class="btn-group" id="size-btns">
+          <button data-val="uniform" class="active">Uniform</button>
+          <button data-val="norm">Norm</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Tools</label>
+        <div class="btn-group">
+          <button id="btn-heatmap">Heatmap</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="heatmap-overlay">
+      <span class="close" id="heatmap-close">&times;</span>
+      <h3>Cosine Similarity Matrix</h3>
+      <canvas id="heatmap-canvas"></canvas>
+      <div id="heatmap-note">Hover cells to see values. Brighter = more similar.</div>
     </div>
   </div>
 
@@ -97,10 +268,168 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
+    // ── Inline data (embeddings excluded to keep file size reasonable) ──
+    const DATA = {
+      "words": ["man","woman","uncle","aunt","hombre","mujer","tío","tía","男人","女人","叔叔","阿姨"],
+      "norms": {"man":1.0,"woman":1.0,"uncle":1.0,"aunt":1.0,"hombre":1.0,"mujer":1.0,"tío":1.0,"tía":1.0,"男人":1.0,"女人":1.0,"叔叔":1.0,"阿姨":1.0},
+      "similarities": [
+        {"word1":"man","word2":"woman","cosine":0.742415,"euclidean":0.717753},
+        {"word1":"man","word2":"uncle","cosine":0.720482,"euclidean":0.747687},
+        {"word1":"man","word2":"aunt","cosine":0.606663,"euclidean":0.886946},
+        {"word1":"man","word2":"hombre","cosine":0.936831,"euclidean":0.355442},
+        {"word1":"man","word2":"mujer","cosine":0.720063,"euclidean":0.748247},
+        {"word1":"man","word2":"tío","cosine":0.699983,"euclidean":0.774618},
+        {"word1":"man","word2":"tía","cosine":0.640529,"euclidean":0.847904},
+        {"word1":"man","word2":"男人","cosine":0.771610,"euclidean":0.675855},
+        {"word1":"man","word2":"女人","cosine":0.562325,"euclidean":0.935601},
+        {"word1":"man","word2":"叔叔","cosine":0.572706,"euclidean":0.924439},
+        {"word1":"man","word2":"阿姨","cosine":0.488145,"euclidean":1.011785},
+        {"word1":"woman","word2":"uncle","cosine":0.616038,"euclidean":0.876313},
+        {"word1":"woman","word2":"aunt","cosine":0.704406,"euclidean":0.768888},
+        {"word1":"woman","word2":"hombre","cosine":0.721946,"euclidean":0.745727},
+        {"word1":"woman","word2":"mujer","cosine":0.953786,"euclidean":0.304019},
+        {"word1":"woman","word2":"tío","cosine":0.625405,"euclidean":0.865558},
+        {"word1":"woman","word2":"tía","cosine":0.722216,"euclidean":0.745364},
+        {"word1":"woman","word2":"男人","cosine":0.544278,"euclidean":0.954696},
+        {"word1":"woman","word2":"女人","cosine":0.772320,"euclidean":0.674804},
+        {"word1":"woman","word2":"叔叔","cosine":0.440874,"euclidean":1.057474},
+        {"word1":"woman","word2":"阿姨","cosine":0.568565,"euclidean":0.928907},
+        {"word1":"uncle","word2":"aunt","cosine":0.870212,"euclidean":0.509487},
+        {"word1":"uncle","word2":"hombre","cosine":0.698164,"euclidean":0.776963},
+        {"word1":"uncle","word2":"mujer","cosine":0.602151,"euclidean":0.892019},
+        {"word1":"uncle","word2":"tío","cosine":0.896715,"euclidean":0.454500},
+        {"word1":"uncle","word2":"tía","cosine":0.788929,"euclidean":0.649725},
+        {"word1":"uncle","word2":"男人","cosine":0.531453,"euclidean":0.968036},
+        {"word1":"uncle","word2":"女人","cosine":0.455438,"euclidean":1.043611},
+        {"word1":"uncle","word2":"叔叔","cosine":0.792268,"euclidean":0.644565},
+        {"word1":"uncle","word2":"阿姨","cosine":0.632568,"euclidean":0.857242},
+        {"word1":"aunt","word2":"hombre","cosine":0.573590,"euclidean":0.923483},
+        {"word1":"aunt","word2":"mujer","cosine":0.681275,"euclidean":0.798405},
+        {"word1":"aunt","word2":"tío","cosine":0.814863,"euclidean":0.608502},
+        {"word1":"aunt","word2":"tía","cosine":0.849080,"euclidean":0.549400},
+        {"word1":"aunt","word2":"男人","cosine":0.427770,"euclidean":1.069794},
+        {"word1":"aunt","word2":"女人","cosine":0.546951,"euclidean":0.951892},
+        {"word1":"aunt","word2":"叔叔","cosine":0.667499,"euclidean":0.815476},
+        {"word1":"aunt","word2":"阿姨","cosine":0.729396,"euclidean":0.735669},
+        {"word1":"hombre","word2":"mujer","cosine":0.748263,"euclidean":0.709560},
+        {"word1":"hombre","word2":"tío","cosine":0.685025,"euclidean":0.793694},
+        {"word1":"hombre","word2":"tía","cosine":0.610092,"euclidean":0.883072},
+        {"word1":"hombre","word2":"男人","cosine":0.764750,"euclidean":0.685931},
+        {"word1":"hombre","word2":"女人","cosine":0.561203,"euclidean":0.936800},
+        {"word1":"hombre","word2":"叔叔","cosine":0.547208,"euclidean":0.951621},
+        {"word1":"hombre","word2":"阿姨","cosine":0.446789,"euclidean":1.051866},
+        {"word1":"mujer","word2":"tío","cosine":0.635419,"euclidean":0.853910},
+        {"word1":"mujer","word2":"tía","cosine":0.731211,"euclidean":0.733197},
+        {"word1":"mujer","word2":"男人","cosine":0.550976,"euclidean":0.947653},
+        {"word1":"mujer","word2":"女人","cosine":0.768311,"euclidean":0.680719},
+        {"word1":"mujer","word2":"叔叔","cosine":0.430008,"euclidean":1.067700},
+        {"word1":"mujer","word2":"阿姨","cosine":0.542686,"euclidean":0.956362},
+        {"word1":"tío","word2":"tía","cosine":0.904383,"euclidean":0.437304},
+        {"word1":"tío","word2":"男人","cosine":0.528525,"euclidean":0.971056},
+        {"word1":"tío","word2":"女人","cosine":0.496654,"euclidean":1.003340},
+        {"word1":"tío","word2":"叔叔","cosine":0.741032,"euclidean":0.719678},
+        {"word1":"tío","word2":"阿姨","cosine":0.594686,"euclidean":0.900349},
+        {"word1":"tía","word2":"男人","cosine":0.478635,"euclidean":1.021141},
+        {"word1":"tía","word2":"女人","cosine":0.601947,"euclidean":0.892248},
+        {"word1":"tía","word2":"叔叔","cosine":0.634245,"euclidean":0.855284},
+        {"word1":"tía","word2":"阿姨","cosine":0.666095,"euclidean":0.817196},
+        {"word1":"男人","word2":"女人","cosine":0.749963,"euclidean":0.707159},
+        {"word1":"男人","word2":"叔叔","cosine":0.652217,"euclidean":0.834006},
+        {"word1":"男人","word2":"阿姨","cosine":0.579520,"euclidean":0.917039},
+        {"word1":"女人","word2":"叔叔","cosine":0.539582,"euclidean":0.959602},
+        {"word1":"女人","word2":"阿姨","cosine":0.698838,"euclidean":0.776096},
+        {"word1":"叔叔","word2":"阿姨","cosine":0.779308,"euclidean":0.664368}
+      ],
+      "groups": {
+        "male_adult": ["man","hombre","男人","uncle","tío","叔叔"],
+        "female_adult": ["woman","mujer","女人","aunt","tía","阿姨"],
+        "parent_generation": ["man","woman","hombre","mujer","男人","女人"],
+        "older_generation": ["uncle","aunt","tío","tía","叔叔","阿姨"]
+      },
+      "gender_vectors": {
+        "man->woman": {"from":"man","to":"woman","norm":0.717753,"parallelism_to_first":1.0},
+        "hombre->mujer": {"from":"hombre","to":"mujer","norm":0.709560,"parallelism_to_first":0.880851},
+        "男人->女人": {"from":"男人","to":"女人","norm":0.707159,"parallelism_to_first":0.861616},
+        "uncle->aunt": {"from":"uncle","to":"aunt","norm":0.509487,"parallelism_to_first":0.552898},
+        "tío->tía": {"from":"tío","to":"tía","norm":0.437304,"parallelism_to_first":0.497857},
+        "叔叔->阿姨": {"from":"叔叔","to":"阿姨","norm":0.664368,"parallelism_to_first":0.445111}
+      },
+      "projections": {
+        "pca": {
+          "explained_variance_ratio": [0.317421,0.241141,0.225168],
+          "points": [
+            {"word":"man","x":-0.262019,"y":-0.063246,"z":-0.383550},
+            {"word":"woman","x":-0.306763,"y":-0.298579,"z":0.234510},
+            {"word":"uncle","x":0.362487,"y":-0.103745,"z":-0.215597},
+            {"word":"aunt","x":0.347615,"y":-0.203520,"z":0.138847},
+            {"word":"hombre","x":-0.306893,"y":-0.077905,"z":-0.396912},
+            {"word":"mujer","x":-0.324553,"y":-0.310228,"z":0.217468},
+            {"word":"tío","x":0.330474,"y":-0.171115,"z":-0.165952},
+            {"word":"tía","x":0.248275,"y":-0.246368,"z":0.114938},
+            {"word":"男人","x":-0.337718,"y":0.465470,"z":-0.204257},
+            {"word":"女人","x":-0.340463,"y":0.236668,"z":0.406342},
+            {"word":"叔叔","x":0.360921,"y":0.411594,"z":-0.093313},
+            {"word":"阿姨","x":0.228637,"y":0.360975,"z":0.347476}
+          ]
+        },
+        "tsne": {
+          "points": [
+            {"word":"man","x":144.008301,"y":-9.814517,"z":-4.778310},
+            {"word":"woman","x":-48.025547,"y":38.921150,"z":-5.394081},
+            {"word":"uncle","x":-115.020386,"y":-92.833366,"z":-142.279984},
+            {"word":"aunt","x":-157.059372,"y":-66.745224,"z":-34.897480},
+            {"word":"hombre","x":-19.382174,"y":169.425522,"z":-44.109131},
+            {"word":"mujer","x":8.529677,"y":21.429504,"z":-85.387642},
+            {"word":"tío","x":124.087936,"y":136.131149,"z":-39.252426},
+            {"word":"tía","x":-41.161217,"y":-119.614578,"z":-21.116774},
+            {"word":"男人","x":94.603485,"y":-151.759338,"z":60.479294},
+            {"word":"女人","x":99.658890,"y":-31.649384,"z":-161.050018},
+            {"word":"叔叔","x":-29.771355,"y":-31.622499,"z":156.547867},
+            {"word":"阿姨","x":73.632607,"y":7.895143,"z":139.163834}
+          ]
+        },
+        "umap": {
+          "points": [
+            {"word":"man","x":10.983663,"y":9.396471,"z":-11.658087},
+            {"word":"woman","x":-12.120119,"y":21.449083,"z":1.738062},
+            {"word":"uncle","x":-11.301126,"y":-2.753609,"z":6.618765},
+            {"word":"aunt","x":-11.384025,"y":-2.185143,"z":7.132301},
+            {"word":"hombre","x":11.375023,"y":9.787843,"z":-12.049446},
+            {"word":"mujer","x":-12.357004,"y":21.678617,"z":1.502972},
+            {"word":"tío","x":-11.859932,"y":-2.206666,"z":6.456400},
+            {"word":"tía","x":-11.947373,"y":-1.758314,"z":6.802420},
+            {"word":"男人","x":11.141785,"y":9.554587,"z":-11.816200},
+            {"word":"女人","x":-12.581367,"y":21.906942,"z":1.277623},
+            {"word":"叔叔","x":-10.716920,"y":-2.825326,"z":6.972393},
+            {"word":"阿姨","x":-10.613706,"y":-2.368050,"z":7.368616}
+          ]
+        }
+      }
+    };
+
+    const TRANSLATIONS = {
+      en: ["man","woman","uncle","aunt"],
+      es: ["hombre","mujer","tío","tía"],
+      zh: ["男人","女人","叔叔","阿姨"],
+    };
+
+    const GENDER_PAIRS = [
+      ["man","woman"],["hombre","mujer"],["男人","女人"],
+      ["uncle","aunt"],["tío","tía"],["叔叔","阿姨"]
+    ];
+
+    // ── State ──
+    const state = {
+      projection: 'pca',
+      edges: 'translations',
+      color: 'language',
+      size: 'uniform',
+    };
+
+    // ── Three.js setup (preserve opencode's bloom + lighting) ──
     const container = document.getElementById('canvas-container');
     const loading = document.getElementById('loading');
 
-    // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x050508);
     scene.fog = new THREE.FogExp2(0x050508, 0.02);
@@ -114,26 +443,19 @@
     renderer.toneMapping = THREE.ReinhardToneMapping;
     container.appendChild(renderer.domElement);
 
-    // Post-processing: subtle bloom only
     const composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
-
+    composer.addPass(new RenderPass(scene, camera));
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.6,  // strength (emissive objects provide the glow now)
-      0.5,  // radius
-      0.3   // threshold (bloom on bright emissive cores)
+      0.6, 0.5, 0.3
     );
     composer.addPass(bloomPass);
 
-    // Lights: ambient base + center point light
     scene.add(new THREE.AmbientLight(0x404060, 0.6));
     const pointLight = new THREE.PointLight(0xffffff, 1.2, 20);
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
 
-    // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -142,44 +464,53 @@
     controls.minDistance = 1;
     controls.maxDistance = 15;
 
-    // Inline data — no web server needed
-    const points = [
-      {"word":"man","x":-0.261448,"y":-0.055642,"z":-0.385663},
-      {"word":"woman","x":-0.307028,"y":-0.303211,"z":0.227338},
-      {"word":"uncle","x":0.363269,"y":-0.099579,"z":-0.216688},
-      {"word":"aunt","x":0.347049,"y":-0.206396,"z":0.135377},
-      {"word":"hombre","x":-0.30541,"y":-0.071066,"z":-0.399092},
-      {"word":"mujer","x":-0.324482,"y":-0.31484,"z":0.210732},
-      {"word":"tío","x":0.331585,"y":-0.166382,"z":-0.168},
-      {"word":"tía","x":0.247764,"y":-0.247873,"z":0.111107},
-      {"word":"男人","x":-0.336855,"y":0.470976,"z":-0.195762},
-      {"word":"女人","x":-0.342505,"y":0.227481,"z":0.410506},
-      {"word":"叔叔","x":0.361001,"y":0.413586,"z":-0.084446},
-      {"word":"阿姨","x":0.227061,"y":0.352947,"z":0.354591}
-    ];
-
-    function getLanguageColor(word) {
-      const en = ['man','woman','uncle','aunt'];
-      const es = ['hombre','mujer','tío','tía'];
-      if (en.includes(word)) return new THREE.Color(0x4fc3f7);  // cyan-blue
-      if (es.includes(word)) return new THREE.Color(0xffb74d);  // orange
-      return new THREE.Color(0xff8a80);  // pink-red for Chinese
+    // Starfield
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 800;
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i++) {
+      starPositions[i] = (Math.random() - 0.5) * 40;
     }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0x505060, size: 0.02 });
+    scene.add(new THREE.Points(starGeo, starMat));
 
-    function getLanguageGroup(word) {
-      const en = ['man','woman','uncle','aunt'];
-      const es = ['hombre','mujer','tío','tía'];
-      if (en.includes(word)) return 'en';
-      if (es.includes(word)) return 'es';
+    // ── Helpers ──
+    function getLanguage(word) {
+      if (TRANSLATIONS.en.includes(word)) return 'en';
+      if (TRANSLATIONS.es.includes(word)) return 'es';
       return 'zh';
     }
-
-    function getSemanticGroup(word) {
-      const male = ['man','hombre','tío','男人','uncle','叔叔'];
-      const female = ['woman','mujer','tía','女人','aunt','阿姨'];
+    function getGender(word) {
+      const male = DATA.groups.male_adult;
+      const female = DATA.groups.female_adult;
       if (male.includes(word)) return 'male';
       if (female.includes(word)) return 'female';
       return 'other';
+    }
+    function getGeneration(word) {
+      if (DATA.groups.parent_generation.includes(word)) return 'parent';
+      if (DATA.groups.older_generation.includes(word)) return 'older';
+      return 'other';
+    }
+
+    const COLORS = {
+      language: { en: 0x4fc3f7, es: 0xffb74d, zh: 0xff8a80 },
+      gender:   { male: 0x4fc3f7, female: 0xff8a80, other: 0xaaaaaa },
+      generation:{ parent: 0x81c784, older: 0xba68c8, other: 0xaaaaaa },
+    };
+
+    function getColor(word) {
+      if (state.color === 'language') return COLORS.language[getLanguage(word)];
+      if (state.color === 'gender') return COLORS.gender[getGender(word)];
+      return COLORS.generation[getGeneration(word)];
+    }
+
+    function getSize(word) {
+      if (state.size === 'uniform') return 0.08;
+      const n = DATA.norms[word];
+      // all norms are ~1.0; add slight variation for visual interest
+      return 0.06 + (n * 0.04);
     }
 
     function createLabelSprite(text, color) {
@@ -188,8 +519,7 @@
       const fontSize = 56;
       ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
       const metrics = ctx.measureText(text);
-      const padX = 20;
-      const padY = 12;
+      const padX = 20, padY = 12;
       const width = metrics.width + padX * 2;
       const height = fontSize + padY * 2;
       canvas.width = width;
@@ -199,26 +529,22 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Dark rounded backing for contrast
       ctx.fillStyle = 'rgba(5, 5, 8, 0.82)';
       roundRect(ctx, 0, 0, width, height, 8);
       ctx.fill();
 
-      // Language-colored underline strip
       ctx.fillStyle = color;
       roundRect(ctx, 4, height - 6, width - 8, 4, 2);
       ctx.fill();
 
-      // Text
       ctx.fillStyle = '#e8e8f0';
       ctx.fillText(text, width / 2, height / 2);
 
       const texture = new THREE.CanvasTexture(canvas);
       texture.minFilter = THREE.LinearFilter;
-      const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
-      const sprite = new THREE.Sprite(material);
-      const scale = 0.005;
-      sprite.scale.set(width * scale, height * scale, 1);
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true }));
+      const s = 0.005;
+      sprite.scale.set(width * s, height * s, 1);
       return sprite;
     }
 
@@ -237,10 +563,7 @@
       ctx.closePath();
     }
 
-    function init() {
-      loading.style.display = 'none';
-
-      // Find bounds for normalization
+    function normalizePoints(points) {
       let minX = Infinity, maxX = -Infinity;
       let minY = Infinity, maxY = -Infinity;
       let minZ = Infinity, maxZ = -Infinity;
@@ -249,35 +572,40 @@
         minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
         minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z);
       }
-
-      // Normalize to roughly -2 to 2 range
-      const scale = 2.5 / Math.max(maxX - minX, maxY - minY, maxZ - minZ);
+      const scale = 2.5 / Math.max(maxX - minX, maxY - minY, maxZ - minZ, 0.001);
       const cx = (minX + maxX) / 2;
       const cy = (minY + maxY) / 2;
       const cz = (minZ + maxZ) / 2;
-
-      const normalized = points.map(p => ({
+      return points.map(p => ({
         word: p.word,
         x: (p.x - cx) * scale,
         y: (p.y - cy) * scale,
         z: (p.z - cz) * scale,
       }));
+    }
 
-      // Group by semantic meaning for connections
-      const groups = { male: [], female: [] };
+    // ── Scene objects ──
+    const meshesGroup = new THREE.Group();
+    const edgesGroup = new THREE.Group();
+    scene.add(meshesGroup);
+    scene.add(edgesGroup);
+
+    function clearScene() {
+      while (meshesGroup.children.length) meshesGroup.remove(meshesGroup.children[0]);
+      while (edgesGroup.children.length) edgesGroup.remove(edgesGroup.children[0]);
+    }
+
+    function buildScene() {
+      clearScene();
+      const proj = DATA.projections[state.projection];
+      const normalized = normalizePoints(proj.points);
+      const posMap = Object.fromEntries(normalized.map(p => [p.word, p]));
+
+      // Spheres + labels
+      const sphereGeo = new THREE.SphereGeometry(1, 32, 32); // scaled per mesh
       for (const p of normalized) {
-        const sg = getSemanticGroup(p.word);
-        if (sg === 'male') groups.male.push(p);
-        else if (sg === 'female') groups.female.push(p);
-      }
-
-      // Create spheres and labels
-      const sphereGeo = new THREE.SphereGeometry(0.08, 32, 32);
-
-      for (const p of normalized) {
-        const color = getLanguageColor(p.word);
-
-        // Emissive core sphere — bloom creates the halo naturally
+        const color = new THREE.Color(getColor(p.word));
+        const size = getSize(p.word);
         const mat = new THREE.MeshStandardMaterial({
           color: color,
           emissive: color,
@@ -287,57 +615,215 @@
         });
         const mesh = new THREE.Mesh(sphereGeo, mat);
         mesh.position.set(p.x, p.y, p.z);
-        scene.add(mesh);
+        mesh.scale.set(size, size, size);
+        meshesGroup.add(mesh);
 
-        // Label
         const colorHex = '#' + color.getHexString();
         const label = createLabelSprite(p.word, colorHex);
         label.position.set(p.x, p.y + 0.4, p.z);
-        scene.add(label);
+        meshesGroup.add(label);
       }
 
-      // Connecting lines between same-meaning words
-      const lineMat = new THREE.LineBasicMaterial({
-        color: 0x404050,
-        transparent: true,
-        opacity: 0.25,
-      });
-
-      for (const groupName of Object.keys(groups)) {
-        const group = groups[groupName];
-        for (let i = 0; i < group.length; i++) {
-          for (let j = i + 1; j < group.length; j++) {
-            const a = group[i];
-            const b = group[j];
-            // Only connect different languages
-            if (getLanguageGroup(a.word) !== getLanguageGroup(b.word)) {
-              const geo = new THREE.BufferGeometry().setFromPoints([
-                new THREE.Vector3(a.x, a.y, a.z),
-                new THREE.Vector3(b.x, b.y, b.z),
-              ]);
-              const line = new THREE.Line(geo, lineMat);
-              scene.add(line);
+      // Edges
+      if (state.edges !== 'none') {
+        let pairs = [];
+        if (state.edges === 'translations') {
+          // connect translations across languages
+          const meaningGroups = [
+            ["man","hombre","男人"],
+            ["woman","mujer","女人"],
+            ["uncle","tío","叔叔"],
+            ["aunt","tía","阿姨"],
+          ];
+          for (const g of meaningGroups) {
+            for (let i = 0; i < g.length; i++) {
+              for (let j = i + 1; j < g.length; j++) {
+                if (g[i] in posMap && g[j] in posMap) pairs.push([g[i], g[j]]);
+              }
+            }
+          }
+        } else if (state.edges === 'gender') {
+          pairs = GENDER_PAIRS.filter(([a,b]) => a in posMap && b in posMap);
+        } else if (state.edges === 'generation') {
+          const parent = DATA.groups.parent_generation;
+          const older = DATA.groups.older_generation;
+          // intra-group connections (same generation, different language)
+          for (const group of [parent, older]) {
+            for (let i = 0; i < group.length; i++) {
+              for (let j = i + 1; j < group.length; j++) {
+                if (getLanguage(group[i]) !== getLanguage(group[j]) && group[i] in posMap && group[j] in posMap) {
+                  pairs.push([group[i], group[j]]);
+                }
+              }
             }
           }
         }
+
+        const lineMat = new THREE.LineBasicMaterial({
+          color: state.edges === 'gender' ? 0xff8a80 : 0x404050,
+          transparent: true,
+          opacity: state.edges === 'gender' ? 0.45 : 0.25,
+        });
+        for (const [a, b] of pairs) {
+          const pa = posMap[a], pb = posMap[b];
+          const geo = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(pa.x, pa.y, pa.z),
+            new THREE.Vector3(pb.x, pb.y, pb.z),
+          ]);
+          edgesGroup.add(new THREE.Line(geo, lineMat));
+        }
       }
 
-      // Starfield background
-      const starGeo = new THREE.BufferGeometry();
-      const starCount = 800;
-      const starPositions = new Float32Array(starCount * 3);
-      for (let i = 0; i < starCount * 3; i++) {
-        starPositions[i] = (Math.random() - 0.5) * 40;
+      // Update info text
+      const info = document.getElementById('projection-info');
+      if (state.projection === 'pca') {
+        const ev = proj.explained_variance_ratio;
+        const total = ev.reduce((a,b)=>a+b,0);
+        info.textContent = `PCA projection (${(total*100).toFixed(1)}% variance explained)`;
+      } else if (state.projection === 'tsne') {
+        info.textContent = `t-SNE projection (perplexity=5)`;
+      } else {
+        info.textContent = `UMAP projection (n_neighbors=3)`;
       }
-      starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-      const starMat = new THREE.PointsMaterial({ color: 0x505060, size: 0.02 });
-      const stars = new THREE.Points(starGeo, starMat);
-      scene.add(stars);
+
+      // Update legend
+      const legend = document.getElementById('color-legend');
+      if (state.color === 'language') {
+        legend.innerHTML = `
+          <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> English</span>
+          <span><span class="dot" style="background:#ffb74d;box-shadow:0 0 6px #ffb74d;"></span> Spanish</span>
+          <span><span class="dot" style="background:#ff8a80;box-shadow:0 0 6px #ff8a80;"></span> Chinese</span>`;
+      } else if (state.color === 'gender') {
+        legend.innerHTML = `
+          <span><span class="dot" style="background:#4fc3f7;box-shadow:0 0 6px #4fc3f7;"></span> Male</span>
+          <span><span class="dot" style="background:#ff8a80;box-shadow:0 0 6px #ff8a80;"></span> Female</span>`;
+      } else {
+        legend.innerHTML = `
+          <span><span class="dot" style="background:#81c784;box-shadow:0 0 6px #81c784;"></span> Parent gen</span>
+          <span><span class="dot" style="background:#ba68c8;box-shadow:0 0 6px #ba68c8;"></span> Older gen</span>`;
+      }
     }
 
-    init();
+    // ── UI wiring ──
+    function wireGroup(id, key, cb) {
+      const group = document.getElementById(id);
+      group.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        for (const b of group.querySelectorAll('button')) b.classList.remove('active','active-warm','active-accent');
+        e.target.classList.add('active');
+        state[key] = e.target.dataset.val;
+        cb && cb();
+        buildScene();
+      });
+    }
 
-    // Animation loop
+    wireGroup('projection-btns', 'projection');
+    wireGroup('edge-btns', 'edges');
+    wireGroup('color-btns', 'color');
+    wireGroup('size-btns', 'size');
+
+    // ── Heatmap ──
+    const heatmapOverlay = document.getElementById('heatmap-overlay');
+    const heatmapCanvas = document.getElementById('heatmap-canvas');
+    let heatmapCtx = null;
+    let heatmapCellSize = 0;
+
+    function drawHeatmap() {
+      const words = DATA.words;
+      const simMap = new Map();
+      for (const s of DATA.similarities) {
+        simMap.set(`${s.word1}|${s.word2}`, s.cosine);
+        simMap.set(`${s.word2}|${s.word1}`, s.cosine);
+      }
+
+      const cell = 40;
+      const pad = 80;
+      const w = words.length * cell + pad;
+      const h = words.length * cell + pad;
+      heatmapCanvas.width = w * 2; // retina
+      heatmapCanvas.height = h * 2;
+      heatmapCanvas.style.width = w + 'px';
+      heatmapCanvas.style.height = h + 'px';
+      const ctx = heatmapCanvas.getContext('2d');
+      ctx.scale(2, 2);
+      heatmapCtx = ctx;
+      heatmapCellSize = cell;
+
+      // background
+      ctx.fillStyle = '#050508';
+      ctx.fillRect(0, 0, w, h);
+
+      // cells
+      for (let i = 0; i < words.length; i++) {
+        for (let j = 0; j < words.length; j++) {
+          let val = 1.0;
+          if (i === j) val = 1.0;
+          else val = simMap.get(`${words[i]}|${words[j]}`) || 0;
+          const t = Math.max(0, Math.min(1, val));
+          const r = Math.floor(5 + t * 120);
+          const g = Math.floor(20 + t * 160);
+          const b = Math.floor(40 + t * 200);
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
+          ctx.fillRect(pad + j * cell, pad + i * cell, cell - 1, cell - 1);
+        }
+      }
+
+      // labels
+      ctx.fillStyle = '#a0a0b0';
+      ctx.font = '11px -apple-system, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i < words.length; i++) {
+        ctx.fillText(words[i], pad - 8, pad + i * cell + cell / 2);
+      }
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      for (let j = 0; j < words.length; j++) {
+        ctx.save();
+        ctx.translate(pad + j * cell + cell / 2, pad - 6);
+        ctx.rotate(-Math.PI / 4);
+        ctx.fillText(words[j], 0, 0);
+        ctx.restore();
+      }
+    }
+
+    heatmapCanvas.addEventListener('mousemove', (e) => {
+      if (!heatmapCtx) return;
+      const rect = heatmapCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const pad = 80;
+      const cell = heatmapCellSize;
+      const words = DATA.words;
+      const j = Math.floor((x - pad) / cell);
+      const i = Math.floor((y - pad) / cell);
+      if (i >= 0 && i < words.length && j >= 0 && j < words.length) {
+        let val = 1.0;
+        if (i !== j) {
+          const key = `${words[i]}|${words[j]}`;
+          const sim = DATA.similarities.find(s => (s.word1 === words[i] && s.word2 === words[j]) || (s.word1 === words[j] && s.word2 === words[i]));
+          val = sim ? sim.cosine : 0;
+        }
+        document.getElementById('heatmap-note').textContent = `${words[i]} ↔ ${words[j]}: cosine = ${val.toFixed(4)}`;
+      }
+    });
+
+    document.getElementById('btn-heatmap').addEventListener('click', () => {
+      if (!heatmapOverlay.classList.contains('visible')) {
+        drawHeatmap();
+        heatmapOverlay.classList.add('visible');
+      } else {
+        heatmapOverlay.classList.remove('visible');
+      }
+    });
+    document.getElementById('heatmap-close').addEventListener('click', () => {
+      heatmapOverlay.classList.remove('visible');
+    });
+
+    // ── Init ──
+    loading.style.display = 'none';
+    buildScene();
+
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -345,7 +831,6 @@
     }
     animate();
 
-    // Resize
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
