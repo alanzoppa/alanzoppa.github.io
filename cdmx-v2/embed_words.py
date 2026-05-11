@@ -19,15 +19,18 @@ from pathlib import Path
 
 
 def get_api_key() -> str:
-    env_path = Path.home() / "Code" / "mnestic" / ".env"
-    if env_path.exists():
-        for line in env_path.read_text().splitlines():
-            if line.startswith("OPENROUTER_API_KEY="):
-                return line.split("=", 1)[1].strip()
+    # Check local .env first, then ~/Code/mnestic/.env, then environment
+    for env_path in [Path.cwd() / ".env", Path.home() / "Code" / "mnestic" / ".env"]:
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                if line.startswith("OPENROUTER_API_KEY="):
+                    val = line.split("=", 1)[1].strip()
+                    if val:
+                        return val
     key = os.getenv("OPENROUTER_API_KEY")
     if key:
         return key
-    raise RuntimeError("OPENROUTER_API_KEY not found in mnestic/.env or env")
+    raise RuntimeError("OPENROUTER_API_KEY not found in .env, mnestic/.env, or env")
 
 
 def embed_texts(texts: list[str], api_key: str) -> list[list[float]]:
@@ -77,7 +80,7 @@ def pca_3d(embeddings: list[list[float]]) -> dict:
     }
 
 
-def tsne_3d(embeddings: list[list[float]], perplexity: float = 5.0, random_state: int = 42) -> list[list[float]]:
+def tsne_3d(embeddings: list[list[float]], perplexity: float = 7.0, random_state: int = 42) -> list[list[float]]:
     from sklearn.manifold import TSNE
     import numpy as np
     X = np.array(embeddings, dtype=np.float32)
@@ -86,7 +89,7 @@ def tsne_3d(embeddings: list[list[float]], perplexity: float = 5.0, random_state
     return coords.tolist()
 
 
-def umap_3d(embeddings: list[list[float]], n_neighbors: int = 3, min_dist: float = 0.1, random_state: int = 42) -> list[list[float]]:
+def umap_3d(embeddings: list[list[float]], n_neighbors: int = 7, min_dist: float = 0.1, random_state: int = 42) -> list[list[float]]:
     import umap
     import numpy as np
     X = np.array(embeddings, dtype=np.float32)
@@ -141,9 +144,10 @@ def main() -> None:
     # 3. Language centroids
     print("Computing language centroids...")
     translations = {
-        "en": ["man", "woman", "uncle", "aunt"],
-        "es": ["hombre", "mujer", "tío", "tía"],
-        "zh": ["男人", "女人", "叔叔", "阿姨"],
+        "en": ["man", "woman", "uncle", "aunt", "rice", "train"],
+        "es": ["hombre", "mujer", "tío", "tía", "arroz", "tren"],
+        "zh": ["男人", "女人", "叔叔", "阿姨", "米饭", "火车"],
+        "hi": ["आदमी", "औरत", "चाचा", "चाची", "चावल", "ट्रेन"],
     }
     lang_idx = {lang: [words.index(w) for w in ws if w in words] for lang, ws in translations.items()}
     centroids = {}
@@ -153,11 +157,12 @@ def main() -> None:
         c = [sum(embeddings[i][d] for i in idxs) / len(idxs) for d in range(dim)]
         centroids[lang] = [round(v, 6) for v in c]
 
-    # 4. Gender vectors
+    # 4. Gender vectors (kinship terms only — rice/train are not gendered)
     print("Computing gender vectors...")
     gender_pairs = [
         ("man", "woman"), ("hombre", "mujer"), ("男人", "女人"),
         ("uncle", "aunt"), ("tío", "tía"), ("叔叔", "阿姨"),
+        ("आदमी", "औरत"), ("चाचा", "चाची"),
     ]
     gender_vectors = {}
     base_diff = None
@@ -212,7 +217,10 @@ def main() -> None:
 
     # 8. PCA distortion check for key pairs
     print("Checking PCA distortion...")
-    key_pairs = [("man", "hombre"), ("man", "男人"), ("man", "woman"), ("uncle", "tío")]
+    key_pairs = [
+        ("man", "hombre"), ("man", "男人"), ("man", "woman"), ("uncle", "tío"),
+        ("rice", "arroz"), ("rice", "米饭"), ("train", "tren"), ("rice", "train"),
+    ]
     distortions = []
     for a, b in key_pairs:
         if a not in words or b not in words:
@@ -232,10 +240,12 @@ def main() -> None:
 
     # 9. Semantic groups
     groups = {
-        "male_adult": [w for w in ["man", "hombre", "男人", "uncle", "tío", "叔叔"] if w in words],
-        "female_adult": [w for w in ["woman", "mujer", "女人", "aunt", "tía", "阿姨"] if w in words],
-        "parent_generation": [w for w in ["man", "woman", "hombre", "mujer", "男人", "女人"] if w in words],
-        "older_generation": [w for w in ["uncle", "aunt", "tío", "tía", "叔叔", "阿姨"] if w in words],
+        "male_adult": [w for w in ["man", "hombre", "男人", "आदमी", "uncle", "tío", "叔叔", "चाचा"] if w in words],
+        "female_adult": [w for w in ["woman", "mujer", "女人", "औरत", "aunt", "tía", "阿姨", "चाची"] if w in words],
+        "parent_generation": [w for w in ["man", "woman", "hombre", "mujer", "男人", "女人", "आदमी", "औरत"] if w in words],
+        "older_generation": [w for w in ["uncle", "aunt", "tío", "tía", "叔叔", "阿姨", "चाचा", "चाची"] if w in words],
+        "food": [w for w in ["rice", "arroz", "米饭", "चावल"] if w in words],
+        "transport": [w for w in ["train", "tren", "火车", "ट्रेन"] if w in words],
     }
 
     result = {
@@ -261,11 +271,11 @@ def main() -> None:
                 "points": pca_points,
             },
             "tsne": {
-                "perplexity": 5.0,
+                "perplexity": 7.0,
                 "points": tsne_points,
             },
             "umap": {
-                "n_neighbors": 3,
+                "n_neighbors": 7,
                 "min_dist": 0.1,
                 "points": umap_points,
             },
