@@ -106,9 +106,6 @@
   [data-theme="dark"] .nav-link.active { background: #4C72B0; }
   [data-theme="dark"] .theme-toggle { color: #aaa; }
   [data-theme="dark"] .theme-toggle:hover { color: #eee; }
-  [data-theme="dark"] .plotly-graph-div text {
-    text-shadow: 0 0 4px #0d1117, 0 0 6px #0d1117;
-  }
 </style>
 </head>
 <body>
@@ -242,27 +239,25 @@
       const isDark = theme === DARK_THEME;
       const bg = isDark ? '#0d1117' : '#fafafa';
       const font = isDark ? '#e1e1e1' : '#222';
-      const grid = isDark ? '#333' : 'white';
       const graphs = document.querySelectorAll('.plotly-graph-div');
       graphs.forEach(el => {
-        Plotly.relayout(el.id, {
+        const update = {
           'paper_bgcolor': bg,
           'plot_bgcolor': bg,
           'font.color': font,
           'scene.bgcolor': bg,
           'scene.xaxis.backgroundcolor': bg,
-          'scene.xaxis.gridcolor': grid,
-          'scene.xaxis.linecolor': grid,
-          'scene.xaxis.zerolinecolor': grid,
           'scene.yaxis.backgroundcolor': bg,
-          'scene.yaxis.gridcolor': grid,
-          'scene.yaxis.linecolor': grid,
-          'scene.yaxis.zerolinecolor': grid,
           'scene.zaxis.backgroundcolor': bg,
-          'scene.zaxis.gridcolor': grid,
-          'scene.zaxis.linecolor': grid,
-          'scene.zaxis.zerolinecolor': grid,
-        });
+        };
+        if (isDark) {
+          ['xaxis', 'yaxis', 'zaxis'].forEach(axis => {
+            update['scene.' + axis + '.gridcolor'] = '#333';
+            update['scene.' + axis + '.linecolor'] = '#333';
+            update['scene.' + axis + '.zerolinecolor'] = '#333';
+          });
+        }
+        Plotly.relayout(el.id, update);
       });
     }
 
