@@ -254,6 +254,14 @@
             update['scene.' + axis + '.linecolor'] = '#333';
             update['scene.' + axis + '.zerolinecolor'] = '#333';
           });
+        } else {
+          update['scene.bgcolor'] = '#E5ECF6';
+          ['xaxis', 'yaxis', 'zaxis'].forEach(axis => {
+            update['scene.' + axis + '.backgroundcolor'] = '#E5ECF6';
+            update['scene.' + axis + '.gridcolor'] = 'white';
+            update['scene.' + axis + '.linecolor'] = 'white';
+            update['scene.' + axis + '.zerolinecolor'] = 'white';
+          });
         }
         Plotly.relayout(el.id, update);
       });
