@@ -245,13 +245,11 @@
           'paper_bgcolor': bg,
           'plot_bgcolor': bg,
           'font.color': font,
-          'scene.bgcolor': bg,
-          'scene.xaxis.backgroundcolor': bg,
-          'scene.yaxis.backgroundcolor': bg,
-          'scene.zaxis.backgroundcolor': bg,
         };
         if (isDark) {
+          update['scene.bgcolor'] = bg;
           ['xaxis', 'yaxis', 'zaxis'].forEach(axis => {
+            update['scene.' + axis + '.backgroundcolor'] = bg;
             update['scene.' + axis + '.gridcolor'] = '#333';
             update['scene.' + axis + '.linecolor'] = '#333';
             update['scene.' + axis + '.zerolinecolor'] = '#333';
