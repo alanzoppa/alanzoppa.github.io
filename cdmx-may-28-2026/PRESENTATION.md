@@ -3,7 +3,7 @@
 A Personal Experiment in Vibe Coding
 
 **Talk:** CDMX, May 28, 2026
-**Duration:** ~32 minutes + Q&A
+**Duration:** ~15 minutes + Q&A
 **Format:** Marp slide deck (SLIDES.md) with speaker notes (SPEAKER_NOTES.md)
 
 ---
@@ -26,7 +26,7 @@ This talk is a personal retrospective on building software through AI agents —
 
 ### Slide 1: Title
 
-**Content:** Talk title, name, subtitle "A Personal Experiment in Vibe Coding." Dark theme, minimalist. Optionally a tagline: "You don't lay every brick. You design the system, set the guardrails, and let the interns do the work."
+**Content:** Talk title, name, subtitle "A Personal Experiment in Vibe Coding." Dark theme, minimalist.
 
 **Media:** None (text-only title slide)
 
@@ -39,7 +39,7 @@ This talk is a personal retrospective on building software through AI agents —
 **Content:** Three numbered research questions displayed as a list. Each question gets a one-line expansion. Visual: simple numbered list with icons or bold numbers.
 
 1. **Open-weights models** — How far can they go with real autonomy?
-2. **Default prompts** — What breaks without Claude's behavioral guardrails?
+2. **Open-source tools** — What degrees of freedom are available?
 3. **Embeddings** — How can I use them to navigate my own data?
 
 **Media:** None
@@ -55,13 +55,10 @@ This talk is a personal retrospective on building software through AI agents —
 | Service | Cost | What You Get |
 |---|---|---|
 | Ollama Pro | $20/mo | Nearly inexhaustible tokens, DeepSeek v4, Qwen 3 |
-| OpenCode Go | $10/mo | Agent runtime, subagent orchestration |
-| OpenRouter | ~$0.01 | Embed ~1600 documents (Qwen 0.6B Embedding) |
-| **Total** | **~$30/mo** | A coding agent that runs all day |
+| OpenRouter | ~$0.01 | Embed ~1600 documents (Qwen 8B Embedding) |
+| **Total** | **~$20/mo** | A coding agent that runs all day |
 
 Optional callout: "Embedding 1600 documents cost one cent."
-
-**Media:** `token-cost-demo.mp4` (optional) — Ollama Pro dashboard, OpenRouter billing, OpenCode Go subscription
 
 **Speaker notes reference:** SPEAKER_NOTES.md §Slide 3 — Cost narrative (3 min)
 
@@ -74,8 +71,7 @@ Optional callout: "Embedding 1600 documents cost one cent."
 | Tool | Role | Best For |
 |---|---|---|
 | **OpenCode** | Primary coding agent | Real dev work, subagent orchestration |
-| **Openclaw** | Personal assistant | GitHub Pages, data gathering |
-| **Hermes Agent** | DevOps specialist | System debugging (Avahi, systemd, nginx) |
+| **Hermes Agent** | Agentic assistant | System debugging (Avahi, systemd, nginx) |
 | **agent-browser** | Web automation | CLI-friendly browser control for agents |
 
 Key message: knowing which tool to reach for is half the battle.
@@ -273,26 +269,6 @@ All media assets needed for the presentation. See `PUNCHLIST.md` for detailed cr
 | `SPEAKER_NOTES.md` | ✅ Complete | Full speaker cues, timing, and Q&A prep |
 | `PUNCHLIST.md` | ✅ Complete | Detailed creation instructions for each media asset |
 | `SLIDES.md` | ⬜ To create | Marp-compatible markdown slide deck |
-
----
-
-## Timing Budget
-
-| Section | Slides | Target |
-|---|---|---|
-| Opening + Three Questions | 1–2 | 4 min |
-| Token Economics | 3 | 3 min |
-| Tool Ecosystem | 4 | 4 min |
-| Managing Interns | 5 | 3 min |
-| Coding Agents as Interns | 6 | 3 min |
-| Guardrails | 7 | 3 min |
-| Mnestic Architecture | 8 | 3 min |
-| Embeddings Explained | 9 | 3 min |
-| Mnestic Demo | 10 | 4 min |
-| Closing | 11 | 2 min |
-| **Total** | **11 slides** | **~32 min** |
-
-Buffer: 5–8 minutes for transitions, demo glitches, and Q&A.
 
 ---
 
