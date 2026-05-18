@@ -1,213 +1,305 @@
-I’m going to talk about a personal experiment in writing code like an architect.
-It’s fair to call this vibe coding, and to be clear I wouldn’t recommend getting
-this far from your code when there are production consequences.
+# Presentation Plan: Writing Code Like an Architect
 
-----
+A Personal Experiment in Vibe Coding
 
-I was interested in a few different things here.
+**Talk:** CDMX, May 28, 2026
+**Duration:** ~32 minutes + Q&A
+**Format:** Marp slide deck (SLIDES.md) with speaker notes (SPEAKER_NOTES.md)
 
-1. How far I can push open-weights models? How do these compare to the flagship
-   models?
-2. What mistakes do agents make without the default prompts baked into Claude?
-3. How can I use embeddings to navigate my own data? I really only understand
-   them at an interface level.
+---
 
+## Overview
 
-----
+This talk is a personal retrospective on building software through AI agents — not as a typist, but as an architect directing autonomous subagents. The through-line: open-weights models are competitive, guardrails matter more than model intelligence, and you can get a shocking amount done for $30/month.
 
-## Tokens
+**Three research questions anchor the talk:**
 
-1. Ollama Pro @ 20USD/mo. is very difficult to exhaust in a week. Sometimes slow
-   during peak periods.
-2. OpenCode Go at $10/mo. is a great deal too.
-3. OpenRouter because none of the above have cloud embedding or reranking
-   models, but embedding the whole set of ~1600 documents cost ~0.01 USD.
-4. Embedding and reranking run alright on a Mac with plenty of unified RAM but
-   the inference is cheap enough that I don't bother anymore. Qwen 0.6B
-   Embedding is great for this kind of thing though.
+1. How far can I push open-weights models vs. flagship models?
+2. What mistakes do agents make without Claude's default system prompts?
+3. How can I use embeddings to navigate my own data?
 
+**The project that ties it together:** Mnestic — a personal knowledge base with semantic search, built almost entirely by AI agents, now queryable by any agent via MCP.
 
-----
+---
 
-## Tools
+## Slide Breakdown
 
-1. Opencode is a great open-source alternative to Claude Code. It's not picky
-   about what model you use or which service. It's easy to switch between models
-   and specialize per-model subagents. It already has a rich team of built-in
-   subagents for parallelization and context-saving.
-2. Openclaw did some of the data gathering for me. It's learned how to use
-   github pages in just the way I like, but it tends to write spaghetti code.
-   For anything more technical, it tends to get lost in all the personal details
-   it has access to.
-3. Hermes Agent is much less personal than Openclaw and tends to do a great job
-   with devops type things. It's more opinionated about the kind of help it
-   provides. It's great for things like "figure out why Avahi or systemd or
-   nginx, etc. aren't working."
-4. agent-browser is generally simpler for agents to orchestrate at the CLI
-   compared to playwright.
+### Slide 1: Title
 
+**Content:** Talk title, name, subtitle "A Personal Experiment in Vibe Coding." Dark theme, minimalist. Optionally a tagline: "You don't lay every brick. You design the system, set the guardrails, and let the interns do the work."
 
+**Media:** None (text-only title slide)
 
-----
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 1 — Opening hook (60s)
 
-## Managing Interns
+---
 
-1. Ten years ago I had this group of eight interns, and this feels a lot like
-   managin them.
-2. I gave them tasks that aren't mission-critical without too much guidance. It
-   was more important to see what they coudl do on their own, where they were
-   comfortable experimenting, and where they needed unambiguous limits.
-3. Often they'd take somethign in a completely unexpected way and the results
-   were often either delightful or ridiculous.
-4. In their first week I told them to pick a team name and they did this. They
-   did something weird and memorable and used it as a chance to make fun of me
-   because I didn't give them any limits.
-5. But I'd also have to remind them of things that were obvious. One of them
-   tried to right a stored SQL procedure for a really simple Rails Controller.
-   I had to talk to another one about storing his sweaty gym clothes in a small,
-   shared office. Another didn't show up for meetings because he figured
-   somebody would come get him when it was time.
+### Slide 2: The Three Questions
 
+**Content:** Three numbered research questions displayed as a list. Each question gets a one-line expansion. Visual: simple numbered list with icons or bold numbers.
 
-----
+1. **Open-weights models** — How far can they go with real autonomy?
+2. **Default prompts** — What breaks without Claude's behavioral guardrails?
+3. **Embeddings** — How can I use them to navigate my own data?
 
-## Coding Agents as Interns
+**Media:** None
 
-1. And coding agents are kind of like this. They'll solve problems with a tangle
-   of regex if you don't encourage them to install third-party libraries.
-   They'll flail around with curl forever if you don't install agent-browser or
-   playwright. If the intern thinks its a good idea to form systemd, the agent
-   will think it's a good idea to fork systemd.
-2. They won't commit or push unless you tell them to.
-3. They won't run the tests before pushing unless you tell them to.
-4. They will commit secrets to your git repo, in front of God and everybody,
-   unless you tell them not to.
-5. They will single-thread their way through an entire task unless you tell them
-   to parallelize.
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 2 — Three questions expanded (3 min)
 
-----
+---
 
-## Guardrails
+### Slide 3: Token Economics
 
-- **MUST parallelize with subagents** — Default to dispatching subagents. Doing everything yourself is the exception, not the rule. This applies in ALL modes (Plan and Build).
-- **Push after successful complex changes** - When completing a series of related changes (model + migration + command updates + tests passing), commit AND push immediately. Unless told otherwise, ensure that ALL tests are green before pushing.
-- **Test new functionality** plan and write automated tests as you go. Write regression tests where appropriate.
-- **Always specify the subagent type** when presenting a plan. Say "I'll dispatch X to `@build`, Y to `@explore`".
-- **Type safety is preferred** when supported by the language.
-- **Don't reinvent the wheel** - If a robust library is available, prefer this over implementing something from scratch. Use standard or existing package management solutions. Don't re-test library functionality.
+**Content:** Cost breakdown as a visual table or card layout. Four items with dollar amounts and key stats:
 
+| Service | Cost | What You Get |
+|---|---|---|
+| Ollama Pro | $20/mo | Nearly inexhaustible tokens, DeepSeek v4, Qwen 3 |
+| OpenCode Go | $10/mo | Agent runtime, subagent orchestration |
+| OpenRouter | ~$0.01 | Embed ~1600 documents (Qwen 0.6B Embedding) |
+| **Total** | **~$30/mo** | A coding agent that runs all day |
 
-----
+Optional callout: "Embedding 1600 documents cost one cent."
 
-## Code I wouldn't have bothered to write.
+**Media:** `token-cost-demo.mp4` (optional) — Ollama Pro dashboard, OpenRouter billing, OpenCode Go subscription
 
-1. I built this thing (I'll add a video later).
-2. I had extensive notes over years and years in different formats. I wanted to
-   organize them and find connections between them.
-3. I wanted to apply the same process to my work notes and give my agents deep
-   access to context about my workday.
-4. I wanted to understand embedding models better. This part was a little
-   frustrating because I honestly only get how they work at an interface level.
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 3 — Cost narrative (3 min)
 
+---
 
+### Slide 4: Tool Ecosystem
 
-----
+**Content:** Four-tool comparison showing distinct personalities and strengths. Visual: four cards or quadrants.
 
-## Embedding how-to
+| Tool | Role | Best For |
+|---|---|---|
+| **OpenCode** | Primary coding agent | Real dev work, subagent orchestration |
+| **Openclaw** | Personal assistant | GitHub Pages, data gathering |
+| **Hermes Agent** | DevOps specialist | System debugging (Avahi, systemd, nginx) |
+| **agent-browser** | Web automation | CLI-friendly browser control for agents |
 
-1. These are sort of a part of an LLM. They'll take input and return (for
-   example) a set of coordinates in 4,096 dimensions.
-2. These coordiantes are relative to the meaning of the word.
-3. Take a look at the example. Here the embeddings are compressed into their
-   most significant three dimensions, and you can see that "uncle" bears about
-   the same relationship to "aunt" as "man" does to "woman."
-4. The "difference" between two embeddings is the cosine distance between the
-   two embeddings relative to the cartesian center.
+Key message: knowing which tool to reach for is half the battle.
 
+**Media:** `tools-ecosystem.png` — visual showing tool ecosystem and connections
 
-----
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 4 — Tool walkthrough (4 min)
 
-## That's what I wanted from Mnestic.
+---
 
-[live or recorded demo]
+### Slide 5: Managing Interns
 
-1. What you're seeing here is a cloud of notes with >75% relationship to each
-   other. The clusters are meaningful. It finds notes from the same series very
-   easily.
-2. This makes it really easy for different agents to tap into the MCP frontend
-   and get a ton of detailed context.
-3. My work notes are mostly generated from the Zoom transcripts. Typically
-   Claude goes into Zoom, captures the AI summaries, and applies my styleguide
-   for notes before dumping into Mnestic.
-4. And then in the next session, it's actually able to follow threads like "Alan
-   promised to send Ale an email, did he remember?"
+**Content:** Split layout. Left side: the intern photo (`interns.jpg`). Right side: three bullet points from the story:
 
+- **Give them room to surprise you** — they picked a ridiculous team name and made fun of me
+- **They'll overengineer** — stored SQL procedure for a simple Rails controller
+- **They need obvious limits** — gym clothes in the office, skipped meetings
 
+Transition line: "These aren't competence problems. They're judgment problems."
 
+**Media:**
+- `interns.jpg` — photo of the intern team (primary visual for this slide)
+- `interns-comparison.png` — side-by-side intern vs. agent behaviors (can be Slide 6 or a second visual here)
 
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 5 — Intern story (3 min)
 
+---
 
+### Slide 6: Coding Agents as Interns
 
+**Content:** Parallel behaviors — intern on the left, agent on the right. Five rows:
 
+| Intern Behavior | Agent Behavior |
+|---|---|
+| Overengineers a simple task | Solves problems with regex tangles |
+| Needs to be told to show up | Won't commit or push unless told |
+| Needs to be reminded of basics | Won't run tests before pushing |
+| No sense of what's sensitive | Commits secrets to git |
+| Does one thing at a time | Single-threads through tasks |
 
+Key message: every one of these is a judgment gap, not a capability gap. Agents CAN do these things — they just don't know they should.
 
+**Media:** `interns-comparison.png` — the side-by-side visual (primary for this slide)
 
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 6 — Agent parallels (3 min)
 
+---
 
+### Slide 7: Guardrails
 
+**Content:** Six guardrail rules displayed as a checklist or card grid. Title: "The Solution Isn't Smarter Models — It's Better Guardrails."
 
+- **MUST parallelize with subagents** — Dispatching is the default; solo work is the exception
+- **Push after successful complex changes** — Commit AND push; all tests green first
+- **Test new functionality** — Write automated tests as you go; regression tests where needed
+- **Always specify the subagent type** — "I'll dispatch X to @build, Y to @explore"
+- **Type safety is preferred** — When supported by the language
+- **Don't reinvent the wheel** — Prefer robust libraries; don't re-test library functionality
 
-But I was interested in how far I could push agency with open models. You can
-get a shocking number of LLM tokens for $20/month now. Ollama Pro is so generous
-I can’t use it up, and let smarter models than I technically need do the dirty
-work.
+**Media:**
+- `guardrails-checklist.png` — visual checklist rendering
+- `guardrails-in-action.gif` — 30-second demo of guardrails working (auto-test, auto-push, library preference)
 
-So I'm going to tell you about what I built, what problems it solves for me, and
-mostly how I let the AIs do most of the work without delivering slop.o
+**Decision matrix callout:** Add a smaller inset or transition note showing the model-to-task mapping (Slide 7b or a reveal):
+> Explore → @flash / DeepSeek v4 Flash · Refactor → @kimi / Kimi k2.6 · Tests → @hurry / MiniMax m2.7
 
-First, let's talk about open-weights models. Chinese companies are delivering a
-lot of great work.
+**Media:** `model-decision-matrix.png` — the model assignment table as a styled card
 
-GLM 5.1 and Kimi k2.6 are 
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 7 — Guardrails walkthrough + decision matrix (3 min)
 
-Plan then execute is a common workflow. Most agentic coding tools are built this
-way, and optimize for using a larger model to plan and a smaller model to
-execute. We can carry this further. Here's a few of my standard instructions.
-Here's the high points and why it's so effective.
+---
 
-1. Global Config (~/.config/opencode/AGENTS.md) — The Powerhouse This is a
-   detailed orchestration manual for AI coding agents. What makes it effective:
-   a) Clear hierarchy of model assignment. It defines a Decision Matrix mapping
-   task types to specific models:
-> | Task Type | Subagent | Model | Why | |---|---|---|---| | Exploring many
-> files, batch metadata edits, pattern-based find-and-replace | @flash |
-> ollama-cloud/deepseek-v4-flash | Token-efficient, fast on large sets | |
-> Writing standalone files, tests, configs, migrations, data transforms | @hurry
-> | ollama-cloud/minimax-m2.7 | Fast for well-defined, self-contained work | |
-> Architectural changes, refactoring, complex feature implementation | @kimi |
-> ollama-cloud/kimi-k2.6 | Smarter model for tasks requiring judgment |
-b) Aggressive parallelization mandate. It doesn't suggest — it requires
-delegation:
-> "MUST parallelize with subagents — Default to dispatching subagents. Doing
-> everything yourself is the exception, not the rule."
-And a concrete self-check rule:
-> "Before executing multi-step work, explicitly ask: 'Can any of these steps be
-> dispatched to a subagent?' If yes, dispatch them. When your todo list has 3+
-> items, at least half should be dispatched to subagents where possible."
-c) Acknowledges tool limitations explicitly. The MCP limitation section prevents
-silent failures:
-> "MCP servers (notes-browser, Linear, Notion, GitHub) are enabled in
-> opencode.json but subagents dispatched via the Task tool cannot access them."
-d) Git discipline baked in. Push-after-green, track AGENTS.md changes, and keep
-skills in sync with repos.  e) Terseness as a value. Code style enforces the
-same brevity the system instructions demand:
-> "Comments are terse omit if code is self-explanatory, use sparingly, keep
-> short."
+### Slide 8: Mnestic Architecture
 
-From the Code Style section of ~/.config/opencode/AGENTS.md:
-> "Don't reinvent the wheel - If a robust library is available, prefer this over
-> implementing something from scratch. Use standard or existing package
-> management solutions. Don't re-test library functionality."
-The mandate is threefold: prefer existing robust libraries, use standard package
-managers (don't ad-hoc install), and don't write tests that re-verify what a
-library already guarantees.
+**Content:** Architecture diagram showing the full pipeline. Left to right flow:
+
+```
+[Zoom Transcripts] ──┐
+[Manual Notes]     ──┤
+[Work Logs]        ──┘
+        │
+        ▼
+  [Claude Processing]
+  transcript → styleguide → structured markdown
+        │
+        ▼
+  [OpenViking Ingestion]
+  ChromaDB + qwen3-embedding-8b (4096-dim)
+        │
+        ▼
+  [MCP Server Frontend]
+        │
+        ├──→ [Hermes Agent]
+        ├──→ [OpenCode]
+        └──→ [Openclaw]
+        │
+        ▼
+  [Similarity Cloud]
+  Notes clustered by >75% cosine similarity
+```
+
+**Media:** `mnestic-architecture.html` — dark-themed SVG architecture diagram (primary visual)
+
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 8 — Architecture walkthrough (3 min)
+
+---
+
+### Slide 9: Embeddings Explained
+
+**Content:** Intuitive, non-mathematical explanation of embeddings. Two visual concepts:
+
+1. **The word relationship:** "uncle" is to "aunt" as "man" is to "woman" — shown as arrows in a reduced 3D space
+2. **Cosine distance:** angle between two vectors = semantic difference. Near-zero = similar meaning. Near-180 = very different.
+
+Key insight: "Sad is close to unhappy even though they share no letters. You're matching meaning, not keywords."
+
+**Media:** `embedding-viz.html` — interactive 3D visualization of word relationships and cosine distance
+
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 9 — Embeddings explained (3 min)
+
+---
+
+### Slide 10: Mnestic Demo
+
+**Content:** Placeholder slide for the live or recorded demo. Shows:
+
+- The Mnestic web UI with note similarity cloud
+- An agent querying via MCP (Hermes or OpenCode using `mcp_mnestic_*` tools)
+- Zoom transcript → Claude → Mnestic pipeline result
+- Cross-session memory: "Alan promised to send Ale an email, did he remember?"
+
+**Media:** `mnestic-demo.mp4` — 2-3 minute screen recording (primary; or live demo)
+
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 10 — Demo narration cues (4 min)
+
+---
+
+### Slide 11: Closing
+
+**Content:** Five takeaways displayed as a summary list:
+
+1. **$20/month gets you a shocking number of tokens** — Ollama Pro is nearly inexhaustible
+2. **Open-weights models are competitive** — GLM 5.1, Kimi k2.6, DeepSeek v4 from Chinese labs
+3. **Plan-then-execute works at scale** — Large model plans, smaller models execute, explicit task-to-model mapping
+4. **Guardrails matter more than model intelligence** — Clear mandates, not suggestions
+5. **I built something I wouldn't have bothered to write by hand** — Mnestic: scattered notes → queryable agent knowledge base
+
+Final line: "That's writing code like an architect. You don't lay every brick. You design the system, you set the guardrails, and you let the interns do the work."
+
+**Media:** None (text-only)
+
+**Speaker notes reference:** SPEAKER_NOTES.md §Slide 11 — Closing + Q&A prep (2 min + buffer)
+
+---
+
+## Media Punch List
+
+All media assets needed for the presentation. See `PUNCHLIST.md` for detailed creation instructions.
+
+### Screen Recordings & GIFs
+
+| # | Asset | Filename | Slides | Description |
+|---|---|---|---|---|
+| 1 | Mnestic demo | `mnestic-demo.mp4` | 10 | 2-3 min: UI cloud, MCP query, Zoom→Mnestic pipeline, cross-session recall |
+| 2 | Agent parallelization | `agent-parallelization.gif` | 7 | 30-60s: OpenCode dispatching subagents, decision matrix in action |
+| 3 | Guardrails in action | `guardrails-in-action.gif` | 7 | 30s: auto-test, auto-push, library-over-regex preference |
+| 4 | Token cost demo | `token-cost-demo.mp4` | 3 | (Optional) 1 min: Ollama Pro dashboard, OpenRouter billing, subscription pages |
+
+### Diagrams & Visuals
+
+| # | Asset | Filename | Slides | Description |
+|---|---|---|---|---|
+| 5 | Mnestic architecture | `mnestic-architecture.html` | 8 | Dark SVG: note sources → Claude → ChromaDB → MCP → agents → similarity cloud |
+| 6 | Embedding visualization | `embedding-viz.html` | 9 | Dark HTML: word relationships in 3D space, cosine distance explanation |
+| 7 | Model decision matrix | `model-decision-matrix.png` | 7 | Styled table: Task Type × Subagent × Model × Why |
+| 8 | Guardrails checklist | `guardrails-checklist.png` | 7 | Visual checklist of all six guardrail rules |
+| 9 | Tools ecosystem | `tools-ecosystem.png` | 4 | Visual: four tools, their roles, and relationships |
+| 10 | Interns comparison | `interns-comparison.png` | 5 or 6 | Side-by-side: intern behaviors ↔ agent behaviors |
+
+### Existing Assets
+
+| # | Asset | Filename | Slides | Description |
+|---|---|---|---|---|
+| 11 | Intern team photo | `interns.jpg` | 5 | Photo of the eight interns (already present) |
+
+### Total: 10 new media assets + 1 existing photo
+
+---
+
+## Supporting Documents
+
+| Document | Status | Purpose |
+|---|---|---|
+| `PRESENTATION.md` | ✅ This file | Slide plan and media punch list |
+| `SPEAKER_NOTES.md` | ✅ Complete | Full speaker cues, timing, and Q&A prep |
+| `PUNCHLIST.md` | ✅ Complete | Detailed creation instructions for each media asset |
+| `SLIDES.md` | ⬜ To create | Marp-compatible markdown slide deck |
+
+---
+
+## Timing Budget
+
+| Section | Slides | Target |
+|---|---|---|
+| Opening + Three Questions | 1–2 | 4 min |
+| Token Economics | 3 | 3 min |
+| Tool Ecosystem | 4 | 4 min |
+| Managing Interns | 5 | 3 min |
+| Coding Agents as Interns | 6 | 3 min |
+| Guardrails | 7 | 3 min |
+| Mnestic Architecture | 8 | 3 min |
+| Embeddings Explained | 9 | 3 min |
+| Mnestic Demo | 10 | 4 min |
+| Closing | 11 | 2 min |
+| **Total** | **11 slides** | **~32 min** |
+
+Buffer: 5–8 minutes for transitions, demo glitches, and Q&A.
+
+---
+
+## Delivery Order (for presenter)
+
+1. Open `SLIDES.md` in Marp/VS Code for slides
+2. Have `SPEAKER_NOTES.md` open in split pane for cues
+3. Queue up `mnestic-demo.mp4` for Slide 10
+4. Have `embedding-viz.html` and `mnestic-architecture.html` ready to open in browser
+5. GIFs (`agent-parallelization.gif`, `guardrails-in-action.gif`) embedded in slides or displayed separately
