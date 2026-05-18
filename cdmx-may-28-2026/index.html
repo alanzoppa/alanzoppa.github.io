@@ -71,6 +71,16 @@
   function next() { showSlide(current + 1); }
   function prev() { showSlide(current - 1); }
 
+  // ============ SLIDE 0: TITLE (pretext kinetic) ============
+  addSlide(`
+    <canvas id="pretext"></canvas>
+    <div class="slide-content" style="text-align:center">
+      <h1>Writing Code<br>Like an Architect</h1>
+      <div class="subtitle">A Personal Experiment in Vibe Coding</div>
+      <div class="tagline">CDMX · May 28, 2026</div>
+    </div>
+  `, "SPEAKER NOTES §1: Opening hook — 60 seconds. \"You don't lay every brick. You design the system, set the guardrails, and let the interns do the work.\"", "slide-0", true),
+
   // ============ SLIDE 1: Three Questions ============
   addSlide(`
     <h2>The Three Questions</h2>
@@ -97,12 +107,7 @@
   // ============ SLIDE 3: Tool Ecosystem ============
   addSlide(`
     <h2>Tool Ecosystem</h2>
-    <div class="grid-2">
-      <div class="card"><h3>OpenCode</h3><p>Primary coding agent. Real dev work, subagent orchestration.</p></div>
-      <div class="card"><h3>Openclaw</h3><p>Personal assistant. GitHub Pages, data gathering.</p></div>
-      <div class="card"><h3>Hermes Agent</h3><p>DevOps specialist. System debugging (Avahi, systemd, nginx).</p></div>
-      <div class="card"><h3>agent-browser</h3><p>Web automation. CLI-friendly browser control for agents.</p></div>
-    </div>
+    <img src="tools-ecosystem.png" style="max-width:85vw;max-height:60vh;object-fit:contain;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.4)">
     <p class="tagline">Knowing which tool to reach for is half the battle.</p>
   `, "SPEAKER NOTES §4: Tool walkthrough — 4 min."),
 
@@ -123,59 +128,31 @@
   // ============ SLIDE 5: Coding Agents as Interns ============
   addSlide(`
     <h2>Coding Agents as Interns</h2>
-    <table>
-      <tr><th>Intern Behavior</th><th>Agent Behavior</th></tr>
-      <tr><td>Overengineers a simple task</td><td>Solves problems with regex tangles</td></tr>
-      <tr><td>Needs to be told to show up</td><td>Won't commit or push unless told</td></tr>
-      <tr><td>Needs to be reminded of basics</td><td>Won't run tests before pushing</td></tr>
-      <tr><td>No sense of what's sensitive</td><td>Commits secrets to git</td></tr>
-      <tr><td>Does one thing at a time</td><td>Single-threads through tasks</td></tr>
-    </table>
+    <img src="interns-comparison.png" style="max-width:85vw;max-height:60vh;object-fit:contain;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.4)">
     <p class="tagline">Every one of these is a judgment gap, not a capability gap.</p>
   `, "SPEAKER NOTES §6: Agent parallels — 3 min."),
 
   // ============ SLIDE 6: Guardrails ============
   addSlide(`
     <h2>The Solution Isn't Smarter Models —<br>It's Better Guardrails</h2>
-    <ul class="emoji-bullet" style="max-width:800px;columns:2;column-gap:2rem">
-      <li>MUST parallelize with subagents</li>
-      <li>Push after successful complex changes</li>
-      <li>Test new functionality — write automated tests</li>
-      <li>Always specify the subagent type</li>
-      <li>Type safety is preferred</li>
-      <li>Don't reinvent the wheel</li>
-    </ul>
+    <img src="guardrails-checklist.png" style="max-width:80vw;max-height:55vh;object-fit:contain;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.4)">
     <p class="tagline">Explore → @flash · Refactor → @kimi · Tests → @hurry</p>
   `, "SPEAKER NOTES §7: Guardrails + decision matrix — 3 min."),
 
   // ============ SLIDE 7: Mnestic Architecture ============
   addSlide(`
     <h2>Mnestic Architecture</h2>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#c8c0b8;line-height:1.8;max-width:600px;margin:0 auto;text-align:left">
-      [Zoom Transcripts] ─┐<br>
-      [Manual Notes]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;──┤<br>
-      [Work Logs]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;──┘<br>
-      <span style="margin-left:3em">│</span><br>
-      <span style="margin-left:3em">▼</span><br>
-      <span style="margin-left:2em">[Claude Processing]</span><br>
-      <span style="margin-left:3em">│</span><br>
-      <span style="margin-left:3em">▼</span><br>
-      <span style="margin-left:1em">[ChromaDB + qwen3-embedding-8b 4096-dim]</span><br>
-      <span style="margin-left:3em">│</span><br>
-      <span style="margin-left:3em">▼</span><br>
-      <span style="margin-left:2em">[MCP Server]</span><br>
-      <span style="margin-left:3em">├──→ Hermes Agent</span><br>
-      <span style="margin-left:3em">├──→ OpenCode</span><br>
-      <span style="margin-left:3em">└──→ Openclaw</span><br>
-      <span style="margin-left:3em">│</span><br>
-      <span style="margin-left:3em">▼</span><br>
-      <span style="margin-left:1em">[Similarity Cloud — notes clustered by >75% cosine]</span>
-    </div>
+    <img src="model-decision-matrix.png" style="max-width:80vw;max-height:55vh;object-fit:contain;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,.4);margin-bottom:1em">
+    <a href="mnestic-architecture.html" target="_blank" style="color:#d4a85c;font-size:.9rem;text-decoration:none;border:1px solid rgba(212,168,92,.3);padding:.4em 1em;border-radius:4px;display:inline-block;margin-top:.5em">Open Architecture Diagram ↗</a>
   `, "SPEAKER NOTES §8: Architecture — 3 min."),
 
   // ============ SLIDE 8: Embeddings Explained ============
   addSlide(`
     <h2>Embeddings Explained</h2>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem">
+      <a href="embedding-viz.html" target="_blank" style="color:#d4a85c;font-size:.9rem;text-decoration:none;border:1px solid rgba(212,168,92,.3);padding:.5em 1.2em;border-radius:4px;display:inline-block">3D Word Relationships ↗</a>
+      <a href="word_vectors_3d.html" target="_blank" style="color:#d4a85c;font-size:.9rem;text-decoration:none;border:1px solid rgba(212,168,92,.3);padding:.5em 1.2em;border-radius:4px;display:inline-block">PCA / t-SNE / UMAP Projections ↗</a>
+    </div>
     <p style="text-align:center;font-size:1.2rem;margin-bottom:1em">"uncle" is to "aunt" as "man" is to "woman"</p>
     <div style="text-align:center;color:#d4a85c;font-size:1.1rem;margin-bottom:1.5em">uncle → aunt &nbsp;∥&nbsp; man → woman</div>
     <p style="text-align:center">Sad is close to <span class="highlight">unhappy</span> even though they share no letters.</p>
