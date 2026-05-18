@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Code Like an Architect — CDMX May 28, 2026</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --bg-elev: #161b22;
+  --bg-card: #1c2128;
+  --fg: #e6edf3;
+  --fg-dim: #8b949e;
+  --fg-muted: #6e7681;
+  --accent: #58a6ff;
+  --accent2: #79c0ff;
+  --border: #30363d;
+  --radius: 8px;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --maxw: 960px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  font-size: 16px;
+}
+nav.toc {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+nav.toc .inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav.toc a {
+  color: var(--fg-dim);
+  text-decoration: none;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+nav.toc a:hover { color: var(--fg); background: var(--bg-card); }
+nav.toc a.active { color: var(--accent); font-weight: 600; }
+main { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.hero {
+  text-align: center;
+  padding: 3rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.hero h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.hero .subtitle { color: var(--fg-dim); font-size: 1.1rem; margin: 0 0 1rem; }
+.hero .meta { color: var(--fg-muted); font-size: 0.9rem; }
+.hero .tagline {
+  margin-top: 1.5rem;
+  font-style: italic;
+  color: var(--accent2);
+  font-size: 1rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+h2 {
+  font-size: 1.5rem;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+h3 {
+  font-size: 1.15rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+}
+h4 { font-size: 1rem; color: var(--accent2); margin: 1.5rem 0 0.5rem; }
+.slide-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.slide-card h3 { margin-top: 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+th, td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  color: var(--accent2);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+tr:hover { background: rgba(88,166,255,0.04); }
+ul, ol { padding-left: 1.3rem; margin: 0.75rem 0; }
+li { margin: 0.4rem 0; }
+li strong { color: var(--accent2); }
+code {
+  font-family: var(--font-mono);
+  background: var(--bg-elev);
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  color: #e6edf3;
+}
+pre {
+  background: var(--bg-elev);
+  padding: 1rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  border: 1px solid var(--border);
+}
+pre code { background: none; padding: 0; }
+.callout {
+  background: rgba(88,166,255,0.08);
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.2rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+.callout strong { color: var(--accent2); }
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.diagram {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  color: var(--fg-dim);
+  white-space: pre;
+  margin: 1rem 0;
+}
+.demo-wrap {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+.demo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.demo-title { font-size: 1rem; font-weight: 600; color: var(--accent2); }
+.demo-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.demo-controls button {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--fg-dim);
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+.demo-controls button:hover { border-color: var(--accent); color: var(--fg); }
+.demo-controls button.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+#embed-canvas {
+  width: 100%;
+  height: 420px;
+  background: #05060a;
+  border-radius: 6px;
+  cursor: grab;
+  display: block;
+}
+#embed-canvas:active { cursor: grabbing; }
+.demo-info {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.demo-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--fg-dim);
+}
+.leg-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.analogy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.analogy-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+}
+.analogy-card .word-pair {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  margin: 0.3rem 0;
+}
+.analogy-card .arrow { color: var(--accent); font-size: 1.2rem; }
+.analogy-card .label { font-size: 0.8rem; color: var(--fg-muted); margin-top: 0.5rem; }
+.analogy-card .sim { font-size: 0.75rem; color: var(--accent2); margin-top: 0.3rem; }
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.matrix-cell {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+}
+.matrix-cell .task { font-size: 0.75rem; color: var(--fg-muted); text-transform: uppercase; }
+.matrix-cell .model { font-size: 0.95rem; color: var(--accent2); font-weight: 600; }
+.matrix-cell .why { font-size: 0.8rem; color: var(--fg-dim); margin-top: 0.2rem; }
+footer {
+  text-align: center;
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.table-wrap { overflow-x: auto; }
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.25rem; }
+  #embed-canvas { height: 300px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="toc" aria-label="Table of contents">
+  <div class="inner">
+    <a href="#top">Title</a>
+    <a href="#overview">Overview</a>
+    <a href="#slides">Slides</a>
+    <a href="#demo">Demo</a>
+    <a href="#analogies">Analogies</a>
+    <a href="#timing">Timing</a>
+    <a href="#media">Media</a>
+  </div>
+</nav>
+
+<main>
+
+<div class="hero" id="top">
+  <h1>Writing Code Like an Architect</h1>
+  <p class="subtitle">A Personal Experiment in Vibe Coding</p>
+  <p class="meta">CDMX, May 28, 2026 &middot; ~32 minutes + Q&amp;A</p>
+  <p class="tagline">"You don't lay every brick. You design the system, set the guardrails, and let the interns do the work."</p>
+</div>
+
+<h2 id="overview">Overview</h2>
+<p>This talk is a personal retrospective on building software through AI agents — not as a typist, but as an architect directing autonomous subagents. The through-line: <strong>open-weights models are competitive, guardrails matter more than model intelligence, and you can get a shocking amount done for $30/month.</strong></p>
+<p>The project that ties it all together: <strong>Mnestic</strong> — a personal knowledge base with semantic search, built almost entirely by AI agents, now queryable by any agent via MCP.</p>
+<div class="callout">
+<strong>Three research questions anchor the talk:</strong><br>
+1. How far can I push open-weights models vs. flagship models?<br>
+2. What mistakes do agents make without Claude's default system prompts?<br>
+3. How can I use embeddings to navigate my own data?
+</div>
+
+<h2 id="slides">Slide Breakdown</h2>
+
+<div class="slide-card" id="slide-1">
+  <h3>1. Title Slide</h3>
+  <p><strong>Writing Code Like an Architect</strong> — A Personal Experiment in Vibe Coding</p>
+  <p>Alan Zoppa &middot; CDMX, May 28, 2026</p>
+  <p class="callout" style="margin-top:1rem">Opening hook (60s): "You don't lay every brick. You design the system, set the guardrails, and let the interns do the work."</p>
+</div>
+
+<div class="slide-card" id="slide-2">
+  <h3>2. The Three Questions</h3>
+  <ol>
+    <li><strong>Open-weights models</strong> — How far can they go with real autonomy?</li>
+    <li><strong>Default prompts</strong> — What breaks without Claude's behavioral guardrails?</li>
+    <li><strong>Embeddings</strong> — How can I use them to navigate my own data?</li>
+  </ol>
+</div>
+
+<div class="slide-card" id="slide-3">
+  <h3>3. Token Economics</h3>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Service</th><th>Cost</th><th>What You Get</th></tr>
+    <tr><td>Ollama Pro</td><td>$20/mo</td><td>Nearly inexhaustible tokens, DeepSeek v4, Qwen 3</td></tr>
+    <tr><td>OpenCode Go</td><td>$10/mo</td><td>Agent runtime, subagent orchestration</td></tr>
+    <tr><td>OpenRouter</td><td>~$0.01</td><td>Embed ~1600 documents (Qwen 0.6B Embedding)</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>~$30/mo</strong></td><td><strong>A coding agent that runs all day</strong></td></tr>
+  </table>
+  </div>
+  <div class="callout">Embedding 1600 documents cost one cent.</div>
+</div>
+
+<div class="slide-card" id="slide-4">
+  <h3>4. Tool Ecosystem</h3>
+  <p>Knowing which tool to reach for is half the battle.</p>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Tool</th><th>Role</th><th>Best For</th></tr>
+    <tr><td><strong>OpenCode</strong></td><td>Primary coding agent</td><td>Real dev work, subagent orchestration</td></tr>
+    <tr><td><strong>Openclaw</strong></td><td>Personal assistant</td><td>GitHub Pages, data gathering</td></tr>
+    <tr><td><strong>Hermes Agent</strong></td><td>DevOps specialist</td><td>System debugging (Avahi, systemd, nginx)</td></tr>
+    <tr><td><strong>agent-browser</strong></td><td>Web automation</td><td>CLI-friendly browser control for agents</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="slide-card" id="slide-5">
+  <h3>5. Managing Interns</h3>
+  <div class="two-col">
+    <div>
+      <p>Three lessons from managing a team of eight interns:</p>
+      <ul>
+        <li><strong>Give them room to surprise you</strong> — they picked a ridiculous team name and made fun of me</li>
+        <li><strong>They'll overengineer</strong> — stored SQL procedure for a simple Rails controller</li>
+        <li><strong>They need obvious limits</strong> — gym clothes in the office, skipped meetings</li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout">
+        <p><strong>These aren't competence problems. They're judgment problems.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide-card" id="slide-6">
+  <h3>6. Coding Agents as Interns</h3>
+  <p>Parallel behaviors — every one of these is a <strong>judgment gap, not a capability gap</strong>. Agents CAN do these things — they just don't know they should.</p>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Intern Behavior</th><th>Agent Behavior</th></tr>
+    <tr><td>Overengineers a simple task</td><td>Solves problems with regex tangles</td></tr>
+    <tr><td>Needs to be told to show up</td><td>Won't commit or push unless told</td></tr>
+    <tr><td>Needs to be reminded of basics</td><td>Won't run tests before pushing</td></tr>
+    <tr><td>No sense of what's sensitive</td><td>Commits secrets to git</td></tr>
+    <tr><td>Does one thing at a time</td><td>Single-threads through tasks</td></tr>
+  </table>
+  </div>
+</div>
+
+<div class="slide-card" id="slide-7">
+  <h3>7. Guardrails</h3>
+  <p><strong>The Solution Isn't Smarter Models — It's Better Guardrails.</strong></p>
+  <ul>
+    <li><strong>MUST parallelize with subagents</strong> — Dispatching is the default; solo work is the exception</li>
+    <li><strong>Push after successful complex changes</strong> — Commit AND push; all tests green first</li>
+    <li><strong>Test new functionality</strong> — Write automated tests as you go; regression tests where needed</li>
+    <li><strong>Always specify the subagent type</strong> — "I'll dispatch X to @build, Y to @explore"</li>
+    <li><strong>Type safety is preferred</strong> — When supported by the language</li>
+    <li><strong>Don't reinvent the wheel</strong> — Prefer robust libraries; don't re-test library functionality</li>
+  </ul>
+  <h3>Model Decision Matrix</h3>
+  <div class="matrix-grid">
+    <div class="matrix-cell">
+      <div class="task">Explore</div>
+      <div class="model">@flash / DeepSeek v4 Flash</div>
+      <div class="why">Fast, cheap, broad context</div>
+    </div>
+    <div class="matrix-cell">
+      <div class="task">Refactor</div>
+      <div class="model">@kimi / Kimi k2.6</div>
+      <div class="why">Strong reasoning, long context</div>
+    </div>
+    <div class="matrix-cell">
+      <div class="task">Tests</div>
+      <div class="model">@hurry / MiniMax m2.7</div>
+      <div class="why">Quick, precise, low cost</div>
+    </div>
+  </div>
+</div>
+
+<div class="slide-card" id="slide-8">
+  <h3>8. Mnestic Architecture</h3>
+  <div class="diagram">[Zoom Transcripts] ──┐
+[Manual Notes]     ──┤
+[Work Logs]        ──┘
+        │
+        ▼
+  [Claude Processing]
+  transcript &rarr; styleguide &rarr; structured markdown
+        │
+        ▼
+  [OpenViking Ingestion]
+  ChromaDB + qwen3-embedding-8b (4096-dim)
+        │
+        ▼
+  [MCP Server Frontend]
+        │
+        ├──&rarr; [Hermes Agent]
+        ├──&rarr; [OpenCode]
+        └──&rarr; [Openclaw]
+        │
+        ▼
+  [Similarity Cloud]
+  Notes clustered by &gt;75% cosine similarity</div>
+</div>
+
+<div class="slide-card" id="slide-9">
+  <h3>9. Embeddings Explained</h3>
+  <p><strong>Two intuitive concepts:</strong></p>
+  <h4>The Word Relationship</h4>
+  <p>"uncle" is to "aunt" as "man" is to "woman" — shown as arrows in a reduced 3D space. The vector offset between male and female concepts is <em>approximately the same</em> regardless of language or specific kinship term.</p>
+  <h4>Cosine Distance</h4>
+  <p>The angle between two vectors = semantic difference. Near-zero = similar meaning. Near-180&deg; = very different.</p>
+  <div class="callout">
+    <strong>Key insight:</strong> "Sad is close to unhappy even though they share no letters. You're matching meaning, not keywords."
+  </div>
+  <p style="color:var(--fg-muted); font-size:0.9rem; margin-top:1rem;">
+    Below: interactive 3D visualization of 24 words across 4 languages projected from 4096-dimensional embeddings using PCA, t-SNE, and UMAP.
+  </p>
+</div>
+
+<!-- EMBEDDING DEMO -->
+<div class="demo-wrap" id="demo">
+  <div class="demo-header">
+    <div class="demo-title">Interactive Embedding Visualization</div>
+    <div class="demo-controls">
+      <button id="btn-pca" class="active">PCA</button>
+      <button id="btn-tsne">t-SNE</button>
+      <button id="btn-umap">UMAP</button>
+      <button id="btn-rotate">Auto-rotate</button>
+      <button id="btn-reset">Reset view</button>
+    </div>
+  </div>
+  <canvas id="embed-canvas" width="900" height="420"></canvas>
+  <div class="demo-legend">
+    <span class="leg-item"><span class="leg-swatch" style="background:#4C72B0"></span> male</span>
+    <span class="leg-item"><span class="leg-swatch" style="background:#C44E52"></span> female</span>
+    <span class="leg-item"><span class="leg-swatch" style="background:#DD8452"></span> food</span>
+    <span class="leg-item"><span class="leg-swatch" style="background:#55A868"></span> transport</span>
+  </div>
+  <div class="demo-info">
+    <span>24 words &middot; 4 languages &middot; 4096-dim embeddings (qwen3-embedding-8b)</span>
+    <span>Drag to rotate &middot; Scroll to zoom</span>
+    <span id="projection-label">Projection: PCA (linear, global)</span>
+  </div>
+</div>
+
+<div class="slide-card" id="slide-10">
+  <h3>10. Mnestic Demo</h3>
+  <p>The Mnestic web UI with note similarity cloud, and agents querying via MCP (<code>mcp_mnestic_*</code> tools).</p>
+  <ul>
+    <li>Zoom transcript &rarr; Claude &rarr; structured markdown &rarr; ChromaDB pipeline</li>
+    <li>Cross-session memory: "Alan promised to send Ale an email, did he remember?"</li>
+    <li>Any agent with MCP access can query your entire knowledge base</li>
+  </ul>
+</div>
+
+<div class="slide-card" id="slide-11">
+  <h3>11. Closing Takeaways</h3>
+  <ol>
+    <li><strong>$20/month gets you a shocking number of tokens</strong> — Ollama Pro is nearly inexhaustible</li>
+    <li><strong>Open-weights models are competitive</strong> — GLM 5.1, Kimi k2.6, DeepSeek v4 from Chinese labs</li>
+    <li><strong>Plan-then-execute works at scale</strong> — Large model plans, smaller models execute, explicit task-to-model mapping</li>
+    <li><strong>Guardrails matter more than model intelligence</strong> — Clear mandates, not suggestions</li>
+    <li><strong>I built something I wouldn't have bothered to write by hand</strong> — Mnestic: scattered notes &rarr; queryable agent knowledge base</li>
+  </ol>
+  <div class="callout" style="margin-top:1.5rem; text-align:center; font-size:1.05rem;">
+    "That's writing code like an architect. You don't lay every brick. You design the system, you set the guardrails, and you let the interns do the work."
+  </div>
+</div>
+
+<h2 id="analogies">Word Analogies in Vector Space</h2>
+<p>These pairs show how the embedding model captures semantic relationships across languages. Similar concepts have similar vectors.</p>
+<div class="analogy-grid">
+  <div class="analogy-card">
+    <div class="word-pair" style="color:#4C72B0">man</div>
+    <div class="arrow">&darr;</div>
+    <div class="word-pair" style="color:#C44E52">woman</div>
+    <div class="label">English</div>
+    <div class="sim">offset sim &asymp; 0.55</div>
+  </div>
+  <div class="analogy-card">
+    <div class="word-pair" style="color:#4C72B0">hombre</div>
+    <div class="arrow">&darr;</div>
+    <div class="word-pair" style="color:#C44E52">mujer</div>
+    <div class="label">Spanish</div>
+    <div class="sim">offset sim &asymp; 0.88</div>
+  </div>
+  <div class="analogy-card">
+    <div class="word-pair" style="color:#4C72B0">uncle</div>
+    <div class="arrow">&darr;</div>
+    <div class="word-pair" style="color:#C44E52">aunt</div>
+    <div class="label">English</div>
+    <div class="sim">offset sim &asymp; 0.55</div>
+  </div>
+  <div class="analogy-card">
+    <div class="word-pair" style="color:#4C72B0">t&iacute;o</div>
+    <div class="arrow">&darr;</div>
+    <div class="word-pair" style="color:#C44E52">t&iacute;a</div>
+    <div class="label">Spanish</div>
+    <div class="sim">offset sim &asymp; 0.64</div>
+  </div>
+</div>
+
+<h2 id="timing">Timing Budget</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Section</th><th>Slides</th><th>Target</th></tr>
+  <tr><td>Opening + Three Questions</td><td>1&ndash;2</td><td>4 min</td></tr>
+  <tr><td>Token Economics</td><td>3</td><td>3 min</td></tr>
+  <tr><td>Tool Ecosystem</td><td>4</td><td>4 min</td></tr>
+  <tr><td>Managing Interns</td><td>5</td><td>3 min</td></tr>
+  <tr><td>Coding Agents as Interns</td><td>6</td><td>3 min</td></tr>
+  <tr><td>Guardrails</td><td>7</td><td>3 min</td></tr>
+  <tr><td>Mnestic Architecture</td><td>8</td><td>3 min</td></tr>
+  <tr><td>Embeddings Explained</td><td>9</td><td>3 min</td></tr>
+  <tr><td>Mnestic Demo</td><td>10</td><td>4 min</td></tr>
+  <tr><td>Closing</td><td>11</td><td>2 min</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>11 slides</strong></td><td><strong>~32 min</strong></td></tr>
+</table>
+</div>
+<p style="color:var(--fg-muted); font-size:0.9rem;">Buffer: 5&ndash;8 minutes for transitions, demo glitches, and Q&amp;A.</p>
+
+<h2 id="media">Media Punch List</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>#</th><th>Asset</th><th>Filename</th><th>Slides</th><th>Description</th></tr>
+  <tr><td>1</td><td>Mnestic demo</td><td>mnestic-demo.mp4</td><td>10</td><td>2-3 min: UI cloud, MCP query, Zoom&rarr;Mnestic pipeline</td></tr>
+  <tr><td>2</td><td>Agent parallelization</td><td>agent-parallelization.gif</td><td>7</td><td>30-60s: OpenCode dispatching subagents</td></tr>
+  <tr><td>3</td><td>Guardrails in action</td><td>guardrails-in-action.gif</td><td>7</td><td>30s: auto-test, auto-push, library preference</td></tr>
+  <tr><td>4</td><td>Token cost demo</td><td>token-cost-demo.mp4</td><td>3</td><td>Ollama Pro dashboard, OpenRouter billing</td></tr>
+  <tr><td>5</td><td>Mnestic architecture</td><td>mnestic-architecture.html</td><td>8</td><td>Dark SVG: full pipeline diagram</td></tr>
+  <tr><td>6</td><td>Embedding visualization</td><td>embedding-viz.html</td><td>9</td><td>Interactive 3D word relationships (THIS PAGE)</td></tr>
+  <tr><td>7</td><td>Model decision matrix</td><td>model-decision-matrix.png</td><td>7</td><td>Task &times; Model assignment table</td></tr>
+  <tr><td>8</td><td>Guardrails checklist</td><td>guardrails-checklist.png</td><td>7</td><td>Visual checklist of all six rules</td></tr>
+  <tr><td>9</td><td>Tools ecosystem</td><td>tools-ecosystem.png</td><td>4</td><td>Four tools, roles, relationships</td></tr>
+  <tr><td>10</td><td>Interns comparison</td><td>interns-comparison.png</td><td>5-6</td><td>Side-by-side: intern vs agent behaviors</td></tr>
+</table>
+</div>
+
+<footer>
+  <p>Built for CDMX, May 28, 2026 &middot; Self-contained HTML &middot; No external dependencies</p>
+</footer>
+
+</main>
+
+
+<script>
+// ============ EMBEDDING DATA ============
+const WORDS = [{"word": "man", "category": "male", "color": "#4C72B0", "pca": {"x": 0.123366, "y": -0.019738, "z": 0.304495}, "tsne": {"x": 28.074217, "y": 51.465027, "z": 89.835831}, "umap": {"x": -0.731528, "y": 9.024197, "z": 1.390248}}, {"word": "woman", "category": "female", "color": "#C44E52", "pca": {"x": 0.174978, "y": 0.045437, "z": 0.368045}, "tsne": {"x": 11.647898, "y": -21.588905, "z": 53.73106}, "umap": {"x": -0.427964, "y": 8.278896, "z": 0.856176}}, {"word": "uncle", "category": "male", "color": "#4C72B0", "pca": {"x": 0.344437, "y": 0.001606, "z": -0.271314}, "tsne": {"x": -91.910271, "y": -66.654343, "z": 59.950764}, "umap": {"x": 0.901066, "y": 8.058801, "z": 1.852035}}, {"word": "aunt", "category": "female", "color": "#C44E52", "pca": {"x": 0.366074, "y": 0.049291, "z": -0.246537}, "tsne": {"x": -65.998978, "y": -28.997322, "z": 31.741978}, "umap": {"x": 0.79347, "y": 7.587298, "z": 1.876086}}, {"word": "hombre", "category": "male", "color": "#4C72B0", "pca": {"x": 0.153869, "y": 0.012191, "z": 0.36307}, "tsne": {"x": 61.711388, "y": 24.769199, "z": 105.209435}, "umap": {"x": -0.67181, "y": 9.439937, "z": 1.16088}}, {"word": "mujer", "category": "female", "color": "#C44E52", "pca": {"x": 0.144566, "y": 0.043285, "z": 0.379805}, "tsne": {"x": 46.006058, "y": -12.674941, "z": 25.76404}, "umap": {"x": -0.892451, "y": 8.171664, "z": 0.848859}}, {"word": "tío", "category": "male", "color": "#4C72B0", "pca": {"x": 0.252034, "y": -0.110841, "z": -0.25361}, "tsne": {"x": -43.741371, "y": -79.980988, "z": 70.476753}, "umap": {"x": 1.238569, "y": 7.751454, "z": 1.527403}}, {"word": "tía", "category": "female", "color": "#C44E52", "pca": {"x": 0.188122, "y": -0.084404, "z": -0.192175}, "tsne": {"x": -73.937492, "y": -22.431202, "z": -23.092108}, "umap": {"x": 0.825656, "y": 7.612496, "z": 1.11513}}, {"word": "男人", "category": "male", "color": "#4C72B0", "pca": {"x": 0.064429, "y": 0.210258, "z": 0.280529}, "tsne": {"x": 90.46904, "y": 54.185951, "z": 6.09565}, "umap": {"x": -0.48841, "y": 9.291615, "z": 0.803166}}, {"word": "女人", "category": "female", "color": "#C44E52", "pca": {"x": 0.067488, "y": 0.251972, "z": 0.29376}, "tsne": {"x": 91.969086, "y": -7.092731, "z": -13.699718}, "umap": {"x": -0.570262, "y": 8.472528, "z": 0.438673}}, {"word": "叔叔", "category": "male", "color": "#4C72B0", "pca": {"x": 0.308247, "y": 0.163566, "z": -0.353134}, "tsne": {"x": -84.156075, "y": -116.526047, "z": 21.631578}, "umap": {"x": 1.317623, "y": 8.220568, "z": 2.335936}}, {"word": "阿姨", "category": "female", "color": "#C44E52", "pca": {"x": 0.256455, "y": 0.267516, "z": -0.239026}, "tsne": {"x": -54.065804, "y": -101.606148, "z": -18.896147}, "umap": {"x": 1.472336, "y": 8.378098, "z": 2.609931}}, {"word": "आदमी", "category": "male", "color": "#4C72B0", "pca": {"x": 0.05431, "y": -0.045244, "z": 0.278677}, "tsne": {"x": 81.493279, "y": 72.784073, "z": 80.194939}, "umap": {"x": -1.153864, "y": 9.375248, "z": 1.225373}}, {"word": "औरत", "category": "female", "color": "#C44E52", "pca": {"x": 0.094543, "y": -0.02706, "z": 0.274581}, "tsne": {"x": 60.41906, "y": -51.431797, "z": 63.93235}, "umap": {"x": -0.495141, "y": 7.781762, "z": 0.74428}}, {"word": "चाचा", "category": "male", "color": "#4C72B0", "pca": {"x": 0.165961, "y": -0.069096, "z": -0.222956}, "tsne": {"x": 133.744003, "y": -15.946055, "z": 60.905392}, "umap": {"x": 0.724777, "y": 7.134906, "z": 1.623254}}, {"word": "चाची", "category": "female", "color": "#C44E52", "pca": {"x": 0.200336, "y": -0.023354, "z": -0.21768}, "tsne": {"x": 29.856167, "y": -91.257111, "z": 7.933339}, "umap": {"x": 0.383864, "y": 7.198313, "z": 1.284347}}, {"word": "rice", "category": "food", "color": "#DD8452", "pca": {"x": -0.491232, "y": 0.267335, "z": -0.096756}, "tsne": {"x": 1.33718, "y": -9.294589, "z": -106.232071}, "umap": {"x": 0.20527, "y": 4.697667, "z": -1.137395}}, {"word": "arroz", "category": "food", "color": "#DD8452", "pca": {"x": -0.457989, "y": 0.260521, "z": -0.083596}, "tsne": {"x": -39.641705, "y": -6.996261, "z": 127.823608}, "umap": {"x": 0.438639, "y": 5.09833, "z": -1.26344}}, {"word": "米饭", "category": "food", "color": "#DD8452", "pca": {"x": -0.504556, "y": 0.423125, "z": -0.145552}, "tsne": {"x": 61.413403, "y": -7.803466, "z": -99.327255}, "umap": {"x": -0.019566, "y": 4.544297, "z": -1.478624}}, {"word": "चावल", "category": "food", "color": "#DD8452", "pca": {"x": -0.491064, "y": 0.242065, "z": -0.090878}, "tsne": {"x": 13.958832, "y": -32.055946, "z": -63.628525}, "umap": {"x": 0.292739, "y": 4.745896, "z": -1.499014}}, {"word": "train", "category": "transport", "color": "#55A868", "pca": {"x": -0.225483, "y": -0.436712, "z": 0.022764}, "tsne": {"x": -9.352049, "y": 62.422554, "z": 2.908007}, "umap": {"x": 2.127791, "y": 9.084675, "z": 0.509953}}, {"word": "tren", "category": "transport", "color": "#55A868", "pca": {"x": -0.227839, "y": -0.502633, "z": -0.018364}, "tsne": {"x": -53.816658, "y": 84.311317, "z": 11.61401}, "umap": {"x": 2.126578, "y": 9.415257, "z": 0.235148}}, {"word": "火车", "category": "transport", "color": "#55A868", "pca": {"x": -0.313604, "y": -0.388978, "z": -0.100924}, "tsne": {"x": -38.315708, "y": 90.197601, "z": -58.254036}, "umap": {"x": 2.28402, "y": 9.613505, "z": 0.562694}}, {"word": "ट्रेन", "category": "transport", "color": "#55A868", "pca": {"x": -0.247449, "y": -0.53011, "z": -0.033225}, "tsne": {"x": -23.612247, "y": 116.438217, "z": -10.70354}, "umap": {"x": 1.943974, "y": 9.622001, "z": 0.327395}}];
+
+// Normalize coordinates for each projection
+function normalizeAll(words, proj) {
+  const xs = words.map(w => w[proj].x);
+  const ys = words.map(w => w[proj].y);
+  const zs = words.map(w => w[proj].z);
+  const mx = xs.reduce((a,b)=>a+b,0)/xs.length;
+  const my = ys.reduce((a,b)=>a+b,0)/ys.length;
+  const mz = zs.reduce((a,b)=>a+b,0)/zs.length;
+  const span = Math.max(Math.max(...xs)-Math.min(...xs), Math.max(...ys)-Math.min(...ys), Math.max(...zs)-Math.min(...zs));
+  const s = span / 2.2;
+  words.forEach(w => {
+    w[proj + '_n'] = {
+      x: (w[proj].x - mx) / s,
+      y: (w[proj].y - my) / s,
+      z: (w[proj].z - mz) / s
+    };
+  });
+}
+
+normalizeAll(WORDS, 'pca');
+normalizeAll(WORDS, 'tsne');
+normalizeAll(WORDS, 'umap');
+
+// ============ 3D CANVAS ENGINE ============
+const canvas = document.getElementById('embed-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, CX, CY;
+
+function resize() {
+  const rect = canvas.getBoundingClientRect();
+  W = rect.width;
+  H = rect.height;
+  canvas.width = W * window.devicePixelRatio;
+  canvas.height = H * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  CX = W / 2;
+  CY = H / 2;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Camera state
+let cam = {
+  rotX: -0.3, rotY: 0.5, zoom: 1.2,
+  autoRotate: false, proj: 'pca'
+};
+
+// Quaternion helpers
+function quatMul(a, b) {
+  return [
+    a[0]*b[0] - a[1]*b[1] - a[2]*b[2] - a[3]*b[3],
+    a[0]*b[1] + a[1]*b[0] + a[2]*b[3] - a[3]*b[2],
+    a[0]*b[2] - a[1]*b[3] + a[2]*b[0] + a[3]*b[1],
+    a[0]*b[3] + a[1]*b[2] - a[2]*b[1] + a[3]*b[0]
+  ];
+}
+function quatFromAxis(axis, angle) {
+  const s = Math.sin(angle/2);
+  return [Math.cos(angle/2), axis[0]*s, axis[1]*s, axis[2]*s];
+}
+function quatRotate(q, v) {
+  const r = [0, v[0], v[1], v[2]];
+  const qi = [q[0], -q[1], -q[2], -q[3]];
+  const t = quatMul(q, r);
+  const res = quatMul(t, qi);
+  return [res[1], res[2], res[3]];
+}
+
+// Project 3D point to 2D screen space
+function project3D(x, y, z) {
+  const qx = quatFromAxis([1,0,0], cam.rotX);
+  const qy = quatFromAxis([0,1,0], cam.rotY);
+  const q = quatMul(qy, qx);
+  const v = quatRotate(q, [x, y, z]);
+  const fov = 1.2;
+  const d = fov / (fov + v[2] + 3.5);  // perspective divide
+  const scale = 140 * cam.zoom * d;
+  return {
+    x: CX + v[0] * scale,
+    y: CY - v[1] * scale,  // flip Y for screen coords
+    z_cam: v[2] + 3.5,     // depth for sorting
+    scale: scale
+  };
+}
+
+// Draw a single frame
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = -4; i <= 4; i++) {
+    const a = project3D(i, -4, 0), b = project3D(i, 4, 0);
+    if (a.z_cam > 0 && b.z_cam > 0) {
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    const c = project3D(-4, i, 0), d = project3D(4, i, 0);
+    if (c.z_cam > 0 && d.z_cam > 0) {
+      ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(d.x, d.y); ctx.stroke();
+    }
+  }
+  
+  // Collect points for current projection
+  const projKey = cam.proj + '_n';
+  const points = WORDS.map(w => {
+    const p = w[projKey];
+    const screen = project3D(p.x, p.y, p.z);
+    return {
+      word: w.word,
+      color: w.color,
+      category: w.category,
+      screen: screen,
+      x: p.x, y: p.y, z: p.z
+    };
+  });
+  
+  // Sort by depth (back to front)
+  points.sort((a, b) => b.screen.z_cam - a.screen.z_cam);
+  
+  // Draw origin lines
+  points.forEach(pt => {
+    const origin = project3D(0, 0, 0);
+    if (origin.z_cam > 0 && pt.screen.z_cam > 0) {
+      ctx.strokeStyle = pt.color + '40';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(origin.x, origin.y);
+      ctx.lineTo(pt.screen.x, pt.screen.y);
+      ctx.stroke();
+    }
+  });
+  
+  // Draw points
+  points.forEach(pt => {
+    if (pt.screen.z_cam <= 0.3) return;
+    const s = Math.max(2, Math.min(8, pt.screen.scale * 0.06));
+    const alpha = Math.max(0.2, Math.min(1.0, 1.0 - (pt.screen.z_cam - 2.5) * 0.3));
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = pt.color;
+    ctx.beginPath();
+    ctx.arc(pt.screen.x, pt.screen.y, s, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+  
+  // Draw labels (front-most only, avoid overlap)
+  const labelDist = 20;
+  points.forEach(pt => {
+    if (pt.screen.z_cam <= 0.8) return;
+    const alpha = Math.max(0.3, Math.min(1.0, 1.0 - (pt.screen.z_cam - 2.5) * 0.25));
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = '#e6edf3';
+    ctx.font = `${Math.max(10, Math.min(13, pt.screen.scale * 0.08))}px ui-monospace, monospace`;
+    const tw = ctx.measureText(pt.word).width;
+    const lx = pt.screen.x + labelDist;
+    const ly = pt.screen.y + 4;
+    ctx.fillText(pt.word, lx, ly);
+    ctx.globalAlpha = 1;
+  });
+  
+  // Axis labels
+  const axisLen = 1.8;
+  const ax = project3D(axisLen, 0, 0);
+  const ay = project3D(0, axisLen, 0);
+  const az = project3D(0, 0, axisLen);
+  if (ax.z_cam > 0) { ctx.fillStyle = '#e6edf3'; ctx.font = '11px sans-serif'; ctx.fillText('X', ax.x, ax.y); }
+  if (ay.z_cam > 0) { ctx.fillStyle = '#e6edf3'; ctx.font = '11px sans-serif'; ctx.fillText('Y', ay.x, ay.y); }
+  if (az.z_cam > 0) { ctx.fillStyle = '#e6edf3'; ctx.font = '11px sans-serif'; ctx.fillText('Z', az.x, az.y); }
+}
+
+// ============ INTERACTION ============
+let dragging = false, lastX = 0, lastY = 0;
+
+canvas.addEventListener('mousedown', e => {
+  dragging = true;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  canvas.style.cursor = 'grabbing';
+});
+window.addEventListener('mouseup', () => {
+  dragging = false;
+  canvas.style.cursor = 'grab';
+});
+window.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  cam.rotY += dx * 0.008;
+  cam.rotX += dy * 0.008;
+  lastX = e.clientX;
+  lastY = e.clientY;
+});
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  cam.zoom *= e.deltaY > 0 ? 0.92 : 1.08;
+  cam.zoom = Math.max(0.3, Math.min(4, cam.zoom));
+}, { passive: false });
+
+// Touch support
+let touchStart = null;
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+});
+canvas.addEventListener('touchmove', e => {
+  if (touchStart && e.touches.length === 1) {
+    e.preventDefault();
+    const dx = e.touches[0].clientX - touchStart.x;
+    const dy = e.touches[0].clientY - touchStart.y;
+    cam.rotY += dx * 0.012;
+    cam.rotX += dy * 0.012;
+    touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+}, { passive: false });
+canvas.addEventListener('touchend', () => { touchStart = null; });
+
+// ============ BUTTON CONTROLS ============
+const labels = { pca: 'PCA (linear, global)', tsne: 't-SNE (nonlinear, local)', umap: 'UMAP (nonlinear, local+global-ish)' };
+
+document.getElementById('btn-pca').addEventListener('click', () => setProj('pca'));
+document.getElementById('btn-tsne').addEventListener('click', () => setProj('tsne'));
+document.getElementById('btn-umap').addEventListener('click', () => setProj('umap'));
+document.getElementById('btn-rotate').addEventListener('click', () => {
+  cam.autoRotate = !cam.autoRotate;
+  document.getElementById('btn-rotate').classList.toggle('active', cam.autoRotate);
+});
+document.getElementById('btn-reset').addEventListener('click', () => {
+  cam.rotX = -0.3; cam.rotY = 0.5; cam.zoom = 1.2; cam.autoRotate = false;
+  document.getElementById('btn-rotate').classList.remove('active');
+});
+
+function setProj(name) {
+  cam.proj = name;
+  document.getElementById('btn-pca').classList.toggle('active', name === 'pca');
+  document.getElementById('btn-tsne').classList.toggle('active', name === 'tsne');
+  document.getElementById('btn-umap').classList.toggle('active', name === 'umap');
+  document.getElementById('projection-label').textContent = 'Projection: ' + labels[name];
+}
+
+// ============ ANIMATION LOOP ============
+function animate() {
+  if (cam.autoRotate) {
+    cam.rotY += 0.003;
+  }
+  draw();
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ============ NAV HIGHLIGHTING ============
+const sections = document.querySelectorAll('h2[id], .slide-card[id]');
+const navLinks = document.querySelectorAll('nav.toc a');
+function updateNav() {
+  let current = '';
+  for (const sec of sections) {
+    const r = sec.getBoundingClientRect();
+    if (r.top <= 100) current = sec.id;
+  }
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + (current || 'top'));
+  });
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+</script>
+
+</body>
+</html>
