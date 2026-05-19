@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>Word Embeddings: Vectors Through 3-Space</title>
+<script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 0.5rem;
+    color: #e1e1e1;
+    line-height: 1.5;
+    background: #0d1117;
+    margin: 0;
+  }
+  h1 { font-size: 1.1rem; margin: 0 0 0.3rem; color: #e1e1e1; }
+  h2 { font-size: 0.9rem; margin: 0.5rem 0 0.2rem; border-bottom: 1px solid #333; padding-bottom: 0.2rem; color: #e1e1e1; }
+  h2 .tag { font-size: 0.75rem; background: #2a2a2a; padding: 1px 6px; border-radius: 3px; vertical-align: middle; font-weight: normal; color: #aaa; }
+  .subtitle { color: #999; font-size: 0.75rem; margin-bottom: 0.3rem; }
+  .params {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.15rem 1rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.72rem;
+  }
+  .params dt { font-weight: 600; color: #ccc; }
+  .params dd { margin: 0 0 0.15rem 0; color: #999; }
+  .blurb { color: #aaa; font-size: 0.72rem; margin-bottom: 0.4rem; }
+  .blurb strong { color: #ddd; }
+  .blurb code { background: #2a2a2a; padding: 1px 4px; border-radius: 2px; font-size: 0.8rem; color: #ccc; }
+  .legend-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+    font-size: 0.72rem;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .section { margin-bottom: 0.5rem; scroll-margin-top: 40px; }
+  .graph-wrap { width: 100%; }
+  .graph-wrap .plotly-graph-div { height: 350px !important; width: 100% !important; }
+  .section-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0.5rem;
+    margin-bottom: 0.6rem;
+    background: rgba(13,17,23,0.95);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #333;
+    border-radius: 6px;
+  }
+  .nav-left { display: flex; gap: 0.5rem; }
+  .nav-link {
+    text-decoration: none;
+    color: #888;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-link:hover { color: #eee; background: #333; }
+  .nav-link.active { color: #fff; background: #4C72B0; font-weight: 600; }
+  html[data-theme="light"] body { background: #fafafa; color: #222; }
+  html[data-theme="light"] h1, html[data-theme="light"] h2 { color: #222; }
+  html[data-theme="light"] h2 { border-bottom-color: #ddd; }
+  html[data-theme="light"] h2 .tag { background: #eee; color: #444; }
+  html[data-theme="light"] .subtitle { color: #666; }
+  html[data-theme="light"] .params dd { color: #666; }
+  html[data-theme="light"] .params dt { color: #444; }
+  html[data-theme="light"] .blurb { color: #444; }
+  html[data-theme="light"] .blurb strong { color: #222; }
+  html[data-theme="light"] .blurb code { background: #eee; color: #333; }
+  html[data-theme="light"] .section-nav {
+    background: rgba(250,250,250,0.95);
+    border-bottom-color: #e0e0e0;
+  }
+  html[data-theme="light"] .nav-link { color: #555; }
+  html[data-theme="light"] .nav-link:hover { color: #222; background: #eee; }
+</style>
+</head>
+<body>
+
+<nav class="section-nav">
+  <div class="nav-left">
+    <a href="#pca" class="nav-link active">PCA</a>
+    <a href="#tsne" class="nav-link">t-SNE</a>
+    <a href="#umap" class="nav-link">UMAP</a>
+  </div>
+</nav>
+
+<h1>Word Embeddings: Vectors Through 3-Space</h1>
+<p class="subtitle">
+  24 words across 4 languages, embedded by <code>qwen/qwen3-embedding-8b</code>
+  into 4096 dimensions, then projected to 3D.
+</p>
+
+<div class="legend-row">
+  <div class="legend-item"><span class="swatch" style="background:#4C72B0"></span> male</div>
+  <div class="legend-item"><span class="swatch" style="background:#C44E52"></span> female</div>
+  <div class="legend-item"><span class="swatch" style="background:#DD8452"></span> food</div>
+  <div class="legend-item"><span class="swatch" style="background:#55A868"></span> transport</div>
+</div>
+
+<div class="section" id="pca">
+<h2>PCA <span class="tag">linear</span></h2>
+<div class="params"><div><dt>Kruskal stress</dt><dd>0.238</dd></div></div>
+<p class="blurb"><strong>Principal Component Analysis</strong> finds 3 orthogonal axes capturing the most variance. A <em>linear</em> projection — distances between points are globally faithful to the original 4096-dim cosine geometry.</p>
+<div class="graph-wrap"><div id="pca-g" class="plotly-graph-div"></div></div>
+<script>
+(function(){
+var d=[{"type":"scatter3d","mode":"markers","x":[0],"y":[0],"z":[0],"marker":{"color":"#111","size":5,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.123366],"y":[0,-0.019738],"z":[0,0.304495],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.123366],"y":[-0.019738],"z":[0.304495],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.174978],"y":[0,0.045437],"z":[0,0.368045],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.174978],"y":[0.045437],"z":[0.368045],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.344437],"y":[0,0.001606],"z":[0,-0.271314],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.344437],"y":[0.001606],"z":[-0.271314],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.366074],"y":[0,0.049291],"z":[0,-0.246537],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.366074],"y":[0.049291],"z":[-0.246537],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.153869],"y":[0,0.012191],"z":[0,0.36307],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.153869],"y":[0.012191],"z":[0.36307],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.144566],"y":[0,0.043285],"z":[0,0.379805],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.144566],"y":[0.043285],"z":[0.379805],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.122756],"y":[0,-0.043566],"z":[0,0.32617],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.122756],"y":[-0.043566],"z":[0.32617],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.144168],"y":[0,0.00491],"z":[0,0.36593],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.144168],"y":[0.00491],"z":[0.36593],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-0.098478],"y":[0,0.001383],"z":[0,0.387183],"line":{"color":"#DD8452","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-0.098478],"y":[0.001383],"z":[0.387183],"marker":{"color":"#DD8452","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.068067],"y":[0,0.020726],"z":[0,0.348799],"line":{"color":"#DD8452","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.068067],"y":[0.020726],"z":[0.348799],"marker":{"color":"#DD8452","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-0.044093],"y":[0,-0.007452],"z":[0,0.395315],"line":{"color":"#55A868","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-0.044093],"y":[-0.007452],"z":[0.395315],"marker":{"color":"#55A868","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.004382],"y":[0,-0.017875],"z":[0,0.387246],"line":{"color":"#55A868","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.004382],"y":[-0.017875],"z":[0.387246],"marker":{"color":"#55A868","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false}];
+var l={"scene":{"bgcolor":"#0d1117","xaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"},"yaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"},"zaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"}},"paper_bgcolor":"#0d1117","plot_bgcolor":"#0d1117","font":{"color":"#e1e1e1"}};
+if(document.getElementById("pca-g")){Plotly.newPlot("pca-g",d,l,{"responsive":true});}
+})();
+</script>
+</div>
+
+<div class="section" id="tsne">
+<h2>t-SNE <span class="tag">nonlocal</span></h2>
+<div class="params"><div><dt>KL divergence</dt><dd>0.986</dd></div><div><dt>Kruskal stress</dt><dd>0.349</dd></div></div>
+<p class="blurb"><strong>t-SNE</strong> optimizes for <em>local</em> neighborhood preservation. Distances <strong>between clusters are meaningless</strong>. Best for spotting unexpected local groupings.</p>
+<div class="graph-wrap"><div id="tsne-g" class="plotly-graph-div"></div></div>
+<script>
+(function(){
+var d=[{"type":"scatter3d","mode":"markers","x":[0],"y":[0],"z":[0],"marker":{"color":"#111","size":5,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,28.074217],"y":[0,51.465027],"z":[0,89.835831],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[28.074217],"y":[51.465027],"z":[89.835831],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,11.647898],"y":[0,-21.588905],"z":[0,53.73106],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[11.647898],"y":[-21.588905],"z":[53.73106],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-91.910271],"y":[0,-66.654343],"z":[0,59.950764],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-91.910271],"y":[-66.654343],"z":[59.950764],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-65.998978],"y":[0,-28.997322],"z":[0,31.741978],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-65.998978],"y":[-28.997322],"z":[31.741978],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-14.839256],"y":[0,-8.846331],"z":[0,61.122131],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-14.839256],"y":[-8.846331],"z":[61.122131],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,4.823005],"y":[0,-15.512175],"z":[0,49.162834],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[4.823005],"y":[-15.512175],"z":[49.162834],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-22.859928],"y":[0,19.684277],"z":[0,69.953918],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-22.859928],"y":[19.684277],"z":[69.953918],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-21.105883],"y":[0,23.270327],"z":[0,62.688896],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-21.105883],"y":[23.270327],"z":[62.688896],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-28.870758],"y":[0,-18.628906],"z":[0,69.065826],"line":{"color":"#DD8452","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-28.870758],"y":[-18.628906],"z":[69.065826],"marker":{"color":"#DD8452","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,16.775265],"y":[0,-13.492981],"z":[0,71.652893],"line":{"color":"#DD8452","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[16.775265],"y":[-13.492981],"z":[71.652893],"marker":{"color":"#DD8452","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-15.659945],"y":[0,-28.741508],"z":[0,57.067047],"line":{"color":"#55A868","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-15.659945],"y":[-28.741508],"z":[57.067047],"marker":{"color":"#55A868","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-13.620413],"y":[0,-7.702043],"z":[0,62.448303],"line":{"color":"#55A868","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-13.620413],"y":[-7.702043],"z":[62.448303],"marker":{"color":"#55A868","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false}];
+var l={"scene":{"bgcolor":"#0d1117","xaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"},"yaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"},"zaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"}},"paper_bgcolor":"#0d1117","plot_bgcolor":"#0d1117","font":{"color":"#e1e1e1"}};
+if(document.getElementById("tsne-g")){Plotly.newPlot("tsne-g",d,l,{"responsive":true});}
+})();
+</script>
+</div>
+
+<div class="section" id="umap">
+<h2>UMAP <span class="tag">nonlinear · local+global</span></h2>
+<div class="params"><div><dt>Kruskal stress</dt><dd>0.347</dd></div></div>
+<p class="blurb"><strong>UMAP</strong> preserves both local neighborhoods <em>and</em> some global structure — a middle ground between PCA and t-SNE. Clusters are real, inter-cluster distances are suggestive, not trustworthy.</p>
+<div class="graph-wrap"><div id="umap-g" class="plotly-graph-div"></div></div>
+<script>
+(function(){
+var d=[{"type":"scatter3d","mode":"markers","x":[0],"y":[0],"z":[0],"marker":{"color":"#111","size":5,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-0.731528],"y":[0,9.024197],"z":[0,1.390248],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-0.731528],"y":[9.024197],"z":[1.390248],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-0.427964],"y":[0,8.278896],"z":[0,0.856176],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-0.427964],"y":[8.278896],"z":[0.856176],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.901066],"y":[0,8.058801],"z":[0,1.852035],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.901066],"y":[8.058801],"z":[1.852035],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.79347],"y":[0,7.587298],"z":[0,1.876086],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.79347],"y":[7.587298],"z":[1.876086],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.537899],"y":[0,7.451113],"z":[0,0.576475],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.537899],"y":[7.451113],"z":[0.576475],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.402637],"y":[0,6.943894],"z":[0,0.774493],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.402637],"y":[6.943894],"z":[0.774493],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.415578],"y":[0,7.810157],"z":[0,-0.24702],"line":{"color":"#4C72B0","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.415578],"y":[7.810157],"z":[-0.24702],"marker":{"color":"#4C72B0","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.378828],"y":[0,7.493391],"z":[0,0.043592],"line":{"color":"#C44E52","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.378828],"y":[7.493391],"z":[0.043592],"marker":{"color":"#C44E52","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-0.957742],"y":[0,9.357753],"z":[0,0.286421],"line":{"color":"#DD8452","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-0.957742],"y":[9.357753],"z":[0.286421],"marker":{"color":"#DD8452","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-0.733005],"y":[0,10.434268],"z":[0,0.421586],"line":{"color":"#DD8452","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-0.733005],"y":[10.434268],"z":[0.421586],"marker":{"color":"#DD8452","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,0.106776],"y":[0,7.268103],"z":[0,-0.023901],"line":{"color":"#55A868","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[0.106776],"y":[7.268103],"z":[-0.023901],"marker":{"color":"#55A868","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"lines","x":[0,-0.083312],"y":[0,7.995916],"z":[0,0.533388],"line":{"color":"#55A868","width":1},"hoverinfo":"skip","showlegend":false},{"type":"scatter3d","mode":"markers","x":[-0.083312],"y":[7.995916],"z":[0.533388],"marker":{"color":"#55A868","size":6,"symbol":"circle"},"hoverinfo":"skip","showlegend":false}];
+var l={"scene":{"bgcolor":"#0d1117","xaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"},"yaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"},"zaxis":{"backgroundcolor":"#0d1117","gridcolor":"#333","linecolor":"#333","zerolinecolor":"#333"}},"paper_bgcolor":"#0d1117","plot_bgcolor":"#0d1117","font":{"color":"#e1e1e1"}};
+if(document.getElementById("umap-g")){Plotly.newPlot("umap-g",d,l,{"responsive":true});}
+})();
+</script>
+</div>
+
+<script>
+(function(){
+  const sections = document.querySelectorAll('.section[id]');
+  const navLinks = document.querySelectorAll('.section-nav .nav-link');
+  function updateActive() {
+    var current = sections[0].id;
+    for (var i = 0; i < sections.length; i++) {
+      var rect = sections[i].getBoundingClientRect();
+      if (rect.top <= 60) { current = sections[i].id; }
+      else { break; }
+    }
+    navLinks.forEach(function(link) {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+})();
+</script>
+</body>
+</html>
