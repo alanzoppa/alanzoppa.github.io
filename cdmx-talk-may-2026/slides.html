@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architect Vibes — CDMX, May 28, 2026</title>
+<style>
+  :root {
+    --bg: #07090e;
+    --bg-2: #0d1118;
+    --panel: #131822;
+    --panel-2: #1a2030;
+    --panel-3: #222a3d;
+    --line: #262d40;
+    --line-2: #30394f;
+    --text: #eef2f8;
+    --muted: #a3adc2;
+    --dim: #6a7388;
+    --accent: #8ec1ff;
+    --accent-soft: #5b8fd9;
+    --accent-2: #ffc580;
+    --accent-3: #a8f3cb;
+    --accent-4: #d4a3ff;
+    --grid: rgba(142, 193, 255, 0.05);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-feature-settings: 'ss01', 'ss02', 'cv11', 'cv09';
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* Subtle dot grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, var(--grid) 1px, transparent 0);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 50%, #000 50%, transparent 100%);
+  }
+
+  /* Top progress bar */
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-3) 100%);
+    width: 0%;
+    transition: width 320ms cubic-bezier(.4,0,.2,1);
+    z-index: 100;
+    box-shadow: 0 0 12px rgba(142, 193, 255, 0.5);
+  }
+
+  /* Chrome */
+  .corner-mark {
+    position: fixed;
+    top: 18px;
+    left: 24px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    user-select: none;
+  }
+  .corner-mark .glyph {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--accent-soft);
+    transform: rotate(45deg);
+    position: relative;
+  }
+  .corner-mark .glyph::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+
+  .counter {
+    position: fixed;
+    bottom: 20px;
+    right: 26px;
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 0.12em;
+    font-variant-numeric: tabular-nums;
+    z-index: 100;
+    user-select: none;
+    font-weight: 500;
+  }
+  .counter b { color: var(--text); font-weight: 700; }
+  .counter .divider { color: var(--line-2); margin: 0 6px; }
+
+  .brand {
+    position: fixed;
+    bottom: 20px;
+    left: 26px;
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    z-index: 100;
+    user-select: none;
+    font-weight: 600;
+  }
+
+  /* Deck + slides */
+  .deck { position: relative; width: 100vw; height: 100vh; z-index: 1; }
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 6vh 7vw 7vh;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 320ms ease, transform 360ms cubic-bezier(.4,0,.2,1);
+    transform: translateY(12px) scale(0.995);
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Slide header (kicker rail) */
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--accent);
+    font-size: 0.74rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 1.4rem;
+  }
+  .kicker .num {
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+  .kicker .rule {
+    flex: 0 0 36px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  /* Typography */
+  h1, h2, h3, h4 { margin: 0; line-height: 1.1; font-weight: 700; letter-spacing: -0.025em; }
+  h1 { font-size: clamp(2.6rem, 5.4vw, 5rem); }
+  h2 {
+    font-size: clamp(1.9rem, 3.6vw, 3.2rem);
+    margin-bottom: 0.7rem;
+    background: linear-gradient(180deg, #ffffff 25%, #b9c2d6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h3 { font-size: clamp(1.05rem, 1.4vw, 1.25rem); letter-spacing: -0.015em; }
+  p { line-height: 1.55; color: var(--text); }
+  .subtitle {
+    color: var(--muted);
+    font-size: clamp(1rem, 1.55vw, 1.3rem);
+    font-weight: 400;
+    max-width: 70ch;
+  }
+  .muted { color: var(--muted); }
+  .dim { color: var(--dim); }
+  em { font-style: italic; color: var(--text); }
+  code {
+    font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-size: 0.88em;
+    color: var(--accent-2);
+    background: var(--panel-2);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* Slide 1 — Title */
+  .title-slide {
+    justify-content: center;
+    background:
+      radial-gradient(ellipse 60% 50% at 85% 10%, rgba(142, 193, 255, 0.16), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 5% 90%, rgba(212, 163, 255, 0.10), transparent 60%);
+  }
+  .title-slide .kicker { margin-bottom: 2rem; }
+  .title-slide h1 {
+    font-size: clamp(3rem, 7vw, 6.2rem);
+    background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, #8392ab 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    max-width: 14ch;
+    line-height: 1.02;
+  }
+  .title-slide h1 em {
+    background: linear-gradient(120deg, var(--accent) 0%, var(--accent-4) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: normal;
+  }
+  .title-slide .subtitle { margin-top: 1.6rem; max-width: 42ch; }
+  .title-slide .quotes {
+    margin-top: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: 52ch;
+    border-left: 1px solid var(--line-2);
+    padding-left: 0.85rem;
+  }
+  .title-slide .tagline {
+    color: var(--dim);
+    font-size: clamp(0.88rem, 1.1vw, 1rem);
+    font-style: italic;
+    line-height: 1.55;
+  }
+  .title-slide .attribution {
+    margin-top: 0.4rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+    letter-spacing: 0.1em;
+  }
+  .title-slide .meta {
+    margin-top: 3rem;
+    color: var(--dim);
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Layouts */
+  .stack > * + * { margin-top: 1rem; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw;
+    align-items: center;
+    flex: 1;
+    min-height: 0;
+  }
+  .two-col.media-left { grid-template-columns: 0.95fr 1.05fr; }
+  .two-col.tight { gap: 2.4vw; }
+  @media (max-width: 900px) {
+    .two-col, .two-col.media-left { grid-template-columns: 1fr; }
+  }
+
+  /* Cards */
+  .grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  @media (min-width: 1100px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .card {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--bg-2) 100%);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.3rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line-2), transparent);
+  }
+  .card .label {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .card h3 { margin-bottom: 0.45rem; font-size: 1.12rem; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.93rem; line-height: 1.5; }
+  .card.compact { padding: 1rem 1.1rem; }
+
+  /* Numbered list (questions) */
+  .qlist { counter-reset: q; list-style: none; padding: 0; margin: 2.4rem 0 0; }
+  .qlist li {
+    counter-increment: q;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.8rem;
+    align-items: baseline;
+    padding: 1.4rem 0.4rem;
+    border-top: 1px solid var(--line);
+    transition: padding 200ms ease;
+  }
+  .qlist li:last-child { border-bottom: 1px solid var(--line); }
+  .qlist li::before {
+    content: counter(q, decimal-leading-zero);
+    color: var(--accent);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+    letter-spacing: -0.03em;
+    min-width: 3rem;
+    line-height: 1;
+  }
+  .qlist .q-title { font-size: clamp(1.3rem, 2vw, 1.7rem); font-weight: 600; display: block; letter-spacing: -0.015em; }
+  .qlist .q-desc { color: var(--muted); font-size: clamp(0.98rem, 1.2vw, 1.1rem); margin-top: 0.35rem; line-height: 1.5; max-width: 70ch; }
+
+  /* Tables */
+  table.styled {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: clamp(0.92rem, 1.15vw, 1.02rem);
+  }
+  table.styled th, table.styled td {
+    text-align: left;
+    padding: 0.95rem 1.15rem;
+    border-bottom: 1px solid var(--line);
+  }
+  table.styled th {
+    background: var(--panel-2);
+    color: var(--dim);
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  table.styled tr:last-child td { border-bottom: none; }
+  table.styled tr.total td {
+    background: rgba(142, 193, 255, 0.07);
+    font-weight: 700;
+    border-top: 1px solid var(--accent-soft);
+  }
+  table.styled td.num { font-variant-numeric: tabular-nums; color: var(--accent-2); font-weight: 600; }
+  table.styled tbody tr { transition: background 160ms ease; }
+
+  /* Verbatim LLM prompt */
+  .prompt {
+    margin: 0.7rem 0 0;
+    padding: 0.55rem 0.8rem;
+    background: #000;
+    border-radius: 6px;
+    font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--accent-3);
+    line-height: 1.5;
+  }
+  .prompt::before {
+    content: '> ';
+    opacity: 0.5;
+  }
+
+  /* Callout */
+  .callout {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(142, 193, 255, 0.12), rgba(168, 243, 203, 0.06));
+    border: 1px solid rgba(142, 193, 255, 0.28);
+    color: var(--text);
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    position: relative;
+    line-height: 1.5;
+  }
+  .callout::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-3));
+    border-radius: 12px 0 0 12px;
+  }
+  .callout b { color: var(--accent-3); font-weight: 700; }
+
+  /* Image frame */
+  .img-frame {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    box-shadow: 0 24px 48px -24px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02);
+    max-height: 72vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .img-frame img { display: block; width: 100%; height: 100%; max-height: 72vh; object-fit: contain; }
+
+  /* Checklist */
+  .checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem 1.4rem;
+  }
+  @media (max-width: 900px) { .checklist { grid-template-columns: 1fr; } }
+  .checklist li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.95rem;
+    padding: 0.95rem 1.1rem;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--bg-2) 100%);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    align-items: flex-start;
+    position: relative;
+  }
+  .checklist .tick {
+    color: var(--accent-3);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(168, 243, 203, 0.12);
+    border: 1px solid rgba(168, 243, 203, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+  }
+  .checklist .ck-title { font-weight: 600; font-size: 1rem; letter-spacing: -0.01em; }
+  .checklist .ck-desc { color: var(--muted); font-size: 0.87rem; margin-top: 0.2rem; line-height: 1.5; }
+
+  /* Decision matrix */
+  .matrix {
+    margin-top: 1.4rem;
+    padding: 1rem 1.3rem;
+    background: var(--panel-2);
+    border: 1px dashed var(--line-2);
+    border-radius: 12px;
+    font-size: 0.94rem;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+    align-items: center;
+  }
+  .matrix .lbl {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-right: 0.6rem;
+  }
+  .matrix .pair { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .matrix .pair b { color: var(--accent-2); font-weight: 600; }
+  .matrix .sep { color: var(--line-2); margin: 0 0.5rem; }
+
+  /* Embedding slide */
+  .embed-layout {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 2.2vw;
+    flex: 1;
+    min-height: 0;
+  }
+  @media (max-width: 1000px) {
+    .embed-layout { grid-template-columns: 1fr; }
+  }
+  .embed-prose p { font-size: 1.05rem; line-height: 1.6; }
+  .embed-prose .word-eq {
+    margin-top: 1.4rem;
+    padding: 1.1rem 1.3rem;
+    background: var(--panel);
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    color: var(--accent-3);
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .embed-prose .word-eq b { color: var(--accent-2); }
+  .embed-prose .word-eq .op { color: var(--dim); }
+
+  .iframe-wrap {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #fff;
+    min-height: 0;
+    box-shadow: 0 24px 48px -24px rgba(0,0,0,0.7);
+  }
+  .iframe-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+  /* Demo placeholder */
+  .demo-placeholder {
+    flex: 1;
+    margin-top: 1rem;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse 50% 40% at 50% 35%, rgba(142, 193, 255, 0.16), transparent 60%),
+      radial-gradient(ellipse 30% 25% at 80% 90%, rgba(168, 243, 203, 0.10), transparent 60%),
+      var(--panel);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 3rem;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(142, 193, 255, 0.06) 1px, transparent 0);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+  .demo-placeholder > * { position: relative; }
+  .demo-placeholder .live {
+    color: var(--accent-3);
+    font-size: 0.74rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(168, 243, 203, 0.3);
+    border-radius: 999px;
+    background: rgba(168, 243, 203, 0.06);
+  }
+  .demo-placeholder .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent-3);
+    box-shadow: 0 0 10px var(--accent-3);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  .demo-placeholder h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1rem; }
+  .demo-cues {
+    margin-top: 1.8rem;
+    text-align: left;
+    max-width: 62ch;
+    color: var(--muted);
+    list-style: none;
+    padding: 0;
+  }
+  .demo-cues li {
+    padding: 0.55rem 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+  }
+  .demo-cues li:last-child { border-bottom: none; }
+  .demo-cues li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .demo-cues code {
+    color: var(--accent-2);
+    background: var(--panel-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+
+  /* Takeaways */
+  .takeaways { list-style: none; padding: 0; margin: 1.8rem 0 0; counter-reset: t; }
+  .takeaways li {
+    counter-increment: t;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.2rem;
+    padding: 0.95rem 0.2rem;
+    border-bottom: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .takeaways li::before {
+    content: counter(t, decimal-leading-zero);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1.05rem;
+    min-width: 2rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .takeaways .t-title { font-weight: 600; font-size: 1.08rem; letter-spacing: -0.01em; }
+  .takeaways .t-desc { color: var(--muted); font-size: 0.92rem; margin-top: 0.2rem; line-height: 1.5; }
+  .final-quote {
+    margin-top: 2.2rem;
+    padding: 1.5rem 1.8rem;
+    background: linear-gradient(135deg, rgba(142, 193, 255, 0.10), rgba(212, 163, 255, 0.06));
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    font-size: clamp(1.1rem, 1.55vw, 1.4rem);
+    line-height: 1.55;
+    font-style: italic;
+    color: var(--text);
+    position: relative;
+  }
+  .final-quote::before {
+    content: '\201C';
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    font-size: 4rem;
+    color: var(--accent);
+    opacity: 0.25;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  /* Help overlay */
+  .help {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 9, 14, 0.94);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    backdrop-filter: blur(8px);
+  }
+  .help.show { display: flex; }
+  .help-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    max-width: 500px;
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,0.8);
+  }
+  .help-card h3 { margin-bottom: 1.2rem; font-size: 1.2rem; }
+  .help-card kbd {
+    background: var(--panel-2);
+    border: 1px solid var(--line-2);
+    border-radius: 5px;
+    padding: 3px 9px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.82rem;
+    margin-right: 0.4rem;
+    color: var(--accent);
+    box-shadow: 0 1px 0 var(--line-2);
+  }
+  .help-card .row {
+    display: flex;
+    padding: 0.45rem 0;
+    color: var(--muted);
+    align-items: center;
+  }
+  .help-card .row span { min-width: 160px; }
+
+  /* Click zones */
+  .clickzone-right, .clickzone-left {
+    position: fixed;
+    top: 0; height: 100%;
+    width: 12%;
+    z-index: 50;
+    cursor: pointer;
+  }
+  .clickzone-right { right: 0; }
+  .clickzone-left { left: 0; }
+
+  /* Slide 4 helper layout */
+  .ecosystem-layout {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 2.4vw;
+    flex: 1;
+    min-height: 0;
+    align-items: center;
+  }
+  @media (max-width: 1000px) { .ecosystem-layout { grid-template-columns: 1fr; } }
+  .ecosystem-layout .grid-4 {
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+    align-content: start;
+  }
+</style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="corner-mark"><span class="glyph"></span><span>Vibe Coding · 2026</span></div>
+  <div class="brand">CDMX · May 28</div>
+  <div class="counter"><b id="cur">1</b><span class="divider">/</span><span id="total">10</span></div>
+
+  <div class="deck" id="deck">
+
+    <!-- 1: Title -->
+    <section class="slide title-slide" data-title="Title">
+      <div style="display:grid; grid-template-columns:auto auto; gap:100px; align-items:center; justify-content:center; height:100%;">
+        <div>
+          <div class="kicker"><span class="rule"></span><span>A Personal Experiment</span></div>
+          <h1><em>Architect</em><br>Vibes.</h1>
+          <div class="subtitle">Managing open-source agents like interns.</div>
+          <div class="quotes">
+            <div class="tagline">Making a film is orchestrating an accident.</div>
+            <div class="attribution">— Guillermo del Toro</div>
+          </div>
+        </div>
+        <div style="width:clamp(256px,28.8vw,416px); flex-shrink:0;">
+          <img src="headshot-8bit.png" alt="Alan Zoppa" style="width:100%; border-radius:12px; border:1px solid var(--line); display:block;">
+          <div class="meta" style="margin-top:0.75em;">Alan Zoppa <span style="color:var(--line-2)">·</span> Chicago <span style="color:var(--line-2)">·</span> May 28, 2026</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2: Three Questions -->
+    <section class="slide" data-title="Three Questions">
+      <div class="kicker"><span class="num">01</span><span class="rule"></span><span>The Premise</span></div>
+      <h2>I had my reasons.</h2>
+      <p class="subtitle">The open-weights ecosystem is vibrant and competitive, and it's exciting to play with the latest model as it's crossing the moat.</p>
+      <ol class="qlist">
+        <li>
+          <div>
+            <span class="q-title">Open-weights models</span>
+            <span class="q-desc">No more than 6 months behind the state-of-the art, low low prices.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <span class="q-title">Agentic Tooling</span>
+            <span class="q-desc">Let's give it higher-level guidelines and stop it when it does something dumb.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <span class="q-title">Embeddings</span>
+            <span class="q-desc">I don't fully understand how embeddings work, but I understand enough to be dangerous. How can I use them to help navigate my own data?</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 3: Managing Interns -->
+    <section class="slide" data-title="Managing Interns">
+      <div class="kicker"><span class="num">03</span><span class="rule"></span><span>The Metaphor</span></div>
+      <h2>Once, I managed eight interns</h2>
+
+      <div class="two-col tight" style="margin-top:1.2rem; align-items:stretch;">
+        <div class="img-frame" style="height:100%; min-height:340px;">
+          <img src="interns.jpg" alt="The intern team" style="object-fit:cover; height:100%; width:100%;">
+        </div>
+        <div class="stack">
+          <div class="card compact">
+            <h3>Give them room to surprise you</h3>
+            <p>They picked a ridiculous team name to make fun of me. It was great.</p>
+          </div>
+          <div class="card compact">
+            <h3>They'll overengineer</h3>
+            <p>One wrote a stored SQL procedure for what should have been a 12-line Rails controller.</p>
+          </div>
+          <div class="card compact">
+            <h3>They need limits that would seem obvious</h3>
+            <p>Gym clothes in the office. Missed Meetings. No tests. Things you didn't think you'd have to say.</p>
+          </div>
+          <div class="callout" style="margin-top:1.4rem">
+            These aren't <b>competence</b> problems. They're <b>judgment</b> problems.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4: Agents as Interns -->
+    <section class="slide" data-title="Agents as Interns">
+      <div class="kicker"><span class="num">04</span><span class="rule"></span><span>The Parallel</span></div>
+      <h2>Coding agents have a lot of the same gaps</h2>
+
+      <ol class="qlist" style="margin-top:1rem;">
+        <li>
+          <div>
+            <span class="q-title">Overengineering</span>
+            <span class="q-desc">Reaches for a clever solution when a boring one was right there.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <span class="q-title">Reinvents the wheel</span>
+            <span class="q-desc">Won't reach for a library or third-party solution without being told to look.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <span class="q-title">Needs reminders for the obvious</span>
+            <span class="q-desc">Won't check the build, run tests, or push unless you say so explicitly.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <span class="q-title">No instinct for what's sensitive</span>
+            <span class="q-desc">Credentials, secrets, private data — not on the radar without a rule.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <span class="q-title">Won't tell you you're wrong</span>
+            <span class="q-desc">If the solution means forking <code>systemd</code> it'll do that.</span>
+          </div>
+        </li>
+      </ol>
+      <p class="muted" style="margin-top:1.4rem; max-width:75ch; font-size:1.02rem">
+        Every one of these is a <b style="color:var(--accent)">judgment gap</b>, not a capability gap. Agents <em>can</em> do these things — they just don't know they should.
+      </p>
+    </section>
+
+    <!-- 5: Tool Ecosystem -->
+    <section class="slide" data-title="Tool Ecosystem">
+      <div class="kicker"><span class="num">05</span><span class="rule"></span><span>Tools</span></div>
+      <h2>Open-source tooling</h2>
+      <p class="subtitle">Knowing which one to reach for is half the battle.</p>
+
+      <div class="grid-4" style="margin-top:1.6rem; grid-template-columns:repeat(2,1fr);">
+        <div class="card">
+          <div class="label">Guardrails for Interns</div>
+          <h3>OpenCode</h3>
+          <p>Real planning and execution. Shows you its thinking, asks permission only when it matters.</p>
+          <div class="prompt">User does not 🤬 care if the test failure is unrelated, you never push a red build.</div>
+        </div>
+        <div class="card">
+          <div class="label">Flexible but high-maintenance agent</div>
+          <h3>Openclaw</h3>
+          <p>Interesting but often ridiculous, requires lot of maintenance.</p>
+          <div class="prompt">Why do you keep forgetting this?</div>
+        </div>
+        <div class="card">
+          <div class="label">"Just works" for structured tasks</div>
+          <h3>Hermes Agent</h3>
+          <p>Task orchestration, system integration, workflow design</p>
+          <div class="prompt">What tests should we add for monitoring my home server?</div>
+        </div>
+        <div class="card">
+          <div class="label">Browser</div>
+          <h3>agent-browser</h3>
+          <p>CLI-friendly browser control. Really great for scripting the browser when headless.</p>
+          <div class="prompt">Look at the site before you tell me there are no JS errors.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6: Token Economics -->
+    <section class="slide" data-title="Token Economics">
+      <div class="kicker"><span class="num">06</span><span class="rule"></span><span>Economics</span></div>
+      <h2>$20/month buys agents that runs all day</h2>
+      <p class="subtitle">Very capable open-weights models are available at race-to-the-bottom prices.</p>
+
+      <div style="margin-top:1.8rem">
+        <table class="styled">
+          <thead>
+            <tr><th style="width:24%">Service</th><th style="width:18%">Cost</th><th>What You Get</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>Ollama Pro</b></td><td class="num">$20 / mo</td><td>Generous tokens · DeepSeek v4 · Kimi k2.6 · GLM 5.1</td></tr>
+            <tr><td><b>OpenRouter</b></td><td class="num">~ $0.01</td><td>Embed ~1,600 documents (Qwen 8B Embedding)</td></tr>
+            <tr class="total"><td>Total</td><td class="num">~ $20 / mo</td><td>A coding agent that runs all day</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- 7: Guardrails -->
+    <section class="slide" data-title="Guardrails">
+      <div class="kicker"><span class="num">06</span><span class="rule"></span><span>The Fix</span></div>
+      <h2>The solution isn't smarter models — it's better guardrails</h2>
+
+      <ul class="checklist" style="margin-top:1.4rem;">
+        <li>
+          <span class="tick">✓</span>
+          <div>
+            <span class="ck-title">MUST parallelize with subagents</span>
+            <span class="ck-desc">Dispatching is the default. Solo work is the exception.</span>
+          </div>
+        </li>
+        <li>
+          <span class="tick">✓</span>
+          <div>
+            <span class="ck-title">Push after successful complex changes</span>
+            <span class="ck-desc">Commit AND push. All tests green first.</span>
+          </div>
+        </li>
+        <li>
+          <span class="tick">✓</span>
+          <div>
+            <span class="ck-title">Test new functionality</span>
+            <span class="ck-desc">Write automated tests as you go. Regression tests where needed.</span>
+          </div>
+        </li>
+        <li>
+          <span class="tick">✓</span>
+          <div>
+            <span class="ck-title">Always specify the subagent type</span>
+            <span class="ck-desc">"I'll dispatch X to @build, Y to @explore."</span>
+          </div>
+        </li>
+        <li>
+          <span class="tick">✓</span>
+          <div>
+            <span class="ck-title">Type safety is preferred</span>
+            <span class="ck-desc">When the language supports it. Free correctness, free docs.</span>
+          </div>
+        </li>
+        <li>
+          <span class="tick">✓</span>
+          <div>
+            <span class="ck-title">Don't reinvent the wheel</span>
+            <span class="ck-desc">Prefer robust libraries. Don't re-test library functionality.</span>
+          </div>
+        </li>
+      </ul>
+
+    </section>
+
+    <!-- 8: Embeddings -->
+    <section class="slide" data-title="Embeddings">
+      <div class="kicker"><span class="num">07</span><span class="rule"></span><span>The Idea</span></div>
+      <h2>Embeddings, without the math</h2>
+
+      <div class="embed-layout" style="margin-top:1.2rem;">
+        <div class="embed-prose">
+          <p>
+            An <b style="color:var(--accent)">embedding</b> is just a coordinate. Every word, sentence, or document gets a position in a high-dimensional space — and similar meanings land near each other.
+          </p>
+          <p class="muted">
+            The angle between two vectors (cosine distance) <em>is</em> their semantic distance.
+            Near 0° → same meaning. Near 180° → opposite.
+          </p>
+          <div class="word-eq">
+            <b>uncle</b><span class="op">−</span>man<span class="op">+</span>woman<span class="op">≈</span><b>aunt</b>
+          </div>
+          <div class="callout" style="margin-top:1.2rem">
+            "Sad" is close to "unhappy" even though they share no letters. You're matching <b>meaning</b>, not keywords.
+          </div>
+          <p class="dim" style="margin-top:1.2rem; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase">→ drag the plot to rotate</p>
+        </div>
+        <div class="iframe-wrap">
+          <iframe src="word_vectors_3d.html?theme=dark" title="3D word embedding visualization"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9: Mnestic Demo -->
+    <section class="slide" data-title="Mnestic Demo">
+      <div class="kicker"><span class="num">08</span><span class="rule"></span><span>The Payoff</span></div>
+      <h2>Mnestic — live</h2>
+
+      <div class="demo-placeholder">
+        <div class="live"><span class="dot"></span> Live demo</div>
+        <h2 style="background:linear-gradient(180deg,#fff,#a3adc2); -webkit-background-clip:text; background-clip:text; color:transparent;">What you'll see</h2>
+        <ul class="demo-cues">
+          <li>The web UI: notes clustered by &gt;75% cosine similarity</li>
+          <li>An agent querying via MCP (<code>mcp_mnestic_*</code> tools)</li>
+          <li>Zoom transcript → Claude → Mnestic, end-to-end</li>
+          <li>Cross-session recall: "Did Alan remember to email Ale?"</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10: Closing -->
+    <section class="slide" data-title="Takeaways">
+      <div class="kicker"><span class="num">09</span><span class="rule"></span><span>Closing</span></div>
+      <h2>Five takeaways</h2>
+
+      <ol class="takeaways">
+        <li>
+          <div>
+            <div class="t-title">$20/month gets you a shocking number of tokens</div>
+            <div class="t-desc">Ollama Pro is nearly inexhaustible for a single developer.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="t-title">Open-weights models are competitive</div>
+            <div class="t-desc">GLM 5.1, Kimi k2.6, DeepSeek v4 — the Chinese labs are shipping.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="t-title">Plan-then-execute works at scale</div>
+            <div class="t-desc">Big model plans, smaller models execute, explicit task-to-model mapping.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="t-title">Guardrails matter more than intelligence</div>
+            <div class="t-desc">Clear mandates — not suggestions — close the judgment gap.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="t-title">I built something I wouldn't have written by hand</div>
+            <div class="t-desc">Mnestic: scattered notes → queryable agent knowledge base.</div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="final-quote">
+        To me, the director as dictator makes no sense. The director as prophet makes sense.
+        <div style="margin-top:0.8rem; font-size:0.88rem; font-style:normal; letter-spacing:0.08em; color:var(--muted);">— Guillermo del Toro</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="clickzone-left" id="zoneL"></div>
+  <div class="clickzone-right" id="zoneR"></div>
+
+  <div class="help" id="help">
+    <div class="help-card">
+      <h3>Keyboard shortcuts</h3>
+      <div class="row"><span><kbd>→</kbd> <kbd>Space</kbd></span> Next slide</div>
+      <div class="row"><span><kbd>←</kbd></span> Previous slide</div>
+      <div class="row"><span><kbd>Home</kbd></span> First slide</div>
+      <div class="row"><span><kbd>End</kbd></span> Last slide</div>
+      <div class="row"><span><kbd>F</kbd></span> Fullscreen</div>
+      <div class="row"><span><kbd>?</kbd></span> Toggle this help</div>
+      <div class="row"><span><kbd>Esc</kbd></span> Close help</div>
+    </div>
+  </div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  document.getElementById('total').textContent = String(total).padStart(2, '0');
+  const progressEl = document.getElementById('progress');
+  const curEl = document.getElementById('cur');
+  const helpEl = document.getElementById('help');
+
+  let idx = 0;
+
+  function show(i) {
+    idx = Math.max(0, Math.min(total - 1, i));
+    slides.forEach((s, n) => s.classList.toggle('active', n === idx));
+    curEl.textContent = String(idx + 1).padStart(2, '0');
+    progressEl.style.width = ((idx + 1) / total * 100) + '%';
+    if (location.hash !== '#' + (idx + 1)) {
+      history.replaceState(null, '', '#' + (idx + 1));
+    }
+  }
+
+  function next() { show(idx + 1); }
+  function prev() { show(idx - 1); }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch (e.key) {
+      case 'ArrowRight':
+      case ' ':
+      case 'PageDown':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault(); prev(); break;
+      case 'Home':
+        e.preventDefault(); show(0); break;
+      case 'End':
+        e.preventDefault(); show(total - 1); break;
+      case 'f':
+      case 'F':
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+        break;
+      case '?':
+      case '/':
+        helpEl.classList.toggle('show'); break;
+      case 'Escape':
+        helpEl.classList.remove('show'); break;
+    }
+  });
+
+  document.getElementById('zoneR').addEventListener('click', next);
+  document.getElementById('zoneL').addEventListener('click', prev);
+
+  function readHash() {
+    const n = parseInt(location.hash.replace('#', ''), 10);
+    if (!isNaN(n) && n >= 1 && n <= total) show(n - 1);
+    else show(0);
+  }
+  window.addEventListener('hashchange', readHash);
+  readHash();
+</script>
+</body>
+</html>
