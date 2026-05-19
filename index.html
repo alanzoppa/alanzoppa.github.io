@@ -1,671 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Writing Code Like an Architect — CDMX 2026</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-/* ===== Reveal Overrides ===== */
-.reveal {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 28px;
-  color: #e8e6e3;
-}
-
-.reveal .slides section {
-  height: 100%;
-  padding: 60px 80px;
-  box-sizing: border-box;
-}
-
-/* ===== Background & Theme ===== */
-:root {
-  --bg-deep: #0a0c14;
-  --bg-panel: #11131f;
-  --bg-card: rgba(255,255,255,0.03);
-  --gold: #d4a85c;
-  --gold-bright: #f0c878;
-  --gold-dim: #a07830;
-  --text-primary: #e8e6e3;
-  --text-secondary: #b8b4ac;
-  --text-muted: #7a7670;
-  --border: rgba(255,255,255,0.07);
-  --border-bright: rgba(212,168,92,0.25);
-  --accent-warm: #c97a40;
-  --accent-cool: #5e8ab4;
-  --accent-green: #5ba872;
-}
-
-.reveal .slide-background {
-  background: radial-gradient(ellipse at 50% 0%, #151b2e 0%, var(--bg-deep) 70%);
-}
-
-/* ===== Typography ===== */
-.reveal h1 { font-size: 2.8em; font-weight: 600; color: var(--text-primary); letter-spacing: -0.03em; margin-bottom: 0.3em; }
-.reveal h2 { font-size: 2em; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; margin-bottom: 0.6em; }
-.reveal h3 { font-size: 1.3em; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.3em; }
-.reveal p, .reveal li { font-size: 0.85em; line-height: 1.6; color: var(--text-secondary); }
-.reveal ul { list-style: none; padding: 0; }
-.reveal ul li { padding: 0.35em 0; position: relative; padding-left: 1.5em; }
-.reveal ul li::before { content: ''; position: absolute; left: 0; top: 0.75em; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-dim); }
-.reveal strong { color: var(--gold-bright); font-weight: 600; }
-.reveal em { color: var(--text-primary); font-style: italic; }
-
-/* ===== Title Slide ===== */
-.title-slide h1 {
-  font-size: 3.2em;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 40%, var(--accent-warm) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.4em;
-  line-height: 1.15;
-}
-.title-slide .subtitle {
-  font-size: 1.3em;
-  font-weight: 400;
-  color: var(--text-secondary);
-  margin-bottom: 1.5em;
-  letter-spacing: 0.02em;
-}
-.title-slide .meta {
-  font-size: 0.75em;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border-bright);
-  display: inline-block;
-  padding-top: 0.8em;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-.title-slide .ornament {
-  width: 60px;
-  height: 3px;
-  background: var(--gold);
-  margin: 0 auto 1.5em;
-  border-radius: 2px;
-}
-
-/* ===== Cards & Grids ===== */
-.card-grid {
-  display: grid;
-  gap: 1.2em;
-  margin-top: 1em;
-}
-.card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
-.card-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
-.card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
-
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1.2em 1em;
-  text-align: left;
-  backdrop-filter: blur(12px);
-  transition: border-color 0.3s ease;
-}
-.card:hover { border-color: var(--border-bright); }
-.card .card-icon { font-size: 1.6em; margin-bottom: 0.3em; }
-.card .card-label { font-size: 0.65em; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.4em; }
-.card .card-value { font-size: 1.5em; font-weight: 700; color: var(--gold-bright); }
-.card .card-name { font-size: 0.9em; font-weight: 600; color: var(--text-primary); margin-bottom: 0.25em; }
-.card .card-desc { font-size: 0.7em; color: var(--text-muted); line-height: 1.5; }
-
-/* ===== Tables ===== */
-.reveal table {
-  margin: 1em auto;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.7em;
-  width: 90%;
-}
-.reveal table th {
-  background: rgba(212,168,92,0.08);
-  color: var(--gold);
-  font-weight: 600;
-  padding: 0.6em 1em;
-  text-align: left;
-  font-size: 0.85em;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--border-bright);
-}
-.reveal table th:first-child { border-radius: 8px 0 0 0; }
-.reveal table th:last-child { border-radius: 0 8px 0 0; }
-.reveal table td {
-  padding: 0.55em 1em;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 0.9em;
-}
-.reveal table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
-.reveal table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
-.reveal table tr:hover td { background: rgba(255,255,255,0.02); }
-
-/* ===== Callout ===== */
-.callout {
-  background: rgba(212,168,92,0.06);
-  border-left: 3px solid var(--gold);
-  padding: 0.8em 1.2em;
-  margin: 1em 0;
-  border-radius: 0 8px 8px 0;
-  font-size: 0.75em;
-  color: var(--gold-bright);
-  text-align: left;
-}
-
-/* ===== Checklist ===== */
-.checklist {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.8em;
-  margin-top: 1em;
-}
-.checklist-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1em 1.2em;
-  text-align: left;
-  font-size: 0.68em;
-  transition: border-color 0.2s;
-}
-.checklist-item:hover { border-color: var(--border-bright); }
-.checklist-item .check-num {
-  color: var(--gold);
-  font-weight: 700;
-  font-size: 0.8em;
-  margin-bottom: 0.4em;
-}
-.checklist-item .check-title {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.3em;
-}
-.checklist-item .check-desc {
-  color: var(--text-muted);
-  line-height: 1.5;
-  font-size: 0.9em;
-}
-
-/* ===== Split Layout ===== */
-.split-layout {
-  display: flex;
-  gap: 2em;
-  align-items: center;
-  text-align: left;
-}
-.split-layout > * { flex: 1; }
-.split-left { text-align: center; }
-.split-right { text-align: left; }
-
-/* ===== Flow Diagram ===== */
-.flow-diagram {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  margin: 1em 0;
-  font-size: 0.65em;
-}
-.flow-node {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.6em 1em;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  transition: border-color 0.2s;
-}
-.flow-node:hover { border-color: var(--border-bright); }
-.flow-node.highlight { border-color: var(--gold-dim); color: var(--gold-bright); }
-.flow-arrow {
-  color: var(--gold-dim);
-  font-size: 1.2em;
-  margin: 0 0.15em;
-}
-
-/* ===== Decision Matrix ===== */
-.decision-matrix {
-  display: flex;
-  gap: 0.8em;
-  justify-content: center;
-  margin-top: 1em;
-  flex-wrap: wrap;
-}
-.dm-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.8em 1.2em;
-  text-align: center;
-  font-size: 0.65em;
-  min-width: 140px;
-}
-.dm-card .dm-action { color: var(--gold); font-weight: 700; font-size: 0.9em; margin-bottom: 0.2em; }
-.dm-card .dm-model { color: var(--text-primary); font-weight: 600; }
-.dm-card .dm-arrow { color: var(--gold-dim); margin: 0 0.3em; }
-
-/* ===== Takeaway list ===== */
-.takeaways { text-align: left; max-width: 85%; margin: 0 auto; }
-.takeaways li { padding: 0.5em 0; padding-left: 2em; }
-.takeaways li::before { top: 0.8em; width: 8px; height: 8px; background: var(--gold); }
-.takeaways .final-line {
-  margin-top: 1.2em;
-  padding-top: 1em;
-  border-top: 1px solid var(--border-bright);
-  font-size: 0.9em;
-  font-style: italic;
-  color: var(--gold-bright);
-}
-
-/* ===== Iframe wrapper ===== */
-.iframe-wrapper {
-  width: 100%;
-  height: 65vh;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  margin-top: 0.8em;
-}
-.iframe-wrapper iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: #fff;
-}
-
-/* ===== Placeholder image ===== */
-.img-placeholder {
-  width: 100%;
-  aspect-ratio: 4/3;
-  background: var(--bg-card);
-  border: 2px dashed var(--border);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  font-size: 0.7em;
-}
-
-/* ===== Numbered list large ===== */
-.numbered-list { counter-reset: qnum; text-align: left; max-width: 85%; margin: 0 auto; }
-.numbered-list li { counter-increment: qnum; padding-left: 3em; padding-bottom: 0.8em; }
-.numbered-list li::before {
-  content: counter(qnum);
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--gold-dim);
-  color: var(--bg-deep);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.75em;
-  position: absolute;
-  left: 0;
-  top: 0.4em;
-}
-.numbered-list li strong { display: block; margin-bottom: 0.15em; }
-
-/* ===== Transition quote ===== */
-.transition-quote {
-  font-size: 0.8em;
-  font-style: italic;
-  color: var(--gold-bright);
-  margin-top: 1em;
-  padding: 0.5em 1em;
-  border-left: 3px solid var(--gold);
-  text-align: left;
-}
-
-/* ===== Progress bar ===== */
-.reveal .progress { background: rgba(255,255,255,0.05); height: 3px; }
-.reveal .progress span { background: var(--gold); }
-
-/* ===== Controls ===== */
-.reveal .controls { color: var(--gold-dim); }
-
-/* ===== Slide-specific helper ===== */
-.slide-label {
-  font-size: 0.55em;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--gold-dim);
-  margin-bottom: 1.5em;
-}
-
-/* ===== Demo slide cues ===== */
-.demo-cues {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1em;
-  text-align: left;
-  margin-top: 1em;
-}
-.demo-cue {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.8em 1.2em;
-}
-.demo-cue .cue-icon { font-size: 1.3em; margin-bottom: 0.3em; }
-.demo-cue .cue-label { font-size: 0.65em; font-weight: 600; color: var(--gold); margin-bottom: 0.2em; }
-.demo-cue .cue-desc { font-size: 0.6em; color: var(--text-muted); line-height: 1.5; }
-
-/* ===== Speaker notes area ===== */
-.reveal .speaker-notes { display: none; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pages</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 { margin-bottom: 28px; color: #333; text-align: center; }
+    .date-header {
+      font-size: 0.8em;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 24px 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #eee;
+    }
+    .date-header:first-of-type { margin-top: 0; }
+    .page-list {
+      list-style: none;
+    }
+    .page-list li {
+      margin: 10px 0;
+    }
+    .page-list a {
+      color: #0a66c2;
+      text-decoration: none;
+      font-size: 17px;
+      padding: 10px 20px;
+      display: inline-block;
+      border: 1px solid #0a66c2;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .page-list a:hover {
+      background: #0a66c2;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-<div class="reveal">
-<div class="slides">
+  <div class="container">
+    <h1>📄 Pages</h1>
 
-<!-- ===== SLIDE 1: TITLE ===== -->
-<section class="title-slide">
-  <div class="ornament"></div>
-  <h1>Writing Code Like<br>an Architect</h1>
-  <p class="subtitle">A Personal Experiment in Vibe Coding</p>
-  <p class="meta">CDMX &bull; May 28, 2026 &bull; Alan Zoppa</p>
-</section>
+    <div class="date-header">April 14, 2026</div>
+    <ul class="page-list">
+      <li><a href="ai-coding-benchmarks/">🤖 AI Coding Benchmarks — April 2026</a></li>
+    </ul>
 
-<!-- ===== SLIDE 2: THE THREE QUESTIONS ===== -->
-<section>
-  <div class="slide-label">Research Questions</div>
-  <h2>The Three Questions</h2>
-  <ol class="numbered-list">
-    <li>
-      <strong>Open-weights models</strong>
-      How far can I push them with real autonomy?
-    </li>
-    <li>
-      <strong>Open-source tools</strong>
-      What degrees of freedom are available?
-    </li>
-    <li>
-      <strong>Embeddings</strong>
-      How can I use them to navigate my own data?
-    </li>
-  </ol>
-</section>
+    <div class="date-header">April 3, 2026</div>
+    <ul class="page-list">
+      <li><a href="london-beer-flood/">🍺 The London Beer Flood of 1814</a></li>
+    </ul>
 
-<!-- ===== SLIDE 3: TOKEN ECONOMICS ===== -->
-<section>
-  <div class="slide-label">Cost Breakdown</div>
-  <h2>Token Economics</h2>
-  <div class="card-grid cols-3">
-    <div class="card">
-      <div class="card-label">Provider</div>
-      <div class="card-name">Ollama Pro</div>
-      <div class="card-value">$20<span style="font-size:0.5em">/mo</span></div>
-      <div class="card-desc">Nearly inexhaustible tokens<br>DeepSeek v4, Qwen 3</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Provider</div>
-      <div class="card-name">OpenRouter</div>
-      <div class="card-value">~$0.01</div>
-      <div class="card-desc">Embed ~1600 documents<br>Qwen 8B Embedding</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Total</div>
-      <div class="card-name">Monthly Cost</div>
-      <div class="card-value">~$20<span style="font-size:0.5em">/mo</span></div>
-      <div class="card-desc">A coding agent that<br>runs all day</div>
-    </div>
-  </div>
-  <div class="callout">
-    Embedding 1,600 documents cost one cent.
-  </div>
-</section>
+    <div class="date-header">April 2, 2026</div>
+    <ul class="page-list">
+      <li><a href="tanganyika-laughter-epidemic/">😶‍🌫️ The Tanganyika Laughter Epidemic</a></li>
+      <li><a href="great-stink/">💩 The Great Stink of 1858</a></li>
+      <li><a href="roden-crater/">🌋 Roden Crater — The Man Who Bought a Volcano</a></li>
+      <li><a href="kronstadt-rebellion/">☭ The Kronstadt Rebellion of 1921</a></li>
+      <li><a href="proto-indo-european/">🏛️ Proto-Indo-European</a></li>
+      <li><a href="the-bloop/">🔊 The Bloop — The Ocean's Mysterious Sound</a></li>
+      <li><a href="cargo-cults/">🛩️ Cargo Cults</a></li>
+      <li><a href="voynich-manuscript/">📜 The Voynich Manuscript</a></li>
+    </ul>
 
-<!-- ===== SLIDE 4: TOOL ECOSYSTEM ===== -->
-<section>
-  <div class="slide-label">Agent Stack</div>
-  <h2>Tool Ecosystem</h2>
-  <div class="card-grid cols-3">
-    <div class="card">
-      <div class="card-icon">💻</div>
-      <div class="card-name">OpenCode</div>
-      <div class="card-label">Primary coding agent</div>
-      <div class="card-desc">Real dev work, subagent orchestration. The workhorse for day-to-day coding.</div>
-    </div>
-    <div class="card">
-      <div class="card-icon">🤖</div>
-      <div class="card-name">Hermes Agent</div>
-      <div class="card-label">Agentic assistant</div>
-      <div class="card-desc">System debugging: Avahi, systemd, nginx. Infrastructure-aware problem solving.</div>
-    </div>
-    <div class="card">
-      <div class="card-icon">🌐</div>
-      <div class="card-name">agent-browser</div>
-      <div class="card-label">Web automation</div>
-      <div class="card-desc">CLI-friendly browser control for agents. Headless web interaction.</div>
-    </div>
-  </div>
-  <div class="transition-quote">
-    Knowing which tool to reach for is half the battle.
-  </div>
-</section>
+    <div class="date-header">March 29, 2026</div>
+    <ul class="page-list">
+      <li><a href="carrington-event/">☀️ The Carrington Event of 1859</a></li>
+    </ul>
 
-<!-- ===== SLIDE 5: MANAGING INTERNS ===== -->
-<section>
-  <div class="slide-label">The Human Side</div>
-  <h2>Managing Interns</h2>
-  <div class="split-layout">
-    <div class="split-left">
-      <div class="img-placeholder">
-        👥 Intern Team Photo
-      </div>
-    </div>
-    <div class="split-right">
-      <ul>
-        <li><strong>Give them room to surprise you</strong><br>They picked a ridiculous team name and made fun of me</li>
-        <li><strong>They'll overengineer</strong><br>Stored SQL procedure for a simple Rails controller</li>
-        <li><strong>They need obvious limits</strong><br>Gym clothes in the office, skipped meetings</li>
-      </ul>
-    </div>
-  </div>
-  <div class="transition-quote">
-    These aren't competence problems. They're judgment problems.
-  </div>
-</section>
+    <div class="date-header">March 26, 2026</div>
+    <ul class="page-list">
+      <li><a href="tunguska/">💥 The Tunguska Event</a></li>
+    </ul>
 
-<!-- ===== SLIDE 6: CODING AGENTS AS INTERNS ===== -->
-<section>
-  <div class="slide-label">Parallel Patterns</div>
-  <h2>Coding Agents as Interns</h2>
-  <table>
-    <thead>
-      <tr><th>Intern Behavior</th><th>Agent Behavior</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Overengineers a simple task</td><td>Solves problems with regex tangles</td></tr>
-      <tr><td>Needs to be told to show up</td><td>Won't commit or push unless told</td></tr>
-      <tr><td>Needs to be reminded of basics</td><td>Won't run tests before pushing</td></tr>
-      <tr><td>No sense of what's sensitive</td><td>Commits secrets to git</td></tr>
-      <tr><td>Does one thing at a time</td><td>Single-threads through tasks</td></tr>
-    </tbody>
-  </table>
-  <div class="transition-quote">
-    Every one of these is a judgment gap, not a capability gap.<br>Agents CAN do these things — they just don't know they should.
-  </div>
-</section>
+    <div class="date-header">March 25, 2026</div>
+    <ul class="page-list">
+      <li><a href="soviet-cameras/">📷 Soviet Cameras & Lenses</a></li>
+      <li><a href="commodity-fetishism/">📱 Commodity Fetishism</a></li>
+    </ul>
 
-<!-- ===== SLIDE 7: GUARDRAILS ===== -->
-<section>
-  <div class="slide-label">Architecture Rules</div>
-  <h2>The Solution Isn't Smarter Models —<br>It's Better Guardrails</h2>
-  <div class="checklist">
-    <div class="checklist-item">
-      <div class="check-num">01</div>
-      <div class="check-title">MUST parallelize with subagents</div>
-      <div class="check-desc">Dispatching is the default; solo work is the exception</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-num">02</div>
-      <div class="check-title">Push after successful complex changes</div>
-      <div class="check-desc">Commit AND push; all tests green first</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-num">03</div>
-      <div class="check-title">Test new functionality</div>
-      <div class="check-desc">Write automated tests as you go; regression tests where needed</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-num">04</div>
-      <div class="check-title">Always specify the subagent type</div>
-      <div class="check-desc">"I'll dispatch X to @build, Y to @explore"</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-num">05</div>
-      <div class="check-title">Type safety is preferred</div>
-      <div class="check-desc">When supported by the language</div>
-    </div>
-    <div class="checklist-item">
-      <div class="check-num">06</div>
-      <div class="check-title">Don't reinvent the wheel</div>
-      <div class="check-desc">Prefer robust libraries; don't re-test library functionality</div>
-    </div>
-  </div>
-  <div class="decision-matrix">
-    <div class="dm-card">
-      <div class="dm-action">Explore</div>
-      <div class="dm-arrow">→</div>
-      <div class="dm-model">@flash / DeepSeek v4 Flash</div>
-    </div>
-    <div class="dm-card">
-      <div class="dm-action">Refactor</div>
-      <div class="dm-arrow">→</div>
-      <div class="dm-model">@kimi / Kimi k2.6</div>
-    </div>
-    <div class="dm-card">
-      <div class="dm-action">Tests</div>
-      <div class="dm-arrow">→</div>
-      <div class="dm-model">@hurry / MiniMax m2.7</div>
-    </div>
-  </div>
-</section>
+    <div class="date-header">March 24, 2026</div>
+    <ul class="page-list">
+      <li><a href="dyatlov-pass/">🏔️ The Dyatlov Pass Incident</a></li>
+      <li><a href="perimeter/">☢️ Dead Hand: The Soviet Doomsday Machine</a></li>
+      <li><a href="molasses-flood/">🍯 The Great Molasses Flood of 1919</a></li>
+      <li><a href="k-19-widowmaker/">🚢 K-19: The Widowmaker</a></li>
+      <li><a href="dancing-plague/">💃 The Dancing Plague of 1518</a></li>
+    </ul>
 
-<!-- ===== SLIDE 8: MNESTIC ARCHITECTURE ===== -->
-<section>
-  <div class="slide-label">System Design</div>
-  <h2>Mnestic Architecture</h2>
-  <div class="flow-diagram">
-    <span class="flow-node">Zoom Transcripts</span>
-    <span class="flow-arrow">+</span>
-    <span class="flow-node">Manual Notes</span>
-    <span class="flow-arrow">+</span>
-    <span class="flow-node">Work Logs</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node highlight">Claude Processing</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node highlight">OpenViking<br><small>ChromaDB + qwen3-embedding-8b</small></span>
-  </div>
-  <div class="flow-diagram" style="margin-top:1.2em">
-    <span class="flow-node highlight">MCP Server Frontend</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node">Hermes Agent</span>
-    <span class="flow-arrow">/</span>
-    <span class="flow-node">OpenCode</span>
-    <span class="flow-arrow">/</span>
-    <span class="flow-node">Openclaw</span>
-  </div>
-  <div class="flow-diagram" style="margin-top:1.2em">
-    <span class="flow-arrow">→</span>
-    <span class="flow-node highlight">Similarity Cloud</span>
-    <span class="flow-arrow" style="font-size:0.7em">Notes clustered by &gt;75% cosine similarity</span>
-  </div>
-  <div class="callout" style="margin-top:1em">
-    Transcript → styleguide → structured markdown → ChromaDB → agent queries
-  </div>
-</section>
+    <div class="date-header">March 20, 2026</div>
+    <ul class="page-list">
+      <li><a href="atomic-spies/">☢️ Soviet Atomic Spies: Operation Enormoz</a></li>
+      <li><a href="tardigrades/">🐻 Tardigrades: The Indestructible Water Bears</a></li>
+    </ul>
 
-<!-- ===== SLIDE 9: EMBEDDINGS EXPLAINED ===== -->
-<section>
-  <div class="slide-label">Visual Intuition</div>
-  <h2>Embeddings Explained</h2>
-  <p style="font-size:0.75em; max-width:80%; margin:0 auto 0.8em; color:var(--text-secondary)">
-    "Uncle" is to "aunt" as "man" is to "woman" —<br>relationships captured in vector space
-  </p>
-  <div class="iframe-wrapper">
-    <iframe src="./cdmx-v2/word_vectors_3d.html" title="3D Word Vectors Demo"></iframe>
+    <div class="date-header">March 19, 2026</div>
+    <ul class="page-list">
+      <li><a href="buran/">🚀 Buran — The Soviet Space Shuttle</a></li>
+      <li><a href="sleep/">🧠 Sleep & Dreaming</a></li>
+      <li><a href="mimicry/">🎭 Mimicry in Nature</a></li>
+      <li><a href="bioluminescence/">💡 Bioluminescence</a></li>
+      <li><a href="fermi-paradox/">🛸 The Fermi Paradox</a></li>
+    </ul>
+
+    <div class="date-header">March 18, 2026</div>
+    <ul class="page-list">
+      <li><a href="crunchwrap-stories/">🌮 The Crunchwrap Chronicles</a></li>
+      <li><a href="voynich-manuscript/">🧪 The Voynich Manuscript</a></li>
+    </ul>
+
+    <div class="date-header">March 5, 2026</div>
+    <ul class="page-list">
+      <li><a href="skinkedin/">🦎 SkinkedIn</a></li>
+    </ul>
   </div>
-  <div class="callout">
-    <strong>Sad</strong> is close to <strong>unhappy</strong> even though they share no letters.<br>
-    You're matching <em>meaning</em>, not keywords.
-  </div>
-</section>
-
-<!-- ===== SLIDE 10: MNESTIC DEMO ===== -->
-<section>
-  <div class="slide-label">Live Demo</div>
-  <h2>Mnestic in Action</h2>
-  <div class="demo-cues">
-    <div class="demo-cue">
-      <div class="cue-icon">☁️</div>
-      <div class="cue-label">Similarity Cloud</div>
-      <div class="cue-desc">Notes clustered by semantic meaning &gt;75% cosine similarity. Visual exploration of your knowledge graph.</div>
-    </div>
-    <div class="demo-cue">
-      <div class="cue-icon">🔌</div>
-      <div class="cue-label">MCP Query</div>
-      <div class="cue-desc">Hermes or OpenCode querying via mcp_mnestic_* tools — semantic search from any agent.</div>
-    </div>
-    <div class="demo-cue">
-      <div class="cue-icon">📋</div>
-      <div class="cue-label">Pipeline Result</div>
-      <div class="cue-desc">Zoom transcript → Claude → structured markdown → ChromaDB. Raw conversation to queryable memory.</div>
-    </div>
-    <div class="demo-cue">
-      <div class="cue-icon">🧠</div>
-      <div class="cue-label">Cross-Session Memory</div>
-      <div class="cue-desc">"Alan promised to send Ale an email<br>— did he remember?" The agent checks.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== SLIDE 11: CLOSING ===== -->
-<section>
-  <div class="slide-label">Key Takeaways</div>
-  <h2>Closing</h2>
-  <ol class="takeaways">
-    <li><strong>$20/month gets you a shocking number of tokens</strong><br>Ollama Pro is nearly inexhaustible</li>
-    <li><strong>Open-weights models are competitive</strong><br>GLM 5.1, Kimi k2.6, DeepSeek v4 from Chinese labs</li>
-    <li><strong>Plan-then-execute works at scale</strong><br>Large model plans, smaller models execute, explicit task-to-model mapping</li>
-    <li><strong>Guardrails matter more than model intelligence</strong><br>Clear mandates, not suggestions</li>
-    <li><strong>I built something I wouldn't have bothered to write by hand</strong><br>Mnestic: scattered notes → queryable agent knowledge base</li>
-  </ol>
-  <p class="final-line">
-    That's writing code like an architect.<br>You don't lay every brick. You design the system,<br>you set the guardrails, and you let the interns do the work.
-  </p>
-</section>
-
-</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
-<script>
-Reveal.initialize({
-  hash: true,
-  transition: 'slide',
-  transitionSpeed: 'default',
-  backgroundTransition: 'fade',
-  width: 1920,
-  height: 1080,
-  margin: 0,
-  minScale: 0.2,
-  maxScale: 2.0,
-  controls: true,
-  progress: true,
-  center: true,
-  slideNumber: false,
-});
-</script>
 </body>
 </html>

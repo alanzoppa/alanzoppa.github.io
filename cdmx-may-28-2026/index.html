@@ -1,976 +1,671 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CDMX: Mexico City</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Code Like an Architect — CDMX 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ===== Reveal Overrides ===== */
+.reveal {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 28px;
+  color: #e8e6e3;
+}
+
+.reveal .slides section {
+  height: 100%;
+  padding: 60px 80px;
+  box-sizing: border-box;
+}
+
+/* ===== Background & Theme ===== */
 :root {
-  --bg: #0c0d10;
-  --bg-warm: #12100d;
-  --terracotta: #D35400;
-  --terracotta-light: #E67E22;
-  --turquoise: #00838F;
-  --turquoise-bright: #0097A7;
-  --gold: #F4A261;
-  --gold-bright: #FFD700;
-  --magenta: #C2185B;
-  --magenta-light: #E91E63;
-  --text: #e8e6df;
-  --text-dim: rgba(232,230,223,0.75);
-  --text-warm: #ede0d0;
+  --bg-deep: #0a0c14;
+  --bg-panel: #11131f;
+  --bg-card: rgba(255,255,255,0.03);
+  --gold: #d4a85c;
+  --gold-bright: #f0c878;
+  --gold-dim: #a07830;
+  --text-primary: #e8e6e3;
+  --text-secondary: #b8b4ac;
+  --text-muted: #7a7670;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(212,168,92,0.25);
+  --accent-warm: #c97a40;
+  --accent-cool: #5e8ab4;
+  --accent-green: #5ba872;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
-
-html, body {
-  height:100%; width:100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-  font-synthesis: none;
+.reveal .slide-background {
+  background: radial-gradient(ellipse at 50% 0%, #151b2e 0%, var(--bg-deep) 70%);
 }
 
-/* --- Slide Deck --- */
+/* ===== Typography ===== */
+.reveal h1 { font-size: 2.8em; font-weight: 600; color: var(--text-primary); letter-spacing: -0.03em; margin-bottom: 0.3em; }
+.reveal h2 { font-size: 2em; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; margin-bottom: 0.6em; }
+.reveal h3 { font-size: 1.3em; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.3em; }
+.reveal p, .reveal li { font-size: 0.85em; line-height: 1.6; color: var(--text-secondary); }
+.reveal ul { list-style: none; padding: 0; }
+.reveal ul li { padding: 0.35em 0; position: relative; padding-left: 1.5em; }
+.reveal ul li::before { content: ''; position: absolute; left: 0; top: 0.75em; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-dim); }
+.reveal strong { color: var(--gold-bright); font-weight: 600; }
+.reveal em { color: var(--text-primary); font-style: italic; }
 
-#deck {
-  position:relative; width:100vw; height:100vh;
+/* ===== Title Slide ===== */
+.title-slide h1 {
+  font-size: 3.2em;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 40%, var(--accent-warm) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.4em;
+  line-height: 1.15;
 }
-
-.slide {
-  position:absolute; inset:0;
-  display:flex; flex-direction:column; justify-content:center; align-items:center;
-  padding: 8vh 10vw;
-  opacity:0; pointer-events:none;
-  transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1);
-  will-change: opacity;
+.title-slide .subtitle {
+  font-size: 1.3em;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 1.5em;
+  letter-spacing: 0.02em;
 }
-.slide.active { opacity:1; pointer-events:auto; }
-
-/* --- Navigation --- */
-
-#nav {
-  position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
-  display:flex; gap:8px; z-index:100;
+.title-slide .meta {
+  font-size: 0.75em;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-bright);
+  display: inline-block;
+  padding-top: 0.8em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
-.dot {
-  width:10px; height:10px; border-radius:50%;
-  background: var(--text-dim); cursor:pointer;
-  transition: all 0.35s ease;
-}
-.dot.active { background: var(--terracotta-light); width:28px; border-radius:5px; }
-.dot:hover { background: var(--gold); }
-
-#slide-counter {
-  position:fixed; top:24px; left:50%; transform:translateX(-50%);
-  font-family: "Inter", sans-serif; font-size:13px; font-weight:500;
-  color: var(--text-dim); letter-spacing:0.15em; z-index:100;
-}
-
-/* --- Canvas Layer (Pretext effects) --- */
-
-#pretext-canvas {
-  position:fixed; inset:0; z-index:10; pointer-events:none;
-  display:none;
-}
-#pretext-canvas.show { display:block; }
-
-#shatter-canvas {
-  position:fixed; inset:0; z-index:25; pointer-events:none;
-  display:none;
-}
-#shatter-canvas.show { display:block; }
-
-/* --- Slide Components --- */
-
-.slide-title {
-  font-family: "Playfair Display", Georgia, serif;
-  font-weight:800; font-size:clamp(48px, 7vw, 96px);
-  line-height:1.05; letter-spacing:-0.02em;
-}
-.slide-subtitle {
-  font-family: "Playfair Display", serif;
-  font-weight:400; font-size:clamp(18px, 2.2vw, 28px);
-  color: var(--text-dim); margin-top:1.2rem;
-  letter-spacing:0.02em; font-style:italic;
+.title-slide .ornament {
+  width: 60px;
+  height: 3px;
+  background: var(--gold);
+  margin: 0 auto 1.5em;
+  border-radius: 2px;
 }
 
-.slide-heading {
-  font-family: "Playfair Display", serif;
-  font-weight:700; font-size:clamp(36px, 5vw, 64px);
-  line-height:1.1; margin-bottom:2.5rem;
-  letter-spacing:-0.01em;
+/* ===== Cards & Grids ===== */
+.card-grid {
+  display: grid;
+  gap: 1.2em;
+  margin-top: 1em;
 }
-.slide-body {
-  font-weight:300; font-size:clamp(15px, 1.6vw, 20px);
-  line-height:1.65; color: var(--text-warm);
-  max-width:720px; text-align:center;
-}
+.card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.card-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
 
-.accent { color: var(--terracotta-light); }
-.turq { color: var(--turquoise-bright); }
-.gold { color: var(--gold-bright); }
-.mag { color: var(--magenta-light); }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.2em 1em;
+  text-align: left;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease;
+}
+.card:hover { border-color: var(--border-bright); }
+.card .card-icon { font-size: 1.6em; margin-bottom: 0.3em; }
+.card .card-label { font-size: 0.65em; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.4em; }
+.card .card-value { font-size: 1.5em; font-weight: 700; color: var(--gold-bright); }
+.card .card-name { font-size: 0.9em; font-weight: 600; color: var(--text-primary); margin-bottom: 0.25em; }
+.card .card-desc { font-size: 0.7em; color: var(--text-muted); line-height: 1.5; }
 
-/* --- Decorative Patterns --- */
-
-.bg-pattern {
-  position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0.06;
-  background:
-    repeating-linear-gradient(45deg, transparent, transparent 40px, var(--terracotta) 40px, var(--terracotta) 41px),
-    repeating-linear-gradient(-45deg, transparent, transparent 40px, var(--turquoise) 40px, var(--turquoise) 41px);
+/* ===== Tables ===== */
+.reveal table {
+  margin: 1em auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.7em;
+  width: 90%;
 }
-.bg-texture {
-  position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0.04;
-  background:
-    radial-gradient(circle at 20% 30%, var(--gold) 1px, transparent 1px),
-    radial-gradient(circle at 80% 70%, var(--terracotta-light) 1px, transparent 1px),
-    radial-gradient(circle at 50% 80%, var(--turquoise-bright) 1px, transparent 1px);
-  background-size: 80px 80px, 120px 120px, 100px 100px;
-}
-
-/* --- Slide 0: Title --- */
-
-#s0 { background: var(--bg); }
-#s0 .title-group {
-  position:relative; z-index:1; text-align:center;
-}
-#s0 .cdmx {
-  font-family: "Playfair Display", serif; font-weight:900;
-  font-size:clamp(80px, 13vw, 200px);
-  line-height:0.9; letter-spacing:-0.04em;
-  background: linear-gradient(135deg, var(--gold-bright) 0%, var(--terracotta-light) 40%, var(--magenta-light) 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text;
-  animation: titleIn 1.2s cubic-bezier(0.16,1,0.3,1) both;
-}
-#s0 .mexico-city {
-  font-family: "Playfair Display", serif; font-weight:300;
-  font-size:clamp(20px, 3vw, 40px);
-  color: var(--text-dim); letter-spacing:0.2em; margin-top:-0.2rem;
-  animation: fadeUp 1.2s 0.25s cubic-bezier(0.16,1,0.3,1) both;
-}
-#s0 .tagline {
-  margin-top:2.5rem; font-weight:300; font-size:15px;
-  color: var(--text-dim); letter-spacing:0.12em;
-  animation: fadeUp 1.2s 0.5s cubic-bezier(0.16,1,0.3,1) both;
-}
-
-@keyframes titleIn {
-  0% { opacity:0; transform:scale(0.92); filter:blur(8px); }
-  100% { opacity:1; transform:scale(1); filter:blur(0); }
-}
-@keyframes fadeUp {
-  0% { opacity:0; transform:translateY(18px); }
-  100% { opacity:1; transform:translateY(0); }
-}
-
-/* --- Slide 1: History --- */
-
-#s1 { background: var(--bg-warm); justify-content:flex-start; padding-top:12vh; }
-#s1 .history-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:3rem;
-  max-width:960px; margin-top:1rem; position:relative; z-index:1;
-}
-#s1 .era {
-  padding:2rem 0; border-bottom:1px solid rgba(244,162,97,0.15);
-}
-#s1 .era-year {
-  font-family: "Playfair Display", serif; font-weight:700;
-  font-size:clamp(28px, 3.5vw, 44px);
+.reveal table th {
+  background: rgba(212,168,92,0.08);
   color: var(--gold);
+  font-weight: 600;
+  padding: 0.6em 1em;
+  text-align: left;
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-bright);
 }
-#s1 .era-label {
-  font-family: "Playfair Display", serif; font-weight:600;
-  font-size:clamp(16px, 1.8vw, 22px);
-  color: var(--text); margin:0.3rem 0 0.6rem;
+.reveal table th:first-child { border-radius: 8px 0 0 0; }
+.reveal table th:last-child { border-radius: 0 8px 0 0; }
+.reveal table td {
+  padding: 0.55em 1em;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.9em;
 }
-#s1 .era-desc {
-  font-weight:300; font-size:clamp(13px, 1.25vw, 16px);
-  color: var(--text-dim); line-height:1.55;
+.reveal table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+.reveal table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+.reveal table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ===== Callout ===== */
+.callout {
+  background: rgba(212,168,92,0.06);
+  border-left: 3px solid var(--gold);
+  padding: 0.8em 1.2em;
+  margin: 1em 0;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.75em;
+  color: var(--gold-bright);
+  text-align: left;
 }
 
-/* --- Slide 2: Culture --- */
-#s2 { background: var(--bg); }
-#s2 .culture-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,minmax(0,1fr));
-  gap:1.2rem;
-  max-width:900px; position:relative; z-index:1;
+/* ===== Checklist ===== */
+.checklist {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8em;
+  margin-top: 1em;
 }
-#s2 .culture-card {
-  text-align:center; padding:1.6rem 1.2rem;
-  border:1px solid rgba(244,162,97,0.1);
-  border-radius:2px;
-  transition:border-color 0.4s;
+.checklist-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1em 1.2em;
+  text-align: left;
+  font-size: 0.68em;
+  transition: border-color 0.2s;
 }
-#s2 .culture-card:hover { border-color:rgba(211,84,0,0.35); }
-#s2 .culture-name {
-  font-family:"Playfair Display",serif; font-weight:600;
-  font-size:clamp(16px,1.8vw,22px); margin-bottom:0.4rem;
+.checklist-item:hover { border-color: var(--border-bright); }
+.checklist-item .check-num {
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 0.8em;
+  margin-bottom: 0.4em;
 }
-#s2 .culture-desc {
-  font-weight:300; font-size:clamp(11px,1vw,13px);
-  color:var(--text-dim); line-height:1.4;
+.checklist-item .check-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.3em;
 }
-
-/* --- Slide 3: Neighborhoods --- */
-#s3 { background: var(--bg-warm); }
-#s3 .hood-grid {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:1.5rem; max-width:960px; position:relative; z-index:1;
-}
-#s3 .hood-card {
-  padding:2rem; border-left:3px solid var(--terracotta);
-  transition:border-color 0.4s;
-}
-#s3 .hood-card:nth-child(even) { border-left-color: var(--turquoise-bright); }
-#s3 .hood-card:hover { border-left-color: var(--gold-bright); }
-#s3 .hood-name {
-  font-family:"Playfair Display",serif; font-weight:600;
-  font-size:clamp(20px,2.4vw,28px); margin-bottom:0.4rem;
-}
-#s3 .hood-vibe {
-  font-size:11px; font-weight:500; letter-spacing:0.1em;
-  color:var(--terracotta-light); text-transform:uppercase; margin-bottom:0.6rem;
-}
-#s3 .hood-desc {
-  font-weight:300; font-size:13px; color:var(--text-dim); line-height:1.5;
+.checklist-item .check-desc {
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-size: 0.9em;
 }
 
-/* --- Slide 4: Food --- */
-#s4 { background: var(--bg); }
-#s4 .food-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:2rem;
-  max-width:900px; position:relative; z-index:1;
+/* ===== Split Layout ===== */
+.split-layout {
+  display: flex;
+  gap: 2em;
+  align-items: center;
+  text-align: left;
 }
-#s4 .food-card {
-  text-align:center; padding:2rem 1.5rem;
+.split-layout > * { flex: 1; }
+.split-left { text-align: center; }
+.split-right { text-align: left; }
+
+/* ===== Flow Diagram ===== */
+.flow-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin: 1em 0;
+  font-size: 0.65em;
 }
-#s4 .food-name {
-  font-family:"Playfair Display",serif; font-weight:600;
-  font-size:clamp(18px,2vw,26px); color:var(--terracotta-light);
-  margin-bottom:0.5rem;
+.flow-node {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6em 1em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  transition: border-color 0.2s;
 }
-#s4 .food-desc {
-  font-weight:300; font-size:13px; color:var(--text-dim); line-height:1.5;
+.flow-node:hover { border-color: var(--border-bright); }
+.flow-node.highlight { border-color: var(--gold-dim); color: var(--gold-bright); }
+.flow-arrow {
+  color: var(--gold-dim);
+  font-size: 1.2em;
+  margin: 0 0.15em;
 }
 
-/* --- Slide 5: Architecture (Pretext reflow canvas) --- */
-#s5 { background: var(--bg-warm); }
-#s5 .arch-label {
-  font-family:"Playfair Display",serif; font-size:clamp(14px,1.5vw,18px);
-  color:var(--gold); letter-spacing:0.15em; z-index:20;
-  position:relative; margin-bottom:0.4rem;
+/* ===== Decision Matrix ===== */
+.decision-matrix {
+  display: flex;
+  gap: 0.8em;
+  justify-content: center;
+  margin-top: 1em;
+  flex-wrap: wrap;
 }
-#s5 .arch-heading {
-  font-family:"Playfair Display",serif; font-weight:700;
-  font-size:clamp(36px,5vw,60px); z-index:20; position:relative; margin-bottom:0.5rem;
+.dm-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8em 1.2em;
+  text-align: center;
+  font-size: 0.65em;
+  min-width: 140px;
 }
-#s5 .arch-sites {
-  display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center;
-  position:relative; z-index:20; margin-top:1.5rem;
-}
-#s5 .arch-site {
-  font-size:12px; font-weight:500; letter-spacing:0.1em;
-  color:var(--text-dim); padding:0.5rem 1rem;
-  border:1px solid rgba(0,131,143,0.2);
+.dm-card .dm-action { color: var(--gold); font-weight: 700; font-size: 0.9em; margin-bottom: 0.2em; }
+.dm-card .dm-model { color: var(--text-primary); font-weight: 600; }
+.dm-card .dm-arrow { color: var(--gold-dim); margin: 0 0.3em; }
+
+/* ===== Takeaway list ===== */
+.takeaways { text-align: left; max-width: 85%; margin: 0 auto; }
+.takeaways li { padding: 0.5em 0; padding-left: 2em; }
+.takeaways li::before { top: 0.8em; width: 8px; height: 8px; background: var(--gold); }
+.takeaways .final-line {
+  margin-top: 1.2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--border-bright);
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--gold-bright);
 }
 
-/* --- Slide 6: Must-Visit --- */
-#s6 { background: var(--bg); }
-#s6 .visit-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:2rem;
-  max-width:800px; position:relative; z-index:1;
+/* ===== Iframe wrapper ===== */
+.iframe-wrapper {
+  width: 100%;
+  height: 65vh;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-top: 0.8em;
 }
-#s6 .visit-item {
-  display:flex; gap:1rem; align-items:flex-start;
-  padding:1.2rem 0; border-bottom:1px solid rgba(244,162,97,0.08);
-}
-#s6 .visit-num {
-  font-family:"Playfair Display",serif; font-weight:700;
-  font-size:clamp(24px,3vw,36px); color:var(--terracotta-light);
-  min-width:48px;
-}
-#s6 .visit-name {
-  font-family:"Playfair Display",serif; font-weight:600;
-  font-size:clamp(15px,1.5vw,19px); margin-bottom:0.25rem;
-}
-#s6 .visit-desc {
-  font-weight:300; font-size:12px; color:var(--text-dim); line-height:1.45;
+.iframe-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
 }
 
-/* --- Slide 7: Practical Tips --- */
-#s7 { background: var(--bg-warm); }
-#s7 .tips-grid {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:2rem;
-  max-width:960px; position:relative; z-index:1;
-}
-#s7 .tip-card {
-  text-align:center; padding:2rem 1rem;
-  border-top:3px solid var(--turquoise-bright);
-}
-#s7 .tip-card:nth-child(even) { border-top-color: var(--terracotta-light); }
-#s7 .tip-title {
-  font-family:"Playfair Display",serif; font-weight:600;
-  font-size:clamp(16px,1.6vw,20px); margin-bottom:0.5rem;
-}
-#s7 .tip-desc {
-  font-weight:300; font-size:12px; color:var(--text-dim); line-height:1.5;
+/* ===== Placeholder image ===== */
+.img-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--bg-card);
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.7em;
 }
 
-/* --- Slide 8: Closing --- */
-#s8 { background: var(--bg); }
-#s8 .closing-text {
-  font-family:"Playfair Display",serif; font-weight:900;
-  font-size:clamp(64px,10vw,140px);
-  line-height:0.95; letter-spacing:-0.03em;
-  background:linear-gradient(135deg,var(--gold-bright),var(--terracotta-light),var(--magenta-light));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text; text-align:center; position:relative; z-index:20;
+/* ===== Numbered list large ===== */
+.numbered-list { counter-reset: qnum; text-align: left; max-width: 85%; margin: 0 auto; }
+.numbered-list li { counter-increment: qnum; padding-left: 3em; padding-bottom: 0.8em; }
+.numbered-list li::before {
+  content: counter(qnum);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  color: var(--bg-deep);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75em;
+  position: absolute;
+  left: 0;
+  top: 0.4em;
 }
-#s8 .closing-sub {
-  font-family:"Playfair Display",serif; font-weight:300;
-  font-size:clamp(16px,2vw,26px); color:var(--text-dim);
-  letter-spacing:0.15em; margin-top:1.5rem; position:relative; z-index:20;
+.numbered-list li strong { display: block; margin-bottom: 0.15em; }
+
+/* ===== Transition quote ===== */
+.transition-quote {
+  font-size: 0.8em;
+  font-style: italic;
+  color: var(--gold-bright);
+  margin-top: 1em;
+  padding: 0.5em 1em;
+  border-left: 3px solid var(--gold);
+  text-align: left;
 }
+
+/* ===== Progress bar ===== */
+.reveal .progress { background: rgba(255,255,255,0.05); height: 3px; }
+.reveal .progress span { background: var(--gold); }
+
+/* ===== Controls ===== */
+.reveal .controls { color: var(--gold-dim); }
+
+/* ===== Slide-specific helper ===== */
+.slide-label {
+  font-size: 0.55em;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--gold-dim);
+  margin-bottom: 1.5em;
+}
+
+/* ===== Demo slide cues ===== */
+.demo-cues {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1em;
+  text-align: left;
+  margin-top: 1em;
+}
+.demo-cue {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8em 1.2em;
+}
+.demo-cue .cue-icon { font-size: 1.3em; margin-bottom: 0.3em; }
+.demo-cue .cue-label { font-size: 0.65em; font-weight: 600; color: var(--gold); margin-bottom: 0.2em; }
+.demo-cue .cue-desc { font-size: 0.6em; color: var(--text-muted); line-height: 1.5; }
+
+/* ===== Speaker notes area ===== */
+.reveal .speaker-notes { display: none; }
 </style>
 </head>
 <body>
+<div class="reveal">
+<div class="slides">
 
-<div class="bg-texture"></div>
-<canvas id="pretext-canvas"></canvas>
-<canvas id="shatter-canvas"></canvas>
+<!-- ===== SLIDE 1: TITLE ===== -->
+<section class="title-slide">
+  <div class="ornament"></div>
+  <h1>Writing Code Like<br>an Architect</h1>
+  <p class="subtitle">A Personal Experiment in Vibe Coding</p>
+  <p class="meta">CDMX &bull; May 28, 2026 &bull; Alan Zoppa</p>
+</section>
 
-<div id="slide-counter">1 / 9</div>
+<!-- ===== SLIDE 2: THE THREE QUESTIONS ===== -->
+<section>
+  <div class="slide-label">Research Questions</div>
+  <h2>The Three Questions</h2>
+  <ol class="numbered-list">
+    <li>
+      <strong>Open-weights models</strong>
+      How far can I push them with real autonomy?
+    </li>
+    <li>
+      <strong>Open-source tools</strong>
+      What degrees of freedom are available?
+    </li>
+    <li>
+      <strong>Embeddings</strong>
+      How can I use them to navigate my own data?
+    </li>
+  </ol>
+</section>
 
-<div id="deck">
-
-<!-- SLIDE 0: Title -->
-<section class="slide active" id="s0" data-index="0">
-  <div class="bg-pattern"></div>
-  <div class="title-group">
-    <div class="cdmx">CDMX</div>
-    <div class="mexico-city">Mexico City</div>
-    <div class="tagline">THE HEART OF MEXICO &bull; 22 MILLION STORIES &bull; ONE IMPOSSIBLE CITY</div>
+<!-- ===== SLIDE 3: TOKEN ECONOMICS ===== -->
+<section>
+  <div class="slide-label">Cost Breakdown</div>
+  <h2>Token Economics</h2>
+  <div class="card-grid cols-3">
+    <div class="card">
+      <div class="card-label">Provider</div>
+      <div class="card-name">Ollama Pro</div>
+      <div class="card-value">$20<span style="font-size:0.5em">/mo</span></div>
+      <div class="card-desc">Nearly inexhaustible tokens<br>DeepSeek v4, Qwen 3</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Provider</div>
+      <div class="card-name">OpenRouter</div>
+      <div class="card-value">~$0.01</div>
+      <div class="card-desc">Embed ~1600 documents<br>Qwen 8B Embedding</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Total</div>
+      <div class="card-name">Monthly Cost</div>
+      <div class="card-value">~$20<span style="font-size:0.5em">/mo</span></div>
+      <div class="card-desc">A coding agent that<br>runs all day</div>
+    </div>
+  </div>
+  <div class="callout">
+    Embedding 1,600 documents cost one cent.
   </div>
 </section>
 
-<!-- SLIDE 1: History -->
-<section class="slide" id="s1" data-index="1">
-  <div class="bg-texture"></div>
-  <div class="slide-heading"><span class="accent">History</span> of a Megalopolis</div>
-  <div class="history-grid">
-    <div class="era">
-      <div class="era-year">1325</div>
-      <div class="era-label">Tenochtitlán Founded</div>
-      <div class="era-desc">The Mexica people, guided by the prophecy of an eagle on a cactus, built their city on an island in Lake Texcoco. By 1519, it was one of the largest cities on Earth — with canals, floating gardens, and a population of over 200,000.</div>
+<!-- ===== SLIDE 4: TOOL ECOSYSTEM ===== -->
+<section>
+  <div class="slide-label">Agent Stack</div>
+  <h2>Tool Ecosystem</h2>
+  <div class="card-grid cols-3">
+    <div class="card">
+      <div class="card-icon">💻</div>
+      <div class="card-name">OpenCode</div>
+      <div class="card-label">Primary coding agent</div>
+      <div class="card-desc">Real dev work, subagent orchestration. The workhorse for day-to-day coding.</div>
     </div>
-    <div class="era">
-      <div class="era-year">1521</div>
-      <div class="era-label">Spanish Conquest</div>
-      <div class="era-desc">Hernán Cortés and his indigenous allies besieged Tenochtitlán for 93 days. The city fell, and from its stones rose the colonial capital of New Spain — the cathedral built atop the Templo Mayor.</div>
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <div class="card-name">Hermes Agent</div>
+      <div class="card-label">Agentic assistant</div>
+      <div class="card-desc">System debugging: Avahi, systemd, nginx. Infrastructure-aware problem solving.</div>
     </div>
-    <div class="era">
-      <div class="era-year">1810–1821</div>
-      <div class="era-label">Independence</div>
-      <div class="era-desc">Miguel Hidalgo's cry for independence — "El Grito de Dolores" — ignited an 11-year struggle. Mexico emerged as a sovereign nation, and the capital became the seat of a new republic.</div>
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <div class="card-name">agent-browser</div>
+      <div class="card-label">Web automation</div>
+      <div class="card-desc">CLI-friendly browser control for agents. Headless web interaction.</div>
     </div>
-    <div class="era">
-      <div class="era-year">1950–Today</div>
-      <div class="era-label">Modern Megalopolis</div>
-      <div class="era-desc">Post-war boom turned the city into a global cultural powerhouse. Today, CDMX is the largest city in North America — a sprawling, chaotic, electrifying metropolis that never stops reinventing itself.</div>
-    </div>
+  </div>
+  <div class="transition-quote">
+    Knowing which tool to reach for is half the battle.
   </div>
 </section>
 
-<!-- SLIDE 2: Culture -->
-<section class="slide" id="s2" data-index="2">
-  <div class="bg-pattern"></div>
-  <div class="slide-heading"><span class="turq">Culture</span> &amp; the Arts</div>
-  <div class="culture-grid">
-    <div class="culture-card">
-      <div class="culture-name">Muralism</div>
-      <div class="culture-desc">Diego Rivera, José Clemente Orozco, and David Alfaro Siqueiros painted Mexico's history onto public walls. Their monumental works at Palacio Nacional and Bellas Artes defined a national visual identity — art for the people, not the gallery.</div>
+<!-- ===== SLIDE 5: MANAGING INTERNS ===== -->
+<section>
+  <div class="slide-label">The Human Side</div>
+  <h2>Managing Interns</h2>
+  <div class="split-layout">
+    <div class="split-left">
+      <div class="img-placeholder">
+        👥 Intern Team Photo
+      </div>
     </div>
-    <div class="culture-card">
-      <div class="culture-name">Frida Kahlo</div>
-      <div class="culture-desc">Pain, passion, and fierce individuality. Frida's Casa Azul in Coyoacán is now a pilgrimage site. Her unflinching self-portraits blended Mexican folk art with surrealism and feminist defiance — an icon whose power only grows with time.</div>
+    <div class="split-right">
+      <ul>
+        <li><strong>Give them room to surprise you</strong><br>They picked a ridiculous team name and made fun of me</li>
+        <li><strong>They'll overengineer</strong><br>Stored SQL procedure for a simple Rails controller</li>
+        <li><strong>They need obvious limits</strong><br>Gym clothes in the office, skipped meetings</li>
+      </ul>
     </div>
-    <div class="culture-card">
-      <div class="culture-name">Día de Muertos</div>
-      <div class="culture-desc">Every November 1-2, the city erupts in marigolds, sugar skulls, and ofrendas. The dead return — and the living celebrate. Parades wind through Centro Histórico; families gather in candlelit cemeteries. It is joy, memory, and resistance.</div>
-    </div>
-    <div class="culture-card">
-      <div class="culture-name">Mariachi</div>
-      <div class="culture-desc">Born in Jalisco, perfected in Garibaldi Plaza. Trumpets, violins, and gut-wrenching vocals fill the night air as bands compete for your attention. A UNESCO Intangible Heritage — and the soundtrack of every Mexican celebration.</div>
-    </div>
-    <div class="culture-card">
-      <div class="culture-name">Son Jarocho</div>
-      <div class="culture-desc">From Veracruz to the capital, this Afro-Mexican tradition pulses with zapateado footwork and improvised verse. The jarana and requinto drive rhythms that have endured for centuries — raw, communal, and utterly alive.</div>
-    </div>
-    <div class="culture-card">
-      <div class="culture-name">Lucha Libre</div>
-      <div class="culture-desc">Masked heroes and villains collide in a theater of flying bodies and moral drama. Arena México is the cathedral — Tuesday and Friday nights, the rudos and técnicos put on a show that is part sport, part soap opera, and pure México.</div>
-    </div>
+  </div>
+  <div class="transition-quote">
+    These aren't competence problems. They're judgment problems.
   </div>
 </section>
 
-<!-- SLIDE 3: Neighborhoods -->
-<section class="slide" id="s3" data-index="3">
-  <div class="bg-texture"></div>
-  <div class="slide-heading"><span class="mag">Colonias</span> &mdash; The Soul of the City</div>
-  <div class="hood-grid">
-    <div class="hood-card">
-      <div class="hood-name">Roma</div>
-      <div class="hood-vibe">Bohemian &amp; Hip</div>
-      <div class="hood-desc">Tree-lined streets, Art Nouveau mansions, and the best coffee in Latin America. Roma Norte is where filmmakers, designers, and chefs collide — a neighborhood that feels like a Wes Anderson set with a mezcal buzz.</div>
-    </div>
-    <div class="hood-card">
-      <div class="hood-name">Condesa</div>
-      <div class="hood-vibe">Leafy &amp; Elegant</div>
-      <div class="hood-desc">Parque México anchors this art deco paradise. Dog walkers, joggers, and weekend brunchers fill its paths. Condesa is Roma's quieter, greener sister — effortlessly chic and endlessly strollable.</div>
-    </div>
-    <div class="hood-card">
-      <div class="hood-name">Coyoacán</div>
-      <div class="hood-vibe">Village Charm</div>
-      <div class="hood-desc">Cobblestone streets, colonial churches, and Frida's blue house. Once a separate village, Coyoacán still feels apart — artists sell their work in the plaza, churros steam in the afternoon sun, and time slows to a colonial pace.</div>
-    </div>
-    <div class="hood-card">
-      <div class="hood-name">Centro Histórico</div>
-      <div class="hood-vibe">Monumental &amp; Ancient</div>
-      <div class="hood-desc">The Zócalo — one of the world's largest public squares — is the beating heart. Aztec ruins lie beneath Spanish palaces. Every street corner holds five centuries of layered history, street commerce, and relentless energy.</div>
-    </div>
-    <div class="hood-card">
-      <div class="hood-name">Polanco</div>
-      <div class="hood-vibe">Polished &amp; Global</div>
-      <div class="hood-desc">Designer boutiques, embassies, and Michelin-starred restaurants line Avenida Masaryk — Mexico's Champs-Élysées. Polanco is sleek, cosmopolitan, and home to the stunning Museo Soumaya with its free Rodin collection.</div>
-    </div>
-    <div class="hood-card">
-      <div class="hood-name">San Ángel</div>
-      <div class="hood-vibe">Artistic &amp; Colonial</div>
-      <div class="hood-desc">Saturday's Bazar del Sábado fills cobbled plazas with paintings and silver. The cobblestone streets, flower-filled courtyards, and Diego Rivera's twin-house studio make San Ángel feel suspended in a more beautiful century.</div>
-    </div>
+<!-- ===== SLIDE 6: CODING AGENTS AS INTERNS ===== -->
+<section>
+  <div class="slide-label">Parallel Patterns</div>
+  <h2>Coding Agents as Interns</h2>
+  <table>
+    <thead>
+      <tr><th>Intern Behavior</th><th>Agent Behavior</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Overengineers a simple task</td><td>Solves problems with regex tangles</td></tr>
+      <tr><td>Needs to be told to show up</td><td>Won't commit or push unless told</td></tr>
+      <tr><td>Needs to be reminded of basics</td><td>Won't run tests before pushing</td></tr>
+      <tr><td>No sense of what's sensitive</td><td>Commits secrets to git</td></tr>
+      <tr><td>Does one thing at a time</td><td>Single-threads through tasks</td></tr>
+    </tbody>
+  </table>
+  <div class="transition-quote">
+    Every one of these is a judgment gap, not a capability gap.<br>Agents CAN do these things — they just don't know they should.
   </div>
 </section>
 
-<!-- SLIDE 4: Food -->
-<section class="slide" id="s4" data-index="4">
-  <div class="bg-texture"></div>
-  <div class="slide-heading">The <span class="gold">Food</span> Capital of the Americas</div>
-  <div class="food-grid">
-    <div class="food-card">
-      <div class="food-name">Tacos al Pastor</div>
-      <div class="food-desc">Lebanese immigrants brought the shawarma; Mexicans added pork, achiote, and pineapple. The trompo spins on every corner — slice, char, serve on a tiny tortilla with salsa verde. Perfection costs 15 pesos.</div>
+<!-- ===== SLIDE 7: GUARDRAILS ===== -->
+<section>
+  <div class="slide-label">Architecture Rules</div>
+  <h2>The Solution Isn't Smarter Models —<br>It's Better Guardrails</h2>
+  <div class="checklist">
+    <div class="checklist-item">
+      <div class="check-num">01</div>
+      <div class="check-title">MUST parallelize with subagents</div>
+      <div class="check-desc">Dispatching is the default; solo work is the exception</div>
     </div>
-    <div class="food-card">
-      <div class="food-name">Street Corn &amp; Tlacoyos</div>
-      <div class="food-desc">Elotes slathered in mayo, chili, and cotija cheese. Blue-corn tlacoyos stuffed with fava beans and topped with nopales. The street is the city's true kitchen — and the best meals come on a paper plate.</div>
+    <div class="checklist-item">
+      <div class="check-num">02</div>
+      <div class="check-title">Push after successful complex changes</div>
+      <div class="check-desc">Commit AND push; all tests green first</div>
     </div>
-    <div class="food-card">
-      <div class="food-name">Mercado de San Juan</div>
-      <div class="food-desc">The chef's market. Exotic produce, wild mushrooms, and every part of every animal. International chefs shop here alongside grandmothers — and the seafood counter serves ceviche that rivals the city's best restaurants.</div>
+    <div class="checklist-item">
+      <div class="check-num">03</div>
+      <div class="check-title">Test new functionality</div>
+      <div class="check-desc">Write automated tests as you go; regression tests where needed</div>
     </div>
-    <div class="food-card">
-      <div class="food-name">La Merced</div>
-      <div class="food-desc">The largest retail market in Latin America. A labyrinth of spices, moles, dried chiles, and fresh masa. The energy is overwhelming, the scale is unfathomable, and the smells will follow you home in the best way.</div>
+    <div class="checklist-item">
+      <div class="check-num">04</div>
+      <div class="check-title">Always specify the subagent type</div>
+      <div class="check-desc">"I'll dispatch X to @build, Y to @explore"</div>
     </div>
-    <div class="food-card">
-      <div class="food-name">Pujol &amp; Quintonil</div>
-      <div class="food-desc">Two of the World's 50 Best Restaurants. Enrique Olvera's Pujol serves a mole that aged 1,500 days. Jorge Vallejo's Quintonil elevates chapulines and hoja santa to high art. CDMX is a fine-dining supernova.</div>
+    <div class="checklist-item">
+      <div class="check-num">05</div>
+      <div class="check-title">Type safety is preferred</div>
+      <div class="check-desc">When supported by the language</div>
     </div>
-    <div class="food-card">
-      <div class="food-name">Mezcal &amp; Pulque</div>
-      <div class="food-desc">Smoky agave spirits from Oaxaca flow freely in Roma's mezcalerías. And pulque — the ancient fermented sap of the maguey, once reserved for Aztec priests — is having a revival among the young and curious.</div>
+    <div class="checklist-item">
+      <div class="check-num">06</div>
+      <div class="check-title">Don't reinvent the wheel</div>
+      <div class="check-desc">Prefer robust libraries; don't re-test library functionality</div>
     </div>
   </div>
-</section>
-
-<!-- SLIDE 5: Architecture (Pretext reflow canvas) -->
-<section class="slide" id="s5" data-index="5">
-  <div class="arch-label">ICONS IN STONE &amp; LIGHT</div>
-  <div class="arch-heading"><span class="turq">Architecture</span> Through the Ages</div>
-  <div class="arch-sites">
-    <div class="arch-site">Bellas Artes &mdash; Art Nouveau &amp; Deco</div>
-    <div class="arch-site">Casa Barragán &mdash; Color &amp; Light</div>
-    <div class="arch-site">UNAM &mdash; Modernist Mural</div>
-    <div class="arch-site">Chapultepec Castle</div>
-    <div class="arch-site">Torre Latinoamericana</div>
-    <div class="arch-site">Museo Soumaya</div>
-  </div>
-  <div id="s5-subtitle" style="position:relative;z-index:20;margin-top:1.2rem;font-weight:300;font-size:14px;color:var(--text-dim);max-width:560px;text-align:center;text-wrap:balance;">Move your mouse — watch the architectural prose part around it</div>
-  <p id="s5-fallback" style="position:absolute;left:50%;transform:translateX(-50%);bottom:12vh;z-index:9;max-width:720px;width:90%;font-family:'Inter',ui-sans-serif,sans-serif;font-weight:300;font-size:15px;line-height:1.65;color:rgba(232,230,223,0.65);text-align:center;pointer-events:none;">The architectural heritage of Mexico City spans from Aztec stone to Art Nouveau, from Luis Barragán's pink walls to the modernist murals of UNAM. Each building tells a story of conquest, faith, revolution, and reinvention.</p>
-</section>
-
-<!-- SLIDE 6: Must-Visit -->
-<section class="slide" id="s6" data-index="6">
-  <div class="bg-texture"></div>
-  <div class="slide-heading"><span class="gold">Must-Visit</span> Icons</div>
-  <div class="visit-grid">
-    <div class="visit-item"><div class="visit-num">01</div><div><div class="visit-name">Zócalo &amp; Templo Mayor</div><div class="visit-desc">One of the largest public plazas on Earth. Beneath it: the Aztec Templo Mayor, where archaeologists still unearth offerings to Huitzilopochtli. The cathedral and National Palace frame the square in colonial grandeur.</div></div></div>
-    <div class="visit-item"><div class="visit-num">02</div><div><div class="visit-name">Teotihuacán Pyramids</div><div class="visit-desc">An hour from the city, the Pyramid of the Sun and Moon rise from the Avenue of the Dead. Built by a civilization that vanished before the Aztecs arrived. Climb them at sunrise — it is unforgettable.</div></div></div>
-    <div class="visit-item"><div class="visit-num">03</div><div><div class="visit-name">Xochimilco Canals</div><div class="visit-desc">The last remnants of the Aztec lake system. Board a colorful trajinera, hire a mariachi band, and float past chinampas — ancient floating gardens still farmed today. Pure, chaotic, floating joy.</div></div></div>
-    <div class="visit-item"><div class="visit-num">04</div><div><div class="visit-name">Chapultepec Park</div><div class="visit-desc">Twice the size of Central Park. Museums, lakes, botanical gardens, and the castle. The Museo Nacional de Antropología here is arguably the greatest museum in the Americas — the Aztec Sun Stone alone is worth the trip.</div></div></div>
-    <div class="visit-item"><div class="visit-num">05</div><div><div class="visit-name">Casa Azul</div><div class="visit-desc">Frida Kahlo's cobalt-blue childhood home in Coyoacán, where she lived with Diego Rivera and died. Her easel, her corsets, her bed — everything remains. Tickets sell out weeks ahead. Book early.</div></div></div>
-    <div class="visit-item"><div class="visit-num">06</div><div><div class="visit-name">Arena México</div><div class="visit-desc">The cathedral of Lucha Libre. Tuesday nights are for rookies; Fridays for the stars. Buy a mask outside, drink a michelada, and boo the rudos with 16,000 screaming fans. No translation required.</div></div></div>
-  </div>
-</section>
-
-<!-- SLIDE 7: Practical Tips -->
-<section class="slide" id="s7" data-index="7">
-  <div class="bg-pattern"></div>
-  <div class="slide-heading"><span class="mag">Practical</span> Know-How</div>
-  <div class="tips-grid">
-    <div class="tip-card">
-      <div class="tip-title">Best Time</div>
-      <div class="tip-desc">November to April: dry, mild days, cool nights. The jacarandas bloom purple in March. Avoid late summer — afternoon downpours are biblical, and the city's drainage is, shall we say, historic.</div>
+  <div class="decision-matrix">
+    <div class="dm-card">
+      <div class="dm-action">Explore</div>
+      <div class="dm-arrow">→</div>
+      <div class="dm-model">@flash / DeepSeek v4 Flash</div>
     </div>
-    <div class="tip-card">
-      <div class="tip-title">Altitude</div>
-      <div class="tip-desc">2,250m (7,380 ft) — higher than Denver. Your first day: hydrate, skip the mezcal, walk slowly. Your lungs adapt by day two, but that initial headache is real.</div>
+    <div class="dm-card">
+      <div class="dm-action">Refactor</div>
+      <div class="dm-arrow">→</div>
+      <div class="dm-model">@kimi / Kimi k2.6</div>
     </div>
-    <div class="tip-card">
-      <div class="tip-title">Getting Around</div>
-      <div class="tip-desc">Metro: 5 pesos, one of the world's cheapest. Metrobús for cross-town. Uber is cheap and everywhere. The airport is 20 minutes from Roma — no excuse to linger in your hotel.</div>
-    </div>
-    <div class="tip-card">
-      <div class="tip-title">Stay Smart</div>
-      <div class="tip-desc">CDMX is safer than its reputation. Stick to well-trafficked colonias at night, use Uber after dark, and keep your phone tucked away on the Metro. Common sense goes far here.</div>
+    <div class="dm-card">
+      <div class="dm-action">Tests</div>
+      <div class="dm-arrow">→</div>
+      <div class="dm-model">@hurry / MiniMax m2.7</div>
     </div>
   </div>
 </section>
 
-<!-- SLIDE 8: Closing -->
-<section class="slide" id="s8" data-index="8">
-  <div class="closing-text">¡Viva<br/>México!</div>
-  <div class="closing-sub">NOW GO — THE CITY IS WAITING</div>
+<!-- ===== SLIDE 8: MNESTIC ARCHITECTURE ===== -->
+<section>
+  <div class="slide-label">System Design</div>
+  <h2>Mnestic Architecture</h2>
+  <div class="flow-diagram">
+    <span class="flow-node">Zoom Transcripts</span>
+    <span class="flow-arrow">+</span>
+    <span class="flow-node">Manual Notes</span>
+    <span class="flow-arrow">+</span>
+    <span class="flow-node">Work Logs</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node highlight">Claude Processing</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node highlight">OpenViking<br><small>ChromaDB + qwen3-embedding-8b</small></span>
+  </div>
+  <div class="flow-diagram" style="margin-top:1.2em">
+    <span class="flow-node highlight">MCP Server Frontend</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-node">Hermes Agent</span>
+    <span class="flow-arrow">/</span>
+    <span class="flow-node">OpenCode</span>
+    <span class="flow-arrow">/</span>
+    <span class="flow-node">Openclaw</span>
+  </div>
+  <div class="flow-diagram" style="margin-top:1.2em">
+    <span class="flow-arrow">→</span>
+    <span class="flow-node highlight">Similarity Cloud</span>
+    <span class="flow-arrow" style="font-size:0.7em">Notes clustered by &gt;75% cosine similarity</span>
+  </div>
+  <div class="callout" style="margin-top:1em">
+    Transcript → styleguide → structured markdown → ChromaDB → agent queries
+  </div>
+</section>
+
+<!-- ===== SLIDE 9: EMBEDDINGS EXPLAINED ===== -->
+<section>
+  <div class="slide-label">Visual Intuition</div>
+  <h2>Embeddings Explained</h2>
+  <p style="font-size:0.75em; max-width:80%; margin:0 auto 0.8em; color:var(--text-secondary)">
+    "Uncle" is to "aunt" as "man" is to "woman" —<br>relationships captured in vector space
+  </p>
+  <div class="iframe-wrapper">
+    <iframe src="../cdmx-v2/word_vectors_3d.html" title="3D Word Vectors Demo"></iframe>
+  </div>
+  <div class="callout">
+    <strong>Sad</strong> is close to <strong>unhappy</strong> even though they share no letters.<br>
+    You're matching <em>meaning</em>, not keywords.
+  </div>
+</section>
+
+<!-- ===== SLIDE 10: MNESTIC DEMO ===== -->
+<section>
+  <div class="slide-label">Live Demo</div>
+  <h2>Mnestic in Action</h2>
+  <div class="demo-cues">
+    <div class="demo-cue">
+      <div class="cue-icon">☁️</div>
+      <div class="cue-label">Similarity Cloud</div>
+      <div class="cue-desc">Notes clustered by semantic meaning &gt;75% cosine similarity. Visual exploration of your knowledge graph.</div>
+    </div>
+    <div class="demo-cue">
+      <div class="cue-icon">🔌</div>
+      <div class="cue-label">MCP Query</div>
+      <div class="cue-desc">Hermes or OpenCode querying via mcp_mnestic_* tools — semantic search from any agent.</div>
+    </div>
+    <div class="demo-cue">
+      <div class="cue-icon">📋</div>
+      <div class="cue-label">Pipeline Result</div>
+      <div class="cue-desc">Zoom transcript → Claude → structured markdown → ChromaDB. Raw conversation to queryable memory.</div>
+    </div>
+    <div class="demo-cue">
+      <div class="cue-icon">🧠</div>
+      <div class="cue-label">Cross-Session Memory</div>
+      <div class="cue-desc">"Alan promised to send Ale an email<br>— did he remember?" The agent checks.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 11: CLOSING ===== -->
+<section>
+  <div class="slide-label">Key Takeaways</div>
+  <h2>Closing</h2>
+  <ol class="takeaways">
+    <li><strong>$20/month gets you a shocking number of tokens</strong><br>Ollama Pro is nearly inexhaustible</li>
+    <li><strong>Open-weights models are competitive</strong><br>GLM 5.1, Kimi k2.6, DeepSeek v4 from Chinese labs</li>
+    <li><strong>Plan-then-execute works at scale</strong><br>Large model plans, smaller models execute, explicit task-to-model mapping</li>
+    <li><strong>Guardrails matter more than model intelligence</strong><br>Clear mandates, not suggestions</li>
+    <li><strong>I built something I wouldn't have bothered to write by hand</strong><br>Mnestic: scattered notes → queryable agent knowledge base</li>
+  </ol>
+  <p class="final-line">
+    That's writing code like an architect.<br>You don't lay every brick. You design the system,<br>you set the guardrails, and you let the interns do the work.
+  </p>
 </section>
 
 </div>
+</div>
 
-<div id="nav"></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
 <script>
-// === NAVIGATION SYSTEM ===
-(function() {
-  const slides = document.querySelectorAll('.slide');
-  const total = slides.length;
-  const nav = document.getElementById('nav');
-  const counter = document.getElementById('slide-counter');
-  let current = 0;
-
-  // Build dots
-  for (let i = 0; i < total; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'dot' + (i === 0 ? ' active' : '');
-    dot.addEventListener('click', () => goTo(i));
-    nav.appendChild(dot);
-  }
-  const dots = document.querySelectorAll('.dot');
-
-  function goTo(i) {
-    if (i < 0 || i >= total || i === current) return;
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
-    current = i;
-    slides[current].classList.add('active');
-    dots[current].classList.add('active');
-    counter.textContent = (current + 1) + ' / ' + total;
-
-    // Re-trigger CSS animations on the new slide
-    slides[current].querySelectorAll('[class*="cdmx"], [class*="mexico-city"], [class*="tagline"]').forEach(el => {
-      el.style.animation = 'none';
-      el.offsetHeight;
-      el.style.animation = '';
-    });
-  }
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
-      e.preventDefault();
-      goTo(current + 1);
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      goTo(current - 1);
-    }
-  });
-
-  // Touch swipe
-  let touchStartX = 0;
-  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-  document.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 60) goTo(dx < 0 ? current + 1 : current - 1);
-  });
-
-  // Expose for future slides
-  window._deckGoTo = goTo;
-  window._deckCurrent = () => current;
-  window._deckTotal = total;
-})();
+Reveal.initialize({
+  hash: true,
+  transition: 'slide',
+  transitionSpeed: 'default',
+  backgroundTransition: 'fade',
+  width: 1920,
+  height: 1080,
+  margin: 0,
+  minScale: 0.2,
+  maxScale: 2.0,
+  controls: true,
+  progress: true,
+  center: true,
+  slideNumber: false,
+});
 </script>
-
-<script type="module">
-// === PRETEXT ARCHITECTURE SLIDE (slide 5) ===
-// Text flows around a moving radial gradient obstacle controlled by mouse position.
-import {
-  prepareWithSegments,
-  layoutNextLineRange,
-  materializeLineRange,
-  layoutWithLines,
-  walkLineRanges,
-} from "https://esm.sh/@chenglou/pretext@0.0.6";
-
-const ARCH_TEXT = [
-  "From the sinking marble palace of Bellas Artes to the jagged aluminum skin of Museo Soumaya, Mexico City wears five centuries of architectural ambition on its streets. The Palacio de Bellas Artes — a fever dream of Italian marble and art nouveau ironwork — sinks a few centimeters each year into the ancient lakebed, as if the Aztec city beneath is slowly reclaiming it. Casa Luis Barragán, a UNESCO World Heritage house, proves that color is structure: shocking pink walls, shafts of golden light, and a staircase that ascends toward nothing but sky. The UNAM campus, a modernist mural writ in volcanic stone, covers entire buildings in mosaics that tell Mexico's story from pre-Hispanic origins to revolutionary futures. Chapultepec Castle — the only royal castle in the Americas — perches on a hill above the park, its neoclassical terraces surveying a city that stretches to every horizon. And then there is the new skyline: glass towers in Santa Fe, the curving spine of Torre Latinoamericana, and Enrique Norten's angular interventions that push the city forward while never quite escaping the gravity of its past. This is a city where every building is a conversation between epochs.",
-].join(" ").repeat(4);
-
-const FONT = '16px/1.45 "Inter", ui-sans-serif, system-ui, sans-serif';
-const LINE_H = 24;
-
-const canvas = document.getElementById("pretext-canvas");
-const ctx = canvas.getContext("2d");
-let W, H, DPR;
-
-let prepared = null;
-let animFrame = 0;
-let initDone = false;
-
-async function initPretext() {
-  await document.fonts.ready;
-  prepared = prepareWithSegments(ARCH_TEXT, FONT);
-  initDone = true;
-}
-
-function resize() {
-  DPR = Math.min(devicePixelRatio || 1, 2);
-  W = innerWidth; H = innerHeight;
-  canvas.width = W * DPR; canvas.height = H * DPR;
-  canvas.style.width = W + "px"; canvas.style.height = H + "px";
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-}
-addEventListener("resize", resize);
-resize();
-initPretext().then(() => { requestAnimationFrame(frame); });
-
-// Obstacle follows mouse, defaults to center
-const obstacle = { x: W * 0.5, y: H * 0.5, r: 130 };
-addEventListener("mousemove", e => {
-  obstacle.x = e.clientX;
-  obstacle.y = e.clientY;
-});
-
-function frame(t) {
-  if (!prepared) { requestAnimationFrame(frame); return; }
-
-  ctx.clearRect(0, 0, W, H);
-
-  // Warm glow gradient around obstacle
-  const g = ctx.createRadialGradient(obstacle.x, obstacle.y, 0, obstacle.x, obstacle.y, obstacle.r);
-  g.addColorStop(0, "rgba(211,84,0,0.30)");
-  g.addColorStop(0.5, "rgba(244,162,97,0.10)");
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
-
-  const COL_X = 40, COL_W = W - 80;
-  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
-  let y = 48;
-
-  ctx.fillStyle = "rgba(232,230,223,0.85)";
-  ctx.font = FONT;
-  ctx.textBaseline = "alphabetic";
-
-  while (y < H - 40) {
-    const dy = y - obstacle.y;
-    const bandY = Math.abs(dy) < obstacle.r;
-    let x = COL_X, lineMaxW = COL_W;
-
-    if (bandY) {
-      const half = Math.sqrt(Math.max(0, obstacle.r * obstacle.r - dy * dy));
-      const orbLeft = obstacle.x - half, orbRight = obstacle.x + half;
-      const leftWidth = Math.max(0, orbLeft - COL_X);
-      const rightWidth = Math.max(0, COL_X + COL_W - orbRight);
-      if (leftWidth >= rightWidth) { x = COL_X; lineMaxW = leftWidth - 16; }
-      else { x = orbRight + 16; lineMaxW = rightWidth - 16; }
-      if (lineMaxW < 40) { y += LINE_H; continue; }
-    }
-
-    const range = layoutNextLineRange(prepared, cursor, lineMaxW);
-    if (!range) break;
-    const line = materializeLineRange(prepared, range);
-    ctx.fillText(line.text, x, y);
-    cursor = range.end;
-    y += LINE_H;
-  }
-
-  animFrame = requestAnimationFrame(frame);
-}
-
-// Start/stop canvas based on which slide is active
-const observer = new MutationObserver(() => {
-  const s5 = document.getElementById("s5");
-  const s1 = document.getElementById("s1");
-  const hint = document.getElementById("hint");
-  if (s5 && s5.classList.contains("active")) {
-    canvas.classList.add("show");
-    if (hint) hint.style.display = "none";
-    if (!animFrame) {
-      initPretext().then(() => { if (!animFrame) requestAnimationFrame(frame); });
-    }
-  } else {
-    canvas.classList.remove("show");
-    if (s1 && s1.classList.contains("active")) {
-      if (hint) hint.style.display = "none";
-    } else {
-      if (hint) hint.style.display = "";
-    }
-  }
-});
-
-// Observe slide deck for class changes
-const deck = document.getElementById("deck");
-observer.observe(deck, { attributes: true, subtree: true, attributeFilter: ["class"] });
-
-// Also hook into navigation
-const origGoTo = window._deckGoTo;
-if (origGoTo) {
-  window._deckGoTo = function(i) {
-    origGoTo(i);
-    const s5 = document.getElementById("s5");
-    const s1 = document.getElementById("s1");
-    const hint = document.getElementById("hint");
-    if (s5 && s5.classList.contains("active")) {
-      canvas.classList.add("show");
-      if (hint) hint.style.display = "none";
-      if (!animFrame) {
-        initPretext().then(() => { if (!animFrame) requestAnimationFrame(frame); });
-      }
-    } else {
-      canvas.classList.remove("show");
-      if (s1 && s1.classList.contains("active")) {
-        if (hint) hint.style.display = "none";
-      } else {
-        if (hint) hint.style.display = "";
-      }
-    }
-  };
-}
-
-// === PRETEXT SHATTER for closing slide 8 ===
-const SHATTER_TEXT = "¡Viva México!";
-const SHATTER_FONT = '700 80px "Playfair Display", Georgia, serif';
-const SHATTER_LINE_H = 100;
-
-const shatterCanvas = document.getElementById("shatter-canvas");
-const sctx = shatterCanvas.getContext("2d");
-let SW, SH, SDPR;
-let shatterPrepared = null;
-let shatterParticles = [];
-let shatterActive = false;
-let shatterFrame = 0;
-let shatterTime = 0;
-let shatterExploded = false;
-
-function shatterResize() {
-  SDPR = Math.min(devicePixelRatio || 1, 2);
-  SW = innerWidth; SH = innerHeight;
-  shatterCanvas.width = SW * SDPR; shatterCanvas.height = SH * SDPR;
-  shatterCanvas.style.width = SW + "px"; shatterCanvas.style.height = SH + "px";
-  sctx.setTransform(SDPR, 0, 0, SDPR, 0, 0);
-}
-
-function buildParticles() {
-  shatterPrepared = prepareWithSegments(SHATTER_TEXT, SHATTER_FONT);
-  const { lines } = layoutWithLines(shatterPrepared, SW * 0.9, SHATTER_LINE_H);
-  shatterParticles = [];
-
-  let y = SH * 0.35;
-  for (const line of lines) {
-    const seg = new Intl.Segmenter(undefined, { granularity: "grapheme" });
-    let x = (SW - line.width) / 2; // center each line
-    for (const { segment } of seg.segment(line.text)) {
-      const w = sctx.measureText(segment).width;
-      shatterParticles.push({
-        ch: segment,
-        x, y, w,
-        homeX: x, homeY: y,
-        vx: 0, vy: 0,
-        opacity: 1,
-        hue: Math.random() * 30 + 15, // warm gold-orange range
-      });
-      x += w;
-    }
-    y += SHATTER_LINE_H;
-  }
-}
-
-function explode(fromX, fromY) {
-  for (const p of shatterParticles) {
-    const dx = p.homeX + p.w / 2 - fromX;
-    const dy = p.homeY + SHATTER_LINE_H / 2 - fromY;
-    const d = Math.hypot(dx, dy) || 1;
-    const force = 600 / (d * 0.15 + 1) + Math.random() * 200;
-    p.vx += (dx / d) * force + (Math.random() - 0.5) * 300;
-    p.vy += (dy / d) * force + (Math.random() - 0.5) * 300 - 150;
-  }
-  shatterExploded = true;
-}
-
-shatterCanvas.addEventListener("click", e => {
-  if (!shatterActive) return;
-  explode(e.clientX, e.clientY);
-});
-
-function resetParticles() {
-  shatterExploded = false;
-  for (const p of shatterParticles) {
-    p.vx = 0; p.vy = 0;
-    p.x = p.homeX; p.y = p.homeY;
-    p.opacity = 1;
-  }
-}
-
-function shatterTick(dt) {
-  dt = Math.min(dt, 0.05);
-  for (const p of shatterParticles) {
-    // Spring back toward home
-    p.vx += (p.homeX - p.x) * 0.08;
-    p.vy += (p.homeY - p.y) * 0.08;
-    p.vx *= 0.94;
-    p.vy *= 0.94;
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
-    p.opacity = 1 - (Math.hypot(p.x - p.homeX, p.y - p.homeY) / 800);
-    p.opacity = Math.max(0.15, Math.min(1, p.opacity));
-  }
-}
-
-function shatterFrameLoop(t) {
-  if (!shatterActive || shatterParticles.length === 0) {
-    shatterFrame = 0;
-    return;
-  }
-
-  const rawDt = shatterFrame ? (t - shatterTime) / 1000 : 0.016;
-  shatterTime = t;
-  shatterTick(rawDt);
-
-  sctx.clearRect(0, 0, SW, SH);
-
-  // Ambient golden glow in center
-  const g = sctx.createRadialGradient(SW / 2, SH / 2, 0, SW / 2, SH / 2, SW * 0.4);
-  g.addColorStop(0, "rgba(244,162,97,0.06)");
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  sctx.fillStyle = g;
-  sctx.fillRect(0, 0, SW, SH);
-
-  sctx.font = SHATTER_FONT;
-  sctx.textBaseline = "alphabetic";
-
-  for (const p of shatterParticles) {
-    const dist = Math.hypot(p.x - p.homeX, p.y - p.homeY);
-    // Color transitions from gold to terracotta to magenta based on distance
-    const t = Math.min(1, dist / 300);
-    const r = Math.round(211 + (194 - 211) * t); // terracotta to magenta
-    const gv = Math.round(84 + (24 - 84) * t);
-    const b = Math.round(0 + (91 - 0) * t);
-
-    sctx.fillStyle = `hsla(${p.hue + t * 20}, 80%, ${60 - t * 20}%, ${p.opacity})`;
-    // Use drop shadow for glow on scattered particles
-    if (dist > 20) {
-      sctx.shadowColor = `rgba(244,162,97,${0.3 * p.opacity})`;
-      sctx.shadowBlur = 8;
-    } else {
-      sctx.shadowColor = "transparent";
-      sctx.shadowBlur = 0;
-    }
-    sctx.fillText(p.ch, p.x, p.y);
-  }
-  sctx.shadowBlur = 0;
-
-  // If all particles are nearly home and not exploded, apply subtle idle wave
-  if (!shatterExploded) {
-    let allHome = true;
-    for (const p of shatterParticles) {
-      if (Math.hypot(p.x - p.homeX, p.y - p.homeY) > 2) { allHome = false; break; }
-    }
-    if (allHome) {
-      // Gentle idle breathing
-      const wave = Math.sin(t / 1500) * 4;
-      for (let i = 0; i < shatterParticles.length; i++) {
-        shatterParticles[i].y = shatterParticles[i].homeY + Math.sin(t / 1200 + i * 0.3) * wave;
-        shatterParticles[i].x = shatterParticles[i].homeX + Math.cos(t / 1400 + i * 0.25) * wave * 0.6;
-      }
-    }
-  }
-
-  shatterFrame = requestAnimationFrame(shatterFrameLoop);
-}
-
-// Hook slide changes
-const s8observer = new MutationObserver(() => {
-  const s8 = document.getElementById("s8");
-  if (s8 && s8.classList.contains("active")) {
-    shatterActive = true;
-    shatterCanvas.classList.add("show");
-    if (shatterParticles.length === 0) {
-      shatterResize();
-      buildParticles();
-    }
-    resetParticles();
-    shatterTime = performance.now();
-    shatterFrame = requestAnimationFrame(shatterFrameLoop);
-    // Auto-explode after 1.5s if user doesn't click
-    setTimeout(() => {
-      if (shatterActive && !shatterExploded) {
-        explode(SW / 2, SH / 2);
-      }
-    }, 1800);
-  } else {
-    shatterActive = false;
-    shatterCanvas.classList.remove("show");
-    if (shatterFrame) cancelAnimationFrame(shatterFrame);
-    shatterFrame = 0;
-  }
-});
-
-const deck2 = document.getElementById("deck");
-s8observer.observe(deck2, { attributes: true, subtree: true, attributeFilter: ["class"] });
-
-// Hook into navigation for slide 8
-const origGoTo2 = window._deckGoTo;
-if (origGoTo2) {
-  window._deckGoTo = function(i) {
-    origGoTo2(i);
-    const s8 = document.getElementById("s8");
-    if (s8 && s8.classList.contains("active")) {
-      shatterActive = true;
-      shatterCanvas.classList.add("show");
-      if (shatterParticles.length === 0) {
-        shatterResize();
-        buildParticles();
-      }
-      resetParticles();
-      shatterTime = performance.now();
-      shatterFrame = requestAnimationFrame(shatterFrameLoop);
-      setTimeout(() => {
-        if (shatterActive && !shatterExploded) {
-          explode(SW / 2, SH / 2);
-        }
-      }, 1800);
-    } else {
-      shatterActive = false;
-      shatterCanvas.classList.remove("show");
-      if (shatterFrame) cancelAnimationFrame(shatterFrame);
-      shatterFrame = 0;
-    }
-  };
-}
-</script>
-
 </body>
 </html>
