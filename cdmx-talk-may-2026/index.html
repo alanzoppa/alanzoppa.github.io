@@ -6,22 +6,22 @@
 <title>Architect Vibes — CDMX, May 28, 2026</title>
 <style>
   :root {
-    --bg: #07090e;
-    --bg-2: #0d1118;
-    --panel: #131822;
-    --panel-2: #1a2030;
-    --panel-3: #222a3d;
-    --line: #262d40;
-    --line-2: #30394f;
+    --bg: #0a0618;
+    --bg-2: #120a26;
+    --panel: #1a0f33;
+    --panel-2: #231447;
+    --panel-3: #2d1a5c;
+    --line: #3a2466;
+    --line-2: #4a2e80;
     --text: #eef2f8;
-    --muted: #a3adc2;
-    --dim: #6a7388;
-    --accent: #8ec1ff;
-    --accent-soft: #5b8fd9;
-    --accent-2: #ffc580;
+    --muted: #b8a8d4;
+    --dim: #7a6a99;
+    --accent: #5eead4;
+    --accent-soft: #22b8a6;
+    --accent-2: #ff71ce;
     --accent-3: #a8f3cb;
-    --accent-4: #d4a3ff;
-    --grid: rgba(142, 193, 255, 0.05);
+    --accent-4: #b967ff;
+    --grid: rgba(255, 113, 206, 0.06);
   }
   * { box-sizing: border-box; }
   html, body {
@@ -57,7 +57,7 @@
     width: 0%;
     transition: width 320ms cubic-bezier(.4,0,.2,1);
     z-index: 100;
-    box-shadow: 0 0 12px rgba(142, 193, 255, 0.5);
+    box-shadow: 0 0 12px rgba(94, 234, 212, 0.5);
   }
 
   /* Chrome */
@@ -166,7 +166,7 @@
   h2 {
     font-size: clamp(1.9rem, 3.6vw, 3.2rem);
     margin-bottom: 0.7rem;
-    background: linear-gradient(180deg, #ffffff 25%, #b9c2d6 100%);
+    background: linear-gradient(145deg, var(--accent) 0%, #ff6ec7 90%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -195,13 +195,13 @@
   .title-slide {
     justify-content: center;
     background:
-      radial-gradient(ellipse 60% 50% at 85% 10%, rgba(142, 193, 255, 0.16), transparent 60%),
-      radial-gradient(ellipse 50% 40% at 5% 90%, rgba(212, 163, 255, 0.10), transparent 60%);
+      radial-gradient(ellipse 60% 50% at 85% 10%, rgba(94, 234, 212, 0.18), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 5% 90%, rgba(255, 113, 206, 0.14), transparent 60%);
   }
   .title-slide .kicker { margin-bottom: 2rem; }
   .title-slide h1 {
     font-size: clamp(3rem, 7vw, 6.2rem);
-    background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, #8392ab 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, #b967ff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -350,7 +350,7 @@
   }
   table.styled tr:last-child td { border-bottom: none; }
   table.styled tr.total td {
-    background: rgba(142, 193, 255, 0.07);
+    background: rgba(94, 234, 212, 0.07);
     font-weight: 700;
     border-top: 1px solid var(--accent-soft);
   }
@@ -379,8 +379,8 @@
     margin-top: 1.6rem;
     padding: 1.1rem 1.4rem;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgba(142, 193, 255, 0.12), rgba(168, 243, 203, 0.06));
-    border: 1px solid rgba(142, 193, 255, 0.28);
+    background: linear-gradient(135deg, rgba(94, 234, 212, 0.12), rgba(168, 243, 203, 0.06));
+    border: 1px solid rgba(94, 234, 212, 0.28);
     color: var(--text);
     font-size: clamp(1rem, 1.4vw, 1.2rem);
     position: relative;
@@ -523,7 +523,7 @@
     border-radius: 16px;
     border: 1px solid var(--line);
     background:
-      radial-gradient(ellipse 50% 40% at 50% 35%, rgba(142, 193, 255, 0.16), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 50% 35%, rgba(94, 234, 212, 0.16), transparent 60%),
       radial-gradient(ellipse 30% 25% at 80% 90%, rgba(168, 243, 203, 0.10), transparent 60%),
       var(--panel);
     display: flex;
@@ -540,7 +540,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle at 1px 1px, rgba(142, 193, 255, 0.06) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, rgba(94, 234, 212, 0.06) 1px, transparent 0);
     background-size: 24px 24px;
     pointer-events: none;
   }
@@ -627,7 +627,7 @@
   .final-quote {
     margin-top: 2.2rem;
     padding: 1.5rem 1.8rem;
-    background: linear-gradient(135deg, rgba(142, 193, 255, 0.10), rgba(212, 163, 255, 0.06));
+    background: linear-gradient(135deg, rgba(94, 234, 212, 0.10), rgba(255, 113, 206, 0.06));
     border-left: 3px solid var(--accent);
     border-radius: 6px;
     font-size: clamp(1.1rem, 1.55vw, 1.4rem);
@@ -737,7 +737,7 @@
           </div>
         </div>
         <div style="width:clamp(256px,28.8vw,416px); flex-shrink:0;">
-          <img src="headshot-8bit.png" alt="Alan Zoppa" style="width:100%; border-radius:12px; border:1px solid var(--line); display:block;">
+          <img src="headshot-8bit.png" alt="Alan Zoppa" style="width:100%; border-radius:12px; border:1px solid var(--line); display:block; box-shadow: 0 0 16px rgba(185,103,255,0.45), 0 0 32px rgba(185,103,255,0.18);">
           <div class="meta" style="margin-top:0.75em;">Alan Zoppa <span style="color:var(--line-2)">·</span> Chicago <span style="color:var(--line-2)">·</span> May 28, 2026</div>
         </div>
       </div>
@@ -776,7 +776,7 @@
       <h2>Once, I managed eight interns</h2>
 
       <div class="two-col tight" style="margin-top:1.2rem; align-items:stretch;">
-        <div class="img-frame" style="height:100%; min-height:340px;">
+        <div class="img-frame" style="height:100%; min-height:340px; max-height:54vh; box-shadow: 0 24px 48px -24px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02), 0 0 28px rgba(185,103,255,0.3);">
           <img src="interns.jpg" alt="The intern team" style="object-fit:cover; height:100%; width:100%;">
         </div>
         <div class="stack">
@@ -983,7 +983,7 @@
 
       <div class="demo-placeholder">
         <div class="live"><span class="dot"></span> Live demo</div>
-        <h2 style="background:linear-gradient(180deg,#fff,#a3adc2); -webkit-background-clip:text; background-clip:text; color:transparent;">What you'll see</h2>
+        <h2 style="background:linear-gradient(180deg,#fff,#ff71ce); -webkit-background-clip:text; background-clip:text; color:transparent;">What you'll see</h2>
         <ul class="demo-cues">
           <li>The web UI: notes clustered by &gt;75% cosine similarity</li>
           <li>An agent querying via MCP (<code>mcp_mnestic_*</code> tools)</li>
