@@ -272,12 +272,13 @@
   overflow: hidden;
   border: 1px solid var(--border);
   margin-top: 0.8em;
+  background: var(--bg-deep);
 }
 .iframe-wrapper iframe {
   width: 100%;
   height: 100%;
   border: none;
-  background: #fff;
+  background: var(--bg-deep);
 }
 
 /* ===== Placeholder image ===== */
@@ -359,6 +360,61 @@
 .demo-cue .cue-label { font-size: 0.65em; font-weight: 600; color: var(--gold); margin-bottom: 0.2em; }
 .demo-cue .cue-desc { font-size: 0.6em; color: var(--text-muted); line-height: 1.5; }
 
+/* ===== Mnestic Legend (Slide 8) ===== */
+.mnestic-legend {
+  display: flex;
+  gap: 1.5em;
+  justify-content: center;
+  margin-bottom: 0.8em;
+  font-size: 0.55em;
+  color: var(--text-muted);
+}
+.mnestic-legend-item { display: flex; align-items: center; gap: 0.4em; }
+.mnestic-badge {
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.mnestic-badge.highlight { background: var(--gold-dim); }
+.mnestic-badge.source { background: var(--text-muted); }
+.mnestic-badge.agent { background: var(--accent-cool); }
+.flow-node.source-node { border-color: var(--text-muted); opacity: 0.8; }
+.flow-node.agent-node { border-color: var(--accent-cool); opacity: 0.85; }
+.flow-node.agent-node:hover { border-color: var(--accent-cool); }
+
+/* ===== Intern Stories (Slide 5) ===== */
+.intern-stories {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+  max-width: 80%;
+  margin: 0 auto;
+  text-align: left;
+}
+.intern-story {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2em;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1em 1.4em;
+  transition: border-color 0.2s;
+}
+.intern-story:hover { border-color: var(--border-bright); }
+.story-num {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 1.4em;
+  text-align: center;
+  flex-shrink: 0;
+}
+.story-text { font-size: 0.85em; line-height: 1.6; }
+.story-text strong { display: block; margin-bottom: 0.2em; }
+.story-text span { color: var(--text-secondary); }
+
 /* ===== Speaker notes area ===== */
 .reveal .speaker-notes { display: none; }
 </style>
@@ -376,10 +432,10 @@
 </section>
 
 <!-- ===== SLIDE 2: THE THREE QUESTIONS ===== -->
-<section>
+<section style="display:flex; flex-direction:column; justify-content:center;">
   <div class="slide-label">Research Questions</div>
   <h2>The Three Questions</h2>
-  <ol class="numbered-list">
+  <ol class="numbered-list" style="font-size:1.1em;">
     <li>
       <strong>Open-weights models</strong>
       How far can I push them with real autonomy?
@@ -410,9 +466,9 @@
       <div class="card-label">Provider</div>
       <div class="card-name">OpenRouter</div>
       <div class="card-value">~$0.01</div>
-      <div class="card-desc">Embed ~1600 documents<br>Qwen 8B Embedding</div>
+      <div class="card-desc">Embed 1,600 documents<br>Qwen 8B Embedding</div>
     </div>
-    <div class="card">
+    <div class="card" style="border:1px solid var(--border-bright); background:rgba(212,168,92,0.06);">
       <div class="card-label">Total</div>
       <div class="card-name">Monthly Cost</div>
       <div class="card-value">~$20<span style="font-size:0.5em">/mo</span></div>
@@ -457,18 +513,27 @@
 <section>
   <div class="slide-label">The Human Side</div>
   <h2>Managing Interns</h2>
-  <div class="split-layout">
-    <div class="split-left">
-      <div class="img-placeholder">
-        👥 Intern Team Photo
+  <div class="intern-stories">
+    <div class="intern-story">
+      <div class="story-num">1</div>
+      <div class="story-text">
+        <strong>Give them room to surprise you</strong>
+        <span>They picked a ridiculous team name and made fun of me</span>
       </div>
     </div>
-    <div class="split-right">
-      <ul>
-        <li><strong>Give them room to surprise you</strong><br>They picked a ridiculous team name and made fun of me</li>
-        <li><strong>They'll overengineer</strong><br>Stored SQL procedure for a simple Rails controller</li>
-        <li><strong>They need obvious limits</strong><br>Gym clothes in the office, skipped meetings</li>
-      </ul>
+    <div class="intern-story">
+      <div class="story-num">2</div>
+      <div class="story-text">
+        <strong>They'll overengineer</strong>
+        <span>Stored SQL procedure for a simple Rails controller</span>
+      </div>
+    </div>
+    <div class="intern-story">
+      <div class="story-num">3</div>
+      <div class="story-text">
+        <strong>They need obvious limits</strong>
+        <span>Gym clothes in the office, skipped meetings</span>
+      </div>
     </div>
   </div>
   <div class="transition-quote">
@@ -500,51 +565,51 @@
 <!-- ===== SLIDE 7: GUARDRAILS ===== -->
 <section>
   <div class="slide-label">Architecture Rules</div>
-  <h2>The Solution Isn't Smarter Models —<br>It's Better Guardrails</h2>
-  <div class="checklist">
-    <div class="checklist-item">
+  <h2 style="font-size:1.6em; margin-bottom:0.4em;">The Solution Isn't Smarter Models —<br>It's Better Guardrails</h2>
+  <div class="checklist" style="font-size:1.15em;">
+    <div class="checklist-item" style="font-size:0.8em;">
       <div class="check-num">01</div>
       <div class="check-title">MUST parallelize with subagents</div>
       <div class="check-desc">Dispatching is the default; solo work is the exception</div>
     </div>
-    <div class="checklist-item">
+    <div class="checklist-item" style="font-size:0.8em;">
       <div class="check-num">02</div>
       <div class="check-title">Push after successful complex changes</div>
       <div class="check-desc">Commit AND push; all tests green first</div>
     </div>
-    <div class="checklist-item">
+    <div class="checklist-item" style="font-size:0.8em;">
       <div class="check-num">03</div>
       <div class="check-title">Test new functionality</div>
       <div class="check-desc">Write automated tests as you go; regression tests where needed</div>
     </div>
-    <div class="checklist-item">
+    <div class="checklist-item" style="font-size:0.8em;">
       <div class="check-num">04</div>
       <div class="check-title">Always specify the subagent type</div>
       <div class="check-desc">"I'll dispatch X to @build, Y to @explore"</div>
     </div>
-    <div class="checklist-item">
+    <div class="checklist-item" style="font-size:0.8em;">
       <div class="check-num">05</div>
       <div class="check-title">Type safety is preferred</div>
       <div class="check-desc">When supported by the language</div>
     </div>
-    <div class="checklist-item">
+    <div class="checklist-item" style="font-size:0.8em;">
       <div class="check-num">06</div>
       <div class="check-title">Don't reinvent the wheel</div>
       <div class="check-desc">Prefer robust libraries; don't re-test library functionality</div>
     </div>
   </div>
-  <div class="decision-matrix">
-    <div class="dm-card">
+  <div class="decision-matrix" style="font-size:1.1em;">
+    <div class="dm-card" style="font-size:0.8em;">
       <div class="dm-action">Explore</div>
       <div class="dm-arrow">→</div>
       <div class="dm-model">@flash / DeepSeek v4 Flash</div>
     </div>
-    <div class="dm-card">
+    <div class="dm-card" style="font-size:0.8em;">
       <div class="dm-action">Refactor</div>
       <div class="dm-arrow">→</div>
       <div class="dm-model">@kimi / Kimi k2.6</div>
     </div>
-    <div class="dm-card">
+    <div class="dm-card" style="font-size:0.8em;">
       <div class="dm-action">Tests</div>
       <div class="dm-arrow">→</div>
       <div class="dm-model">@hurry / MiniMax m2.7</div>
@@ -553,33 +618,37 @@
 </section>
 
 <!-- ===== SLIDE 8: MNESTIC ARCHITECTURE ===== -->
-<section>
+<section style="display:flex; flex-direction:column; justify-content:center;">
   <div class="slide-label">System Design</div>
   <h2>Mnestic Architecture</h2>
-  <div class="flow-diagram">
-    <span class="flow-node">Zoom Transcripts</span>
+  <div class="mnestic-legend">
+    <span class="mnestic-legend-item"><span class="mnestic-badge highlight"></span> processing layer</span>
+    <span class="mnestic-legend-item"><span class="mnestic-badge source"></span> data source</span>
+    <span class="mnestic-legend-item"><span class="mnestic-badge agent"></span> agent consumer</span>
+  </div>
+  <div class="flow-diagram" style="align-items:stretch;">
+    <span class="flow-node source-node">Zoom Transcripts</span>
     <span class="flow-arrow">+</span>
-    <span class="flow-node">Manual Notes</span>
+    <span class="flow-node source-node">Manual Notes</span>
     <span class="flow-arrow">+</span>
-    <span class="flow-node">Work Logs</span>
+    <span class="flow-node source-node">Work Logs</span>
     <span class="flow-arrow">→</span>
-    <span class="flow-node highlight">Claude Processing</span>
+    <span class="flow-node highlight">Claude Processing<br><small>transcript → styleguide → markdown</small></span>
     <span class="flow-arrow">→</span>
     <span class="flow-node highlight">OpenViking<br><small>ChromaDB + qwen3-embedding-8b</small></span>
   </div>
-  <div class="flow-diagram" style="margin-top:1.2em">
+  <div class="flow-diagram" style="margin-top:1.2em; align-items:stretch;">
     <span class="flow-node highlight">MCP Server Frontend</span>
     <span class="flow-arrow">→</span>
-    <span class="flow-node">Hermes Agent</span>
+    <span class="flow-node agent-node">Hermes Agent</span>
     <span class="flow-arrow">/</span>
-    <span class="flow-node">OpenCode</span>
+    <span class="flow-node agent-node">OpenCode</span>
     <span class="flow-arrow">/</span>
-    <span class="flow-node">Openclaw</span>
+    <span class="flow-node agent-node">Openclaw</span>
   </div>
-  <div class="flow-diagram" style="margin-top:1.2em">
-    <span class="flow-arrow">→</span>
-    <span class="flow-node highlight">Similarity Cloud</span>
-    <span class="flow-arrow" style="font-size:0.7em">Notes clustered by &gt;75% cosine similarity</span>
+  <div class="flow-diagram" style="margin-top:1.2em; align-items:stretch;">
+    <span class="flow-node highlight" style="margin-top:0.3em;">Similarity Cloud</span>
+    <span class="flow-arrow" style="font-size:0.7em; align-self:center;">Notes clustered by &gt;75% cosine similarity</span>
   </div>
   <div class="callout" style="margin-top:1em">
     Transcript → styleguide → structured markdown → ChromaDB → agent queries
@@ -594,7 +663,7 @@
     "Uncle" is to "aunt" as "man" is to "woman" —<br>relationships captured in vector space
   </p>
   <div class="iframe-wrapper">
-    <iframe src="../cdmx-v2/word_vectors_3d.html" title="3D Word Vectors Demo"></iframe>
+    <iframe src="./cdmx-v2/word_vectors_3d.html" title="3D Word Vectors Demo"></iframe>
   </div>
   <div class="callout">
     <strong>Sad</strong> is close to <strong>unhappy</strong> even though they share no letters.<br>
@@ -603,7 +672,7 @@
 </section>
 
 <!-- ===== SLIDE 10: MNESTIC DEMO ===== -->
-<section>
+<section style="display:flex; flex-direction:column; justify-content:center;">
   <div class="slide-label">Live Demo</div>
   <h2>Mnestic in Action</h2>
   <div class="demo-cues">
@@ -631,19 +700,19 @@
 </section>
 
 <!-- ===== SLIDE 11: CLOSING ===== -->
-<section>
+<section style="text-align:left;">
   <div class="slide-label">Key Takeaways</div>
-  <h2>Closing</h2>
-  <ol class="takeaways">
+  <h2 style="text-align:left;">Closing</h2>
+  <ol class="takeaways" style="margin:0 auto 0 0; max-width:90%;">
     <li><strong>$20/month gets you a shocking number of tokens</strong><br>Ollama Pro is nearly inexhaustible</li>
     <li><strong>Open-weights models are competitive</strong><br>GLM 5.1, Kimi k2.6, DeepSeek v4 from Chinese labs</li>
     <li><strong>Plan-then-execute works at scale</strong><br>Large model plans, smaller models execute, explicit task-to-model mapping</li>
     <li><strong>Guardrails matter more than model intelligence</strong><br>Clear mandates, not suggestions</li>
     <li><strong>I built something I wouldn't have bothered to write by hand</strong><br>Mnestic: scattered notes → queryable agent knowledge base</li>
   </ol>
-  <p class="final-line">
+  <div class="transition-quote" style="margin-top:1.2em;">
     That's writing code like an architect.<br>You don't lay every brick. You design the system,<br>you set the guardrails, and you let the interns do the work.
-  </p>
+  </div>
 </section>
 
 </div>
