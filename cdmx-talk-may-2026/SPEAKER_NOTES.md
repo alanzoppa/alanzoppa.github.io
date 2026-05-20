@@ -257,18 +257,18 @@ A: Yes. That's partly why I use open-weights models — they can run anywhere. I
 
 ## Timing Guide
 
-  Slide  Section               Time
--------  --------------------  ----------
-      1  Title / Opening       1 min
-      2  Three Questions       2.5 min
-      3  Managing Interns      2.5 min
-      4  Agents as Interns     2 min
-      5  Tool Ecosystem        2.5 min
-      6  Token Economics       1.5 min
-      7  Guardrails            2 min
-      8  Embeddings            2.5 min
-      9  Mnestic Demo (video)  3-4 min
-     10  Takeaways / Closing   2 min
-         Total                 ~22-24 min
+| Slide | Section | Target Time |
+|---|---|---|
+| 1 | Title / Opening | 1 min |
+| 2 | Three Questions | 2.5 min |
+| 3 | Managing Interns | 2.5 min |
+| 4 | Agents as Interns | 2 min |
+| 5 | Tool Ecosystem | 2.5 min |
+| 6 | Token Economics | 1.5 min |
+| 7 | Guardrails | 2 min |
+| 8 | Embeddings | 2.5 min |
+| 9 | Mnestic Demo (video) | 3-4 min |
+| 10 | Takeaways / Closing | 2 min |
+| | **Total** | **~22-24 min** |
 
 *Buffer: 5-8 minutes for transitions, demo video, and Q&A setup. The video does the heavy lifting on the demo slide — let it play and narrate over it.*
