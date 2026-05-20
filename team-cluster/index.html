@@ -3,282 +3,524 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Cluster</title>
+<title>Team Cluster — Number Proximity Ranker</title>
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#0a0a0f;--surface:#12121a;--card:#1a1a26;--border:#2a2a3a;
-    --accent:#6c5ce7;--accent-glow:rgba(108,92,231,.25);
-    --text:#e8e8f0;--dim:#8888a0;--green:#00e676;--red:#ff5252;
-    --radius:14px;--shadow:0 4px 24px rgba(0,0,0,.4);
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131f;
+    --surface-2: #1a1a2e;
+    --border: #2a2a45;
+    --text: #e0e0f0;
+    --text-dim: #8888aa;
+    --accent: #7c5cfc;
+    --accent-glow: #7c5cfc44;
+    --gold: #f0c060;
+    --silver: #c0c0d0;
+    --bronze: #d4a070;
+    --danger: #ff5e7a;
+    --success: #4ade80;
+    --radius: 16px;
+    --radius-sm: 10px;
   }
-  html{font-size:16px}
-  body{
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    background:var(--bg);color:var(--text);min-height:100vh;
-    display:flex;flex-direction:column;align-items:center;
-    padding:2rem 1rem 4rem;
-    background-image:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(108,92,231,.08),transparent);
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, #2e1a5c22 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, #1a2e5c22 0%, transparent 60%);
   }
 
-  /* ── Header ── */
-  .header{text-align:center;margin-bottom:2.5rem;animation:fadeDown .6s ease-out}
-  .header h1{
-    font-size:2.6rem;font-weight:800;letter-spacing:-.03em;
-    background:linear-gradient(135deg,#6c5ce7,#a29bfe,#74b9ff);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;
+  .container {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
   }
-  .header p{color:var(--dim);margin-top:.4rem;font-size:1.05rem;font-weight:400}
 
-  /* ── App Shell ── */
-  .app{width:100%;max-width:720px;animation:fadeUp .5s ease-out}
+  header {
+    text-align: center;
+    position: relative;
+  }
 
-  /* ── Input Section ── */
-  .input-section{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:var(--radius);padding:1.8rem;
-    margin-bottom:1.5rem;box-shadow:var(--shadow);
+  header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--accent), #a78bfa, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  .input-section label{display:block;font-weight:600;margin-bottom:.45rem;font-size:.9rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
-  .input-row{display:flex;gap:1rem;align-items:end;flex-wrap:wrap}
-  .field{flex:1;min-width:140px}
-  .field input,.field select{
-    width:100%;padding:.75rem 1rem;font-size:1rem;
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:10px;color:var(--text);outline:none;
-    transition:border-color .2s,box-shadow .2s;
-  }
-  .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-  .field input::placeholder{color:var(--dim)}
 
-  .btn{
-    padding:.75rem 2rem;font-size:1rem;font-weight:700;
-    background:linear-gradient(135deg,#6c5ce7,#a29bfe);
-    color:#fff;border:none;border-radius:10px;cursor:pointer;
-    transition:transform .15s,box-shadow .2s;white-space:nowrap;
+  header p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-top: 6px;
   }
-  .btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow)}
-  .btn:active{transform:translateY(0)}
 
-  /* ── Pair Editor ── */
-  .pair-section{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:var(--radius);padding:1.8rem;
-    margin-bottom:1.5rem;box-shadow:var(--shadow);
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    backdrop-filter: blur(12px);
+    transition: border-color 0.3s;
   }
-  .pair-section h2{font-size:1.15rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-  .pair-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem}
-  .pair-entry{
-    display:flex;gap:.4rem;align-items:center;
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:8px;padding:.35rem .5rem;
-    transition:border-color .2s;
-  }
-  .pair-entry:focus-within{border-color:var(--accent)}
-  .pair-entry .num{width:60px;text-align:center}
-  .pair-entry .name{flex:1;min-width:0}
-  .pair-entry input{
-    width:100%;padding:.35rem .5rem;font-size:.88rem;
-    background:transparent;border:none;color:var(--text);outline:none;
-  }
-  .pair-entry input::placeholder{color:var(--dim)}
-  .pair-entry .idx{
-    font-size:.7rem;color:var(--dim);min-width:18px;text-align:center;font-weight:600;
-  }
-  .pair-actions{display:flex;gap:.5rem;margin-top:.8rem}
-  .btn-sm{
-    padding:.4rem 1rem;font-size:.8rem;font-weight:600;
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:8px;color:var(--text);cursor:pointer;
-    transition:background .15s,border-color .15s;
-  }
-  .btn-sm:hover{background:var(--border);border-color:var(--accent)}
+  .card:hover { border-color: #3a3a60; }
 
-  /* ── Results ── */
-  .results{
-    background:var(--card);border:1px solid var(--border);
-    border-radius:var(--radius);padding:1.8rem;
-    box-shadow:var(--shadow);min-height:80px;
+  .card h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 16px;
   }
-  .results h2{font-size:1.15rem;font-weight:700;margin-bottom:1rem}
-  .results-empty{color:var(--dim);text-align:center;padding:2rem 0;font-style:italic}
 
-  .rank-list{display:flex;flex-direction:column;gap:.6rem}
-  .rank-item{
-    display:flex;align-items:center;gap:1rem;
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:10px;padding:.85rem 1.2rem;
-    animation:slideIn .35s ease-out both;
-    transition:border-color .2s,transform .15s;
+  .pairs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
   }
-  .rank-item:hover{border-color:var(--accent);transform:translateX(3px)}
-  .rank-pos{
-    font-size:1.4rem;font-weight:800;min-width:2rem;text-align:center;
-    background:linear-gradient(135deg,#6c5ce7,#a29bfe);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;
-  }
-  .rank-pos.gold{
-    background:linear-gradient(135deg,#ffd700,#ffaa00);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  }
-  .rank-info{flex:1;min-width:0}
-  .rank-name{font-weight:700;font-size:1.05rem}
-  .rank-num{color:var(--dim);font-size:.88rem;margin-top:.1rem}
-  .rank-dist{
-    font-size:.9rem;font-weight:700;padding:.3rem .7rem;
-    border-radius:6px;white-space:nowrap;
-  }
-  .dist-close{background:rgba(0,230,118,.12);color:#00e676}
-  .dist-mid{background:rgba(255,215,0,.1);color:#ffd700}
-  .dist-far{background:rgba(255,82,82,.1);color:#ff5252}
 
-  /* ── Animations ── */
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes fadeDown{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-
-  @media(prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .pair-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
-  @media(max-width:500px){
-    .header h1{font-size:1.8rem}
-    .input-row{flex-direction:column}
-    .pair-grid{grid-template-columns:1fr}
+  .pair-row:hover {
+    border-color: var(--border);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px #0003;
+  }
+  .pair-row.selected {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent), 0 4px 20px var(--accent-glow);
+  }
+  .pair-row .num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent);
+    min-width: 42px;
+    text-align: center;
+  }
+  .pair-row input.name-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 0.9rem;
+    outline: none;
+    min-width: 0;
+  }
+  .pair-row input.name-input::placeholder { color: #555; }
+  .pair-row input.num-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.9rem;
+    width: 58px;
+    padding: 4px 6px;
+    text-align: center;
+    outline: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .pair-row input.num-input:focus {
+    border-color: var(--accent);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .btn:hover {
+    border-color: #555;
+    background: #1f1f3a;
+  }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .btn.primary:hover {
+    background: #8b6cf8;
+    box-shadow: 0 6px 28px #7c5cfc55;
+    transform: translateY(-1px);
+  }
+  .btn.small {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
+  .controls {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+  }
+  .field input, .field select {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 140px;
+    font-variant-numeric: tabular-nums;
+  }
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+  .field select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  .results { margin-top: 8px; }
+
+  .result-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    animation: slideIn 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+  }
+  .result-card:nth-child(1)::before { background: var(--gold); }
+  .result-card:nth-child(2)::before { background: var(--silver); }
+  .result-card:nth-child(3)::before { background: var(--bronze); }
+  .result-card:nth-child(n+4)::before { background: var(--border); }
+
+  .result-card .rank {
+    font-size: 1.3rem;
+    font-weight: 800;
+    min-width: 36px;
+    text-align: center;
+  }
+  .result-card:nth-child(1) .rank { color: var(--gold); }
+  .result-card:nth-child(2) .rank { color: var(--silver); }
+  .result-card:nth-child(3) .rank { color: var(--bronze); }
+  .result-card:nth-child(n+4) .rank { color: var(--text-dim); }
+
+  .result-card .match-name {
+    flex: 1;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .result-card .match-num {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .result-card .dist {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 500px) {
+    body { padding: 20px 12px; }
+    .pairs-grid { grid-template-columns: 1fr; }
+    .controls { flex-direction: column; }
+    .field input, .field select { width: 100%; }
+    .btn-row { flex-direction: column; }
+    .btn { width: 100%; }
+    .result-card { flex-wrap: wrap; gap: 8px; }
   }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>Team Cluster</h1>
-  <p>Find your closest number neighbors</p>
-</div>
-
-<div class="app">
-  <!-- Pair Editor -->
-  <div class="pair-section">
-    <h2>&#x1F465; Number / Name Pairs</h2>
-    <div class="pair-grid" id="pairGrid"></div>
-    <div class="pair-actions">
-      <button class="btn-sm" onclick="addPair()">&#x2795; Add Pair</button>
-      <button class="btn-sm" onclick="clearPairs()">&#x1F5D1; Clear All</button>
-    </div>
-  </div>
-
-  <!-- Input -->
-  <div class="input-section">
-    <div class="input-row">
-      <div class="field">
-        <label>Your Number</label>
-        <input type="number" id="myNum" min="1" max="1000" placeholder="1 &#x2013; 1000">
-      </div>
-      <div class="field">
-        <label>Top Matches</label>
-        <select id="topN">
-          <option value="3">3</option>
-          <option value="5" selected>5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
-        </select>
-      </div>
-      <button class="btn" onclick="compute()">&#x26A1; Rank</button>
-    </div>
-  </div>
-
-  <!-- Results -->
-  <div class="results" id="results">
-    <h2>&#x1F3C6; Rankings</h2>
-    <div class="results-empty">Enter your number and hit Rank</div>
-  </div>
-</div>
+<div class="container" id="app"></div>
 
 <script>
-const STORAGE_KEY = 'teamClusterPairs';
 const DEFAULT_PAIRS = [
-  {n:7,name:'Alice'},{n:42,name:'Bob'},{n:137,name:'Carol'},{n:256,name:'Dave'},
-  {n:314,name:'Eve'},{n:404,name:'Frank'},{n:500,name:'Grace'},{n:618,name:'Heidi'},
-  {n:777,name:'Ivan'},{n:808,name:'Judy'}
+  {name:"Alice", num:420},
+  {name:"Bob", num:777},
+  {name:"Charlie", num:88},
+  {name:"Diana", num:512},
+  {name:"Eve", num:330},
+  {name:"Frank", num:999},
+  {name:"Grace", num:15},
+  {name:"Henry", num:650},
+  {name:"Iris", num:250},
+  {name:"Jack", num:800},
+  {name:"Kate", num:100},
+  {name:"Leo", num:555},
+  {name:"Maya", num:300},
+  {name:"Nick", num:950},
+  {name:"Olivia", num:45},
+  {name:"Paul", num:700},
+  {name:"Quinn", num:180},
+  {name:"Ruby", num:860},
+  {name:"Sam", num:620},
+  {name:"Tina", num:390},
 ];
 
-let pairs = [];
-
-function loadPairs(){
-  try{const s=localStorage.getItem(STORAGE_KEY);if(s){pairs=JSON.parse(s);return}}catch(e){}
-  pairs=DEFAULT_PAIRS.map(p=>({...p}));
-}
-function savePairs(){localStorage.setItem(STORAGE_KEY,JSON.stringify(pairs))}
-
-function renderPairs(){
-  const g=document.getElementById('pairGrid');
-  g.innerHTML='';
-  pairs.forEach((p,i)=>{
-    const d=document.createElement('div');d.className='pair-entry';
-    d.innerHTML=`<span class="idx">${i+1}</span>`
-      +`<div class="name"><input type="text" value="${esc(p.name)}" placeholder="Name" data-i="${i}" data-f="name"></div>`
-      +`<div class="num"><input type="number" value="${p.n}" min="1" max="1000" placeholder="#" data-i="${i}" data-f="n"></div>`;
-    g.appendChild(d);
-  });
-  g.querySelectorAll('input').forEach(inp=>{
-    inp.addEventListener('input',e=>{
-      const idx=+e.target.dataset.i, f=e.target.dataset.f;
-      if(f==='name') pairs[idx].name=e.target.value;
-      else{let v=parseInt(e.target.value);if(isNaN(v))v=1;if(v<1)v=1;if(v>1000)v=1000;pairs[idx].n=v;}
-      savePairs();
-    });
-  });
+function loadState() {
+  try {
+    const raw = localStorage.getItem('team-cluster-pairs');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return DEFAULT_PAIRS;
 }
 
-function addPair(){
-  if(pairs.length>=20)return;
-  const n=Math.floor(Math.random()*1000)+1;
-  pairs.push({n,name:''});
-  savePairs();renderPairs();
-  const all=document.querySelectorAll('.pair-entry input');
-  if(all.length)all[all.length-1].focus();
-}
-function clearPairs(){pairs=[];savePairs();renderPairs()}
-
-function compute(){
-  const raw=parseInt(document.getElementById('myNum').value);
-  if(isNaN(raw)||raw<1||raw>1000){showError('Enter a valid number (1&#x2013;1000)');return}
-  const topN=parseInt(document.getElementById('topN').value);
-  const valid=pairs.filter(p=>p.name.trim()&&p.n>=1&&p.n<=1000);
-  if(!valid.length){showError('Add at least one named pair with a number');return}
-
-  const ranked=valid.map(p=>({name:p.name.trim(),num:p.n,dist:Math.abs(raw-p.n)}))
-    .sort((a,b)=>a.dist-b.dist||a.num-b.num)
-    .slice(0,topN);
-
-  const el=document.getElementById('results');
-  let html='<h2>&#x1F3C6; Rankings</h2><div class="rank-list">';
-  ranked.forEach((r,i)=>{
-    const cls=i===0?'gold':'';
-    const distCls=r.dist<=50?'dist-close':r.dist<=200?'dist-mid':'dist-far';
-    const delay=i*60;
-    html+=`<div class="rank-item" style="animation-delay:${delay}ms">`
-      +`<span class="rank-pos ${cls}">${i+1}</span>`
-      +`<div class="rank-info"><div class="rank-name">${esc(r.name)}</div><div class="rank-num">Number: ${r.n}</div></div>`
-      +`<span class="rank-dist ${distCls}">&#x00B1;${r.dist}</span>`
-      +`</div>`;
-  });
-  html+='</div>';
-  el.innerHTML=html;
+function saveState(pairs) {
+  localStorage.setItem('team-cluster-pairs', JSON.stringify(pairs));
 }
 
-function showError(msg){
-  const el=document.getElementById('results');
-  el.innerHTML=`<h2>&#x1F3C6; Rankings</h2><div class="results-empty" style="color:var(--red)">${msg}</div>`;
+function App() {
+  const [pairs, setPairs] = React.useState(loadState);
+  const [myNum, setMyNum] = React.useState('');
+  const [matchCount, setMatchCount] = React.useState(6);
+  const [results, setResults] = React.useState([]);
+
+  React.useEffect(() => { saveState(pairs); }, [pairs]);
+
+  const updatePair = (idx, field, value) => {
+    const next = [...pairs];
+    if (field === 'num') {
+      const v = parseInt(value, 10);
+      if (!isNaN(v) && v >= 1 && v <= 1000) next[idx] = {...next[idx], num: v};
+      else if (value === '') next[idx] = {...next[idx], num: ''};
+    } else {
+      next[idx] = {...next[idx], name: value};
+    }
+    setPairs(next);
+    setResults([]);
+  };
+
+  const addPair = () => {
+    if (pairs.length >= 20) return;
+    setPairs([...pairs, {name: '', num: ''}]);
+    setResults([]);
+  };
+
+  const removePair = (idx) => {
+    const next = pairs.filter((_, i) => i !== idx);
+    setPairs(next.length ? next : DEFAULT_PAIRS.slice(0,1));
+    setResults([]);
+  };
+
+  const shuffle = () => {
+    const shuffled = pairs.map(p => ({
+      ...p,
+      num: Math.floor(Math.random() * 1000) + 1,
+      name: p.name || ''
+    }));
+    setPairs(shuffled);
+    setResults([]);
+  };
+
+  const compute = () => {
+    const num = parseInt(myNum, 10);
+    if (isNaN(num) || num < 1 || num > 1000) return;
+    const valid = pairs.filter(p => typeof p.num === 'number' && p.num >= 1 && p.num <= 1000);
+    if (!valid.length) return;
+    const ranked = valid
+      .map(p => ({...p, dist: Math.abs(p.num - num)}))
+      .sort((a,b) => a.dist - b.dist || a.num - b.num)
+      .slice(0, matchCount);
+    setResults(ranked);
+  };
+
+  // React.createElement manually (no Babel, no JSX)
+  return React.createElement('div', null,
+    React.createElement('header', null,
+      React.createElement('h1', null, 'Team Cluster'),
+      React.createElement('p', null, 'Find your nearest neighbors in number space')
+    ),
+
+    // Pairs card
+    React.createElement('div', {className:'card'},
+      React.createElement('h2', null, `Pairs (${pairs.length}/20)`),
+      React.createElement('div', {className:'pairs-grid'},
+        pairs.map((p, i) =>
+          React.createElement('div', {className:'pair-row', key:i},
+            React.createElement('input', {
+              className:'num-input',
+              type:'number', min:1, max:1000,
+              value: p.num !== '' ? p.num : '',
+              placeholder: '#',
+              onChange: (e) => updatePair(i, 'num', e.target.value)
+            }),
+            React.createElement('input', {
+              className:'name-input',
+              type:'text',
+              value: p.name,
+              placeholder: 'Name',
+              onChange: (e) => updatePair(i, 'name', e.target.value)
+            }),
+            React.createElement('button', {
+              className:'btn small',
+              onClick: () => removePair(i),
+              title:'Remove'
+            }, '×')
+          )
+        )
+      ),
+      React.createElement('div', {className:'btn-row'},
+        React.createElement('button', {
+          className:'btn',
+          onClick: addPair,
+          disabled: pairs.length >= 20
+        }, '+ Add Pair'),
+        React.createElement('button', {className:'btn', onClick: shuffle}, '🎲 Shuffle Numbers'),
+        React.createElement('button', {
+          className:'btn',
+          onClick: () => {
+            setPairs(DEFAULT_PAIRS);
+            setMyNum('');
+            setMatchCount(6);
+            setResults([]);
+          }
+        }, '↺ Reset')
+      )
+    ),
+
+    // Controls card
+    React.createElement('div', {className:'card'},
+      React.createElement('h2', null, 'Find Your Cluster'),
+      React.createElement('div', {className:'controls'},
+        React.createElement('div', {className:'field'},
+          React.createElement('label', null, 'Your Number (1–1000)'),
+          React.createElement('input', {
+            type:'number', min:1, max:1000,
+            value: myNum,
+            placeholder: 'e.g. 500',
+            onChange: (e) => { setMyNum(e.target.value); setResults([]); },
+            onKeyDown: (e) => { if (e.key === 'Enter') compute(); }
+          })
+        ),
+        React.createElement('div', {className:'field'},
+          React.createElement('label', null, 'Top Matches'),
+          React.createElement('select', {
+            value: matchCount,
+            onChange: (e) => { setMatchCount(parseInt(e.target.value)); setResults([]); }
+          },
+            ...[1,2,3,4,5,6,7,8,9,10,12,15,20].map(n =>
+              React.createElement('option', {key:n, value:n}, `Top ${n}`)
+            )
+          )
+        ),
+        React.createElement('button', {className:'btn primary', onClick: compute}, '⚡ Rank')
+      ),
+
+      results.length > 0 && React.createElement('div', {className:'results'},
+        results.map((r, i) =>
+          React.createElement('div', {className:'result-card', key:i, style:{animationDelay: `${i*0.06}s`}},
+            React.createElement('span', {className:'rank'}, `#${i+1}`),
+            React.createElement('span', {className:'match-name'}, r.name || '(unnamed)'),
+            React.createElement('span', {className:'match-num'}, r.num),
+            React.createElement('span', {className:'dist'}, `Δ ${r.dist}`)
+          )
+        )
+      ),
+
+      results.length === 0 && React.createElement('div', {className:'empty-state'},
+        pairs.some(p => p.num) && myNum
+          ? 'Enter a number and hit Rank →'
+          : 'Add some number/name pairs above, then enter your number and hit Rank'
+      )
+    ),
+
+    React.createElement('footer', null, 'Team Cluster · numbers 1–1000')
+  );
 }
 
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-
-loadPairs();renderPairs();
-
-document.getElementById('myNum').addEventListener('keydown',e=>{if(e.key==='Enter')compute()});
+ReactDOM.createRoot(document.getElementById('app')).render(React.createElement(App));
 </script>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 </body>
 </html>
