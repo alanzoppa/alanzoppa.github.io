@@ -10,7 +10,7 @@
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background-image:radial-gradient(ellipse at 50% 0%,#2e1a5c22 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,#1a2e5c22 0%,transparent 60%)}
 .c{width:100%;max-width:720px;display:flex;flex-direction:column;gap:28px}
 h1{font-size:2rem;font-weight:700;text-align:center;background:linear-gradient(135deg,var(--accent),#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-sub{text-align:center;color:var(--dim);font-size:.9rem;display:block;margin-top:4px}
+.sub{text-align:center;color:var(--dim);font-size:.9rem;display:block;margin-top:4px}
 .g{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px}
 .g h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:14px}
 .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:14px}
@@ -36,15 +36,9 @@ sub{text-align:center;color:var(--dim);font-size:.9rem;display:block;margin-top:
 .fd select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
 .rc{display:flex;align-items:center;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:14px 18px;margin-bottom:8px;animation:si .35s ease both;position:relative;overflow:hidden}
 .rc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
-.rc:nth-child(1)::before{background:var(--gold)}
-.rc:nth-child(2)::before{background:var(--silver)}
-.rc:nth-child(3)::before{background:var(--bronze)}
-.rc:nth-child(n+4)::before{background:var(--border)}
+.rc.r1::before{background:var(--gold)}.rc.r2::before{background:var(--silver)}.rc.r3::before{background:var(--bronze)}.rc.rn::before{background:var(--border)}
 .rc .rk{font-size:1.2rem;font-weight:800;min-width:32px;text-align:center}
-.rc:nth-child(1) .rk{color:var(--gold)}
-.rc:nth-child(2) .rk{color:var(--silver)}
-.rc:nth-child(3) .rk{color:var(--bronze)}
-.rc:nth-child(n+4) .rk{color:var(--dim)}
+.r1 .rk{color:var(--gold)}.r2 .rk{color:var(--silver)}.r3 .rk{color:var(--bronze)}.rn .rk{color:var(--dim)}
 .rc .mname{flex:1;font-weight:600;font-size:1rem}
 .rc .mnum{font-weight:700;font-size:1.1rem;color:var(--accent);font-variant-numeric:tabular-nums}
 .rc .dst{font-size:.75rem;color:var(--dim);background:var(--surface);padding:3px 10px;border-radius:100px;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -53,161 +47,242 @@ sub{text-align:center;color:var(--dim);font-size:.9rem;display:block;margin-top:
 @keyframes si{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:500px){body{padding:16px 8px}.pg{grid-template-columns:1fr}.ct{flex-direction:column}.fd input,.fd select{width:100%}.br{flex-direction:column}.btn{width:100%}}
 </style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-<div class="c">
-  <header>
-    <h1>Team Cluster</h1>
-    <sub>Find your nearest neighbors in number space</sub>
-  </header>
-
-  <div class="g">
-    <h2>Pairs (<span id="pcnt">20</span>/20)</h2>
-    <div class="pg" id="pg"></div>
-    <div class="br">
-      <button class="btn" id="add" title="Add pair">+ Add Pair</button>
-      <button class="btn" id="shuffle" title="Randomize all numbers">🎲 Shuffle</button>
-      <button class="btn" id="reset" title="Reset to defaults">↺ Reset</button>
-    </div>
-  </div>
-
-  <div class="g">
-    <h2>Find Your Cluster</h2>
-    <div class="ct">
-      <div class="fd">
-        <label>Your Number (1–1000)</label>
-        <input type="number" id="mynum" min="1" max="1000" placeholder="e.g. 500">
-      </div>
-      <div class="fd">
-        <label>Top Matches</label>
-        <select id="topn">
-          <option value="1">Top 1</option>
-          <option value="2">Top 2</option>
-          <option value="3">Top 3</option>
-          <option value="4">Top 4</option>
-          <option value="5">Top 5</option>
-          <option value="6" selected>Top 6</option>
-          <option value="7">Top 7</option>
-          <option value="8">Top 8</option>
-          <option value="9">Top 9</option>
-          <option value="10">Top 10</option>
-          <option value="12">Top 12</option>
-          <option value="15">Top 15</option>
-          <option value="20">Top 20</option>
-        </select>
-      </div>
-      <button class="btn p" id="rankbtn">⚡ Rank</button>
-    </div>
-    <div id="results" style="margin-top:16px">
-      <div class="es">Add some pairs above, enter your number, and hit Rank</div>
-    </div>
-  </div>
-
-  <footer style="text-align:center;color:var(--dim);font-size:.7rem;opacity:.4">Team Cluster · numbers 1–1000</footer>
-</div>
-
+<div id="root"></div>
 <script>
-const DEFAULTS = [
-  ["Alice",420],["Bob",777],["Charlie",88],["Diana",512],["Eve",330],
-  ["Frank",999],["Grace",15],["Henry",650],["Iris",250],["Jack",800],
-  ["Kate",100],["Leo",555],["Maya",300],["Nick",950],["Olivia",45],
-  ["Paul",700],["Quinn",180],["Ruby",860],["Sam",620],["Tina",390]
+const { useState, useCallback, useMemo } = React;
+
+const SEED_PAIRS = [
+  { name: "joey", num: 40 },
+  { name: "paul", num: 400 },
+  { name: "david", num: 520 },
+  { name: "alan", num: 640 },
+  { name: "raul", num: 820 }
 ];
 
-function load(){try{const r=localStorage.getItem('tc-pairs');if(r)return JSON.parse(r)}catch(e){}return DEFAULTS.map(([n,num])=>({name:n,num}))}
-function save(p){localStorage.setItem('tc-pairs',JSON.stringify(p))}
+const MAX_PAIRS = 20;
 
-let pairs = load();
-let editing = false;
-
-function render(){
-  if(editing) return;
-  const pg = document.getElementById('pg');
-  const pcnt = document.getElementById('pcnt');
-  pg.innerHTML = '';
-  pairs.forEach((p,i) => {
-    const d = document.createElement('div'); d.className = 'pr';
-    const ni = document.createElement('input');
-    ni.type = 'number'; ni.className = 'ni';
-    ni.min = 1; ni.max = 1000;
-    ni.value = p.num || '';
-    ni.placeholder = '#';
-    ni.addEventListener('input', () => {
-      const v = parseInt(ni.value);
-      if (!isNaN(v) && v >= 1 && v <= 1000) { pairs[i].num = v; save(pairs); }
-      else if (ni.value === '') { pairs[i].num = null; save(pairs); }
-      editing = true;
-      // set it back after any other input
-    });
-    ni.addEventListener('change', () => { editing = false; render(); });
-    const nm = document.createElement('input');
-    nm.type = 'text'; nm.className = 'nm';
-    nm.value = p.name || '';
-    nm.placeholder = 'Name';
-    nm.addEventListener('input', () => { pairs[i].name = nm.value; save(pairs); });
-    nm.addEventListener('change', () => { editing = false; render(); });
-    const x = document.createElement('button');
-    x.className = 'btn s'; x.textContent = '×'; x.title = 'Remove';
-    x.addEventListener('click', () => {
-      pairs.splice(i,1);
-      if (!pairs.length) pairs = DEFAULTS.map(([n,num])=>({name:n,num}));
-      save(pairs); render(); doRank();
-    });
-    d.append(ni, nm, x);
-    pg.appendChild(d);
-  });
-  pcnt.textContent = pairs.length;
-  document.getElementById('add').disabled = pairs.length >= 20;
-}
-render();
-
-document.getElementById('add').addEventListener('click', () => {
-  if (pairs.length >= 20) return;
-  pairs.push({name:'',num:null});
-  save(pairs); render(); doRank();
-});
-
-document.getElementById('shuffle').addEventListener('click', () => {
-  pairs = pairs.map(p => ({name:p.name, num:Math.floor(Math.random()*1000)+1}));
-  save(pairs); render(); doRank();
-});
-
-document.getElementById('reset').addEventListener('click', () => {
-  pairs = DEFAULTS.map(([n,num])=>({name:n,num}));
-  save(pairs);
-  document.getElementById('mynum').value = '';
-  document.getElementById('topn').value = '6';
-  render();
-  document.getElementById('results').innerHTML = '<div class="es">Add some pairs above, enter your number, and hit Rank</div>';
-});
-
-function doRank(){
-  const mynum = parseInt(document.getElementById('mynum').value);
-  const topn = parseInt(document.getElementById('topn').value);
-  const res = document.getElementById('results');
-
-  if (isNaN(mynum) || mynum < 1 || mynum > 1000) { res.innerHTML = '<div class="es">Enter your number and hit Rank</div>'; return; }
-
-  const valid = pairs.filter(p => typeof p.num === 'number' && p.num >= 1 && p.num <= 1000);
-  if (!valid.length) { res.innerHTML = '<div class="er">No valid number/name pairs to rank against</div>'; return; }
-
-  const ranked = valid.map(p => ({...p, dist: Math.abs(p.num - mynum)}))
-    .sort((a,b) => a.dist - b.dist || a.num - b.num)
-    .slice(0, Math.min(topn, valid.length));
-
-  res.innerHTML = '';
-  ranked.forEach((r,i) => {
-    const rc = document.createElement('div'); rc.className = 'rc';
-    rc.style.animationDelay = (i*0.05)+'s';
-    rc.innerHTML = `<span class="rk">#${i+1}</span><span class="mname">${r.name||'(unnamed)'}</span><span class="mnum">${r.num}</span><span class="dst">Δ ${r.dist}</span>`;
-    res.appendChild(rc);
-  });
+function loadPairs() {
+  try {
+    const r = localStorage.getItem("tc-pairs-react");
+    if (r) return JSON.parse(r);
+  } catch (e) {}
+  return SEED_PAIRS.map(p => ({ ...p }));
 }
 
-document.getElementById('rankbtn').addEventListener('click', doRank);
-document.getElementById('mynum').addEventListener('keydown', e => { if (e.key === 'Enter') doRank(); });
-document.getElementById('mynum').addEventListener('input', doRank);
-document.getElementById('topn').addEventListener('change', doRank);
+function savePairs(pairs) {
+  localStorage.setItem("tc-pairs-react", JSON.stringify(pairs));
+}
+
+function PairRow({ pair, index, onUpdate, onRemove }) {
+  const handleNumChange = (e) => {
+    const v = e.target.value;
+    if (v === "") {
+      onUpdate(index, { ...pair, num: null });
+    } else {
+      const n = parseInt(v);
+      if (!isNaN(n) && n >= 1 && n <= 1000) onUpdate(index, { ...pair, num: n });
+    }
+  };
+  const handleNameChange = (e) => {
+    onUpdate(index, { ...pair, name: e.target.value });
+  };
+  return React.createElement("div", { className: "pr" },
+    React.createElement("input", {
+      type: "number", className: "ni", min: 1, max: 1000,
+      value: pair.num != null ? pair.num : "",
+      placeholder: "#", onChange: handleNumChange
+    }),
+    React.createElement("input", {
+      type: "text", className: "nm",
+      value: pair.name || "", placeholder: "Name", onChange: handleNameChange
+    }),
+    React.createElement("button", {
+      className: "btn s", title: "Remove", onClick: () => onRemove(index)
+    }, "\u00d7")
+  );
+}
+
+function ResultRow({ item }) {
+  const cls = item.rank <= 1 ? "r1" : item.rank <= 2 ? "r2" : item.rank <= 3 ? "r3" : "rn";
+  const delay = (item.rank - 1) * 0.05;
+  return React.createElement("div", {
+    className: "rc " + cls,
+    style: { animationDelay: delay + "s" }
+  },
+    React.createElement("span", { className: "rk" }, "#" + item.rank),
+    React.createElement("span", { className: "mname" }, item.name || "(unnamed)"),
+    React.createElement("span", { className: "mnum" }, item.num),
+    React.createElement("span", { className: "dst" }, "\u0394 " + item.dist)
+  );
+}
+
+function App() {
+  const [pairs, setPairs] = useState(loadPairs);
+  const [myNum, setMyNum] = useState("");
+  const [topN, setTopN] = useState(5);
+  const [results, setResults] = useState(null);
+
+  const updatePair = useCallback((index, updated) => {
+    setPairs(prev => {
+      const next = [...prev];
+      next[index] = updated;
+      savePairs(next);
+      return next;
+    });
+  }, []);
+
+  const removePair = useCallback((index) => {
+    setPairs(prev => {
+      let next = prev.filter((_, i) => i !== index);
+      if (!next.length) next = SEED_PAIRS.map(p => ({ ...p }));
+      savePairs(next);
+      return next;
+    });
+  }, []);
+
+  const addPair = useCallback(() => {
+    if (pairs.length >= MAX_PAIRS) return;
+    setPairs(prev => {
+      const next = [...prev, { name: "", num: null }];
+      savePairs(next);
+      return next;
+    });
+  }, [pairs.length]);
+
+  const shuffle = useCallback(() => {
+    setPairs(prev => {
+      const next = prev.map(p => ({ name: p.name, num: Math.floor(Math.random() * 1000) + 1 }));
+      savePairs(next);
+      return next;
+    });
+  }, []);
+
+  const reset = useCallback(() => {
+    const seed = SEED_PAIRS.map(p => ({ ...p }));
+    setPairs(seed);
+    savePairs(seed);
+    setMyNum("");
+    setTopN(5);
+    setResults(null);
+  }, []);
+
+  const doRank = useCallback(() => {
+    const n = parseInt(myNum);
+    if (isNaN(n) || n < 1 || n > 1000) {
+      setResults([]);
+      return;
+    }
+    const valid = pairs.filter(p => typeof p.num === "number" && p.num >= 1 && p.num <= 1000);
+    if (!valid.length) {
+      setResults(null);
+      return;
+    }
+    const ranked = valid
+      .map(p => ({ name: p.name, num: p.num, dist: Math.abs(p.num - n) }))
+      .sort((a, b) => a.dist - b.dist || a.num - b.num)
+      .slice(0, Math.min(topN, valid.length))
+      .map((r, i) => ({ ...r, rank: i + 1 }));
+    setResults(ranked);
+  }, [myNum, topN, pairs]);
+
+  const handleMyNumChange = useCallback((e) => {
+    setMyNum(e.target.value);
+  }, []);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === "Enter") doRank();
+  }, [doRank]);
+
+  const topOptions = [1,2,3,4,5,6,7,8,9,10,12,15,20];
+
+  let resultsEl;
+  if (results === null) {
+    resultsEl = React.createElement("div", { className: "es" },
+      "Enter your number and hit Rank"
+    );
+  } else if (results.length === 0 && (myNum === "" || isNaN(parseInt(myNum)))) {
+    resultsEl = React.createElement("div", { className: "es" },
+      "Enter your number and hit Rank"
+    );
+  } else if (results.length === 0) {
+    resultsEl = React.createElement("div", { className: "er" },
+      "No valid pairs to rank against"
+    );
+  } else {
+    resultsEl = results.map(r =>
+      React.createElement(ResultRow, { key: r.rank, item: r })
+    );
+  }
+
+  return React.createElement("div", { className: "c" },
+    // Header
+    React.createElement("header", null,
+      React.createElement("h1", null, "Team Cluster"),
+      React.createElement("span", { className: "sub" }, "Find your nearest neighbors in number space")
+    ),
+    // Pairs group
+    React.createElement("div", { className: "g" },
+      React.createElement("h2", null, "Pairs (" + pairs.length + "/" + MAX_PAIRS + ")"),
+      React.createElement("div", { className: "pg" },
+        pairs.map((p, i) =>
+          React.createElement(PairRow, {
+            key: i, pair: p, index: i, onUpdate: updatePair, onRemove: removePair
+          })
+        )
+      ),
+      React.createElement("div", { className: "br" },
+        React.createElement("button", {
+          className: "btn", onClick: addPair, disabled: pairs.length >= MAX_PAIRS,
+          title: "Add pair"
+        }, "+ Add Pair"),
+        React.createElement("button", {
+          className: "btn", onClick: shuffle, title: "Randomize all numbers"
+        }, "\ud83c\udfb2 Shuffle"),
+        React.createElement("button", {
+          className: "btn", onClick: reset, title: "Reset to defaults"
+        }, "\u21ba Reset")
+      )
+    ),
+    // Find Your Cluster group
+    React.createElement("div", { className: "g" },
+      React.createElement("h2", null, "Find Your Cluster"),
+      React.createElement("div", { className: "ct" },
+        React.createElement("div", { className: "fd" },
+          React.createElement("label", null, "Your Number (1\u20131000)"),
+          React.createElement("input", {
+            type: "number", min: 1, max: 1000, value: myNum,
+            placeholder: "e.g. 500",
+            onChange: handleMyNumChange,
+            onKeyDown: handleKeyDown
+          })
+        ),
+        React.createElement("div", { className: "fd" },
+          React.createElement("label", null, "Top Matches"),
+          React.createElement("select", {
+            value: topN,
+            onChange: (e) => setTopN(parseInt(e.target.value))
+          },
+            topOptions.map(n =>
+              React.createElement("option", { key: n, value: n }, "Top " + n)
+            )
+          )
+        ),
+        React.createElement("button", { className: "btn p", onClick: doRank }, "\u26a1 Rank")
+      ),
+      React.createElement("div", { style: { marginTop: 16 } }, resultsEl)
+    ),
+    // Footer
+    React.createElement("footer", {
+      style: { textAlign: "center", color: "var(--dim)", fontSize: ".7rem", opacity: .4 }
+    }, "Team Cluster \u00b7 numbers 1\u20131000")
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
 </script>
 </body>
 </html>
