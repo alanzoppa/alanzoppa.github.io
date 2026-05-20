@@ -5,522 +5,209 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Team Cluster — Number Proximity Ranker</title>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131f;
-    --surface-2: #1a1a2e;
-    --border: #2a2a45;
-    --text: #e0e0f0;
-    --text-dim: #8888aa;
-    --accent: #7c5cfc;
-    --accent-glow: #7c5cfc44;
-    --gold: #f0c060;
-    --silver: #c0c0d0;
-    --bronze: #d4a070;
-    --danger: #ff5e7a;
-    --success: #4ade80;
-    --radius: 16px;
-    --radius-sm: 10px;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    background-image:
-      radial-gradient(ellipse at 50% 0%, #2e1a5c22 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 100%, #1a2e5c22 0%, transparent 60%);
-  }
-
-  .container {
-    width: 100%;
-    max-width: 720px;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-  }
-
-  header {
-    text-align: center;
-    position: relative;
-  }
-
-  header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, var(--accent), #a78bfa, #60a5fa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  header p {
-    color: var(--text-dim);
-    font-size: 0.9rem;
-    margin-top: 6px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    backdrop-filter: blur(12px);
-    transition: border-color 0.3s;
-  }
-  .card:hover { border-color: #3a3a60; }
-
-  .card h2 {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-  }
-
-  .pairs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  .pair-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surface-2);
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    padding: 8px 12px;
-    transition: all 0.25s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .pair-row:hover {
-    border-color: var(--border);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px #0003;
-  }
-  .pair-row.selected {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 1px var(--accent), 0 4px 20px var(--accent-glow);
-  }
-  .pair-row .num {
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--accent);
-    min-width: 42px;
-    text-align: center;
-  }
-  .pair-row input.name-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-size: 0.9rem;
-    outline: none;
-    min-width: 0;
-  }
-  .pair-row input.name-input::placeholder { color: #555; }
-  .pair-row input.num-input {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-size: 0.9rem;
-    width: 58px;
-    padding: 4px 6px;
-    text-align: center;
-    outline: none;
-    font-variant-numeric: tabular-nums;
-  }
-  .pair-row input.num-input:focus {
-    border-color: var(--accent);
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    padding: 10px 20px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--text);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-  }
-  .btn:hover {
-    border-color: #555;
-    background: #1f1f3a;
-  }
-  .btn.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-    box-shadow: 0 4px 20px var(--accent-glow);
-  }
-  .btn.primary:hover {
-    background: #8b6cf8;
-    box-shadow: 0 6px 28px #7c5cfc55;
-    transform: translateY(-1px);
-  }
-  .btn.small {
-    padding: 6px 12px;
-    font-size: 0.78rem;
-  }
-
-  .controls {
-    display: flex;
-    gap: 16px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .field label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-dim);
-  }
-  .field input, .field select {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    padding: 10px 14px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 140px;
-    font-variant-numeric: tabular-nums;
-  }
-  .field input:focus, .field select:focus {
-    border-color: var(--accent);
-  }
-  .field select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 32px;
-  }
-
-  .results { margin-top: 8px; }
-
-  .result-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 16px 20px;
-    margin-bottom: 10px;
-    animation: slideIn 0.4s ease both;
-    position: relative;
-    overflow: hidden;
-  }
-  .result-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-  }
-  .result-card:nth-child(1)::before { background: var(--gold); }
-  .result-card:nth-child(2)::before { background: var(--silver); }
-  .result-card:nth-child(3)::before { background: var(--bronze); }
-  .result-card:nth-child(n+4)::before { background: var(--border); }
-
-  .result-card .rank {
-    font-size: 1.3rem;
-    font-weight: 800;
-    min-width: 36px;
-    text-align: center;
-  }
-  .result-card:nth-child(1) .rank { color: var(--gold); }
-  .result-card:nth-child(2) .rank { color: var(--silver); }
-  .result-card:nth-child(3) .rank { color: var(--bronze); }
-  .result-card:nth-child(n+4) .rank { color: var(--text-dim); }
-
-  .result-card .match-name {
-    flex: 1;
-    font-weight: 600;
-    font-size: 1.05rem;
-    letter-spacing: -0.01em;
-  }
-  .result-card .match-num {
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-  }
-  .result-card .dist {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    background: var(--surface);
-    padding: 4px 10px;
-    border-radius: 100px;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-dim);
-    font-style: italic;
-  }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  footer {
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 0.75rem;
-    opacity: 0.5;
-  }
-
-  @media (max-width: 500px) {
-    body { padding: 20px 12px; }
-    .pairs-grid { grid-template-columns: 1fr; }
-    .controls { flex-direction: column; }
-    .field input, .field select { width: 100%; }
-    .btn-row { flex-direction: column; }
-    .btn { width: 100%; }
-    .result-card { flex-wrap: wrap; gap: 8px; }
-  }
+:root{--bg:#0a0a0f;--surface:#13131f;--s2:#1a1a2e;--border:#2a2a45;--text:#e0e0f0;--dim:#8888aa;--accent:#7c5cfc;--aglow:#7c5cfc44;--gold:#f0c060;--silver:#c0c0d0;--bronze:#d4a070;--r:16px;--rsm:10px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background-image:radial-gradient(ellipse at 50% 0%,#2e1a5c22 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,#1a2e5c22 0%,transparent 60%)}
+.c{width:100%;max-width:720px;display:flex;flex-direction:column;gap:28px}
+h1{font-size:2rem;font-weight:700;text-align:center;background:linear-gradient(135deg,var(--accent),#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+sub{text-align:center;color:var(--dim);font-size:.9rem;display:block;margin-top:4px}
+.g{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px}
+.g h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:14px}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:14px}
+.pr{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid transparent;border-radius:var(--rsm);padding:6px 10px;transition:all .2s}
+.pr:hover{border-color:var(--border);box-shadow:0 2px 10px #0003}
+.pr .ni{background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.85rem;width:52px;padding:4px 2px;text-align:center;outline:none;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.pr .ni:focus{border-color:var(--accent)}
+.pr .ni::-webkit-inner-spin-button{display:none}
+.pr .nm{flex:1;background:transparent;border:none;color:var(--text);font-size:.85rem;outline:none;min-width:0}
+.pr .nm::placeholder{color:#555}
+.br{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 16px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:.8rem;cursor:pointer;transition:all .2s;font-weight:600}
+.btn:hover{border-color:#555;background:#1f1f3a}
+.btn.p{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 20px var(--aglow)}
+.btn.p:hover{background:#8b6cf8;box-shadow:0 6px 28px #7c5cfc55}
+.btn.s{padding:4px 10px;font-size:.72rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.ct{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+.fd{display:flex;flex-direction:column;gap:4px}
+.fd label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+.fd input,.fd select{background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.95rem;outline:none;width:130px;font-variant-numeric:tabular-nums}
+.fd input:focus,.fd select:focus{border-color:var(--accent)}
+.fd select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+.rc{display:flex;align-items:center;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:14px 18px;margin-bottom:8px;animation:si .35s ease both;position:relative;overflow:hidden}
+.rc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.rc:nth-child(1)::before{background:var(--gold)}
+.rc:nth-child(2)::before{background:var(--silver)}
+.rc:nth-child(3)::before{background:var(--bronze)}
+.rc:nth-child(n+4)::before{background:var(--border)}
+.rc .rk{font-size:1.2rem;font-weight:800;min-width:32px;text-align:center}
+.rc:nth-child(1) .rk{color:var(--gold)}
+.rc:nth-child(2) .rk{color:var(--silver)}
+.rc:nth-child(3) .rk{color:var(--bronze)}
+.rc:nth-child(n+4) .rk{color:var(--dim)}
+.rc .mname{flex:1;font-weight:600;font-size:1rem}
+.rc .mnum{font-weight:700;font-size:1.1rem;color:var(--accent);font-variant-numeric:tabular-nums}
+.rc .dst{font-size:.75rem;color:var(--dim);background:var(--surface);padding:3px 10px;border-radius:100px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.es{text-align:center;padding:30px;color:var(--dim);font-style:italic}
+.er{text-align:center;padding:30px;color:#ff5e7a}
+@keyframes si{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:500px){body{padding:16px 8px}.pg{grid-template-columns:1fr}.ct{flex-direction:column}.fd input,.fd select{width:100%}.br{flex-direction:column}.btn{width:100%}}
 </style>
 </head>
 <body>
-<div class="container" id="app"></div>
+<div class="c">
+  <header>
+    <h1>Team Cluster</h1>
+    <sub>Find your nearest neighbors in number space</sub>
+  </header>
+
+  <div class="g">
+    <h2>Pairs (<span id="pcnt">20</span>/20)</h2>
+    <div class="pg" id="pg"></div>
+    <div class="br">
+      <button class="btn" id="add" title="Add pair">+ Add Pair</button>
+      <button class="btn" id="shuffle" title="Randomize all numbers">🎲 Shuffle</button>
+      <button class="btn" id="reset" title="Reset to defaults">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="g">
+    <h2>Find Your Cluster</h2>
+    <div class="ct">
+      <div class="fd">
+        <label>Your Number (1–1000)</label>
+        <input type="number" id="mynum" min="1" max="1000" placeholder="e.g. 500">
+      </div>
+      <div class="fd">
+        <label>Top Matches</label>
+        <select id="topn">
+          <option value="1">Top 1</option>
+          <option value="2">Top 2</option>
+          <option value="3">Top 3</option>
+          <option value="4">Top 4</option>
+          <option value="5">Top 5</option>
+          <option value="6" selected>Top 6</option>
+          <option value="7">Top 7</option>
+          <option value="8">Top 8</option>
+          <option value="9">Top 9</option>
+          <option value="10">Top 10</option>
+          <option value="12">Top 12</option>
+          <option value="15">Top 15</option>
+          <option value="20">Top 20</option>
+        </select>
+      </div>
+      <button class="btn p" id="rankbtn">⚡ Rank</button>
+    </div>
+    <div id="results" style="margin-top:16px">
+      <div class="es">Add some pairs above, enter your number, and hit Rank</div>
+    </div>
+  </div>
+
+  <footer style="text-align:center;color:var(--dim);font-size:.7rem;opacity:.4">Team Cluster · numbers 1–1000</footer>
+</div>
 
 <script>
-const DEFAULT_PAIRS = [
-  {name:"Alice", num:420},
-  {name:"Bob", num:777},
-  {name:"Charlie", num:88},
-  {name:"Diana", num:512},
-  {name:"Eve", num:330},
-  {name:"Frank", num:999},
-  {name:"Grace", num:15},
-  {name:"Henry", num:650},
-  {name:"Iris", num:250},
-  {name:"Jack", num:800},
-  {name:"Kate", num:100},
-  {name:"Leo", num:555},
-  {name:"Maya", num:300},
-  {name:"Nick", num:950},
-  {name:"Olivia", num:45},
-  {name:"Paul", num:700},
-  {name:"Quinn", num:180},
-  {name:"Ruby", num:860},
-  {name:"Sam", num:620},
-  {name:"Tina", num:390},
+const DEFAULTS = [
+  ["Alice",420],["Bob",777],["Charlie",88],["Diana",512],["Eve",330],
+  ["Frank",999],["Grace",15],["Henry",650],["Iris",250],["Jack",800],
+  ["Kate",100],["Leo",555],["Maya",300],["Nick",950],["Olivia",45],
+  ["Paul",700],["Quinn",180],["Ruby",860],["Sam",620],["Tina",390]
 ];
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem('team-cluster-pairs');
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return DEFAULT_PAIRS;
+function load(){try{const r=localStorage.getItem('tc-pairs');if(r)return JSON.parse(r)}catch(e){}return DEFAULTS.map(([n,num])=>({name:n,num}))}
+function save(p){localStorage.setItem('tc-pairs',JSON.stringify(p))}
+
+let pairs = load();
+let editing = false;
+
+function render(){
+  if(editing) return;
+  const pg = document.getElementById('pg');
+  const pcnt = document.getElementById('pcnt');
+  pg.innerHTML = '';
+  pairs.forEach((p,i) => {
+    const d = document.createElement('div'); d.className = 'pr';
+    const ni = document.createElement('input');
+    ni.type = 'number'; ni.className = 'ni';
+    ni.min = 1; ni.max = 1000;
+    ni.value = p.num || '';
+    ni.placeholder = '#';
+    ni.addEventListener('input', () => {
+      const v = parseInt(ni.value);
+      if (!isNaN(v) && v >= 1 && v <= 1000) { pairs[i].num = v; save(pairs); }
+      else if (ni.value === '') { pairs[i].num = null; save(pairs); }
+      editing = true;
+      // set it back after any other input
+    });
+    ni.addEventListener('change', () => { editing = false; render(); });
+    const nm = document.createElement('input');
+    nm.type = 'text'; nm.className = 'nm';
+    nm.value = p.name || '';
+    nm.placeholder = 'Name';
+    nm.addEventListener('input', () => { pairs[i].name = nm.value; save(pairs); });
+    nm.addEventListener('change', () => { editing = false; render(); });
+    const x = document.createElement('button');
+    x.className = 'btn s'; x.textContent = '×'; x.title = 'Remove';
+    x.addEventListener('click', () => {
+      pairs.splice(i,1);
+      if (!pairs.length) pairs = DEFAULTS.map(([n,num])=>({name:n,num}));
+      save(pairs); render(); doRank();
+    });
+    d.append(ni, nm, x);
+    pg.appendChild(d);
+  });
+  pcnt.textContent = pairs.length;
+  document.getElementById('add').disabled = pairs.length >= 20;
+}
+render();
+
+document.getElementById('add').addEventListener('click', () => {
+  if (pairs.length >= 20) return;
+  pairs.push({name:'',num:null});
+  save(pairs); render(); doRank();
+});
+
+document.getElementById('shuffle').addEventListener('click', () => {
+  pairs = pairs.map(p => ({name:p.name, num:Math.floor(Math.random()*1000)+1}));
+  save(pairs); render(); doRank();
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+  pairs = DEFAULTS.map(([n,num])=>({name:n,num}));
+  save(pairs);
+  document.getElementById('mynum').value = '';
+  document.getElementById('topn').value = '6';
+  render();
+  document.getElementById('results').innerHTML = '<div class="es">Add some pairs above, enter your number, and hit Rank</div>';
+});
+
+function doRank(){
+  const mynum = parseInt(document.getElementById('mynum').value);
+  const topn = parseInt(document.getElementById('topn').value);
+  const res = document.getElementById('results');
+
+  if (isNaN(mynum) || mynum < 1 || mynum > 1000) { res.innerHTML = '<div class="es">Enter your number and hit Rank</div>'; return; }
+
+  const valid = pairs.filter(p => typeof p.num === 'number' && p.num >= 1 && p.num <= 1000);
+  if (!valid.length) { res.innerHTML = '<div class="er">No valid number/name pairs to rank against</div>'; return; }
+
+  const ranked = valid.map(p => ({...p, dist: Math.abs(p.num - mynum)}))
+    .sort((a,b) => a.dist - b.dist || a.num - b.num)
+    .slice(0, Math.min(topn, valid.length));
+
+  res.innerHTML = '';
+  ranked.forEach((r,i) => {
+    const rc = document.createElement('div'); rc.className = 'rc';
+    rc.style.animationDelay = (i*0.05)+'s';
+    rc.innerHTML = `<span class="rk">#${i+1}</span><span class="mname">${r.name||'(unnamed)'}</span><span class="mnum">${r.num}</span><span class="dst">Δ ${r.dist}</span>`;
+    res.appendChild(rc);
+  });
 }
 
-function saveState(pairs) {
-  localStorage.setItem('team-cluster-pairs', JSON.stringify(pairs));
-}
-
-function App() {
-  const [pairs, setPairs] = React.useState(loadState);
-  const [myNum, setMyNum] = React.useState('');
-  const [matchCount, setMatchCount] = React.useState(6);
-  const [results, setResults] = React.useState([]);
-
-  React.useEffect(() => { saveState(pairs); }, [pairs]);
-
-  const updatePair = (idx, field, value) => {
-    const next = [...pairs];
-    if (field === 'num') {
-      const v = parseInt(value, 10);
-      if (!isNaN(v) && v >= 1 && v <= 1000) next[idx] = {...next[idx], num: v};
-      else if (value === '') next[idx] = {...next[idx], num: ''};
-    } else {
-      next[idx] = {...next[idx], name: value};
-    }
-    setPairs(next);
-    setResults([]);
-  };
-
-  const addPair = () => {
-    if (pairs.length >= 20) return;
-    setPairs([...pairs, {name: '', num: ''}]);
-    setResults([]);
-  };
-
-  const removePair = (idx) => {
-    const next = pairs.filter((_, i) => i !== idx);
-    setPairs(next.length ? next : DEFAULT_PAIRS.slice(0,1));
-    setResults([]);
-  };
-
-  const shuffle = () => {
-    const shuffled = pairs.map(p => ({
-      ...p,
-      num: Math.floor(Math.random() * 1000) + 1,
-      name: p.name || ''
-    }));
-    setPairs(shuffled);
-    setResults([]);
-  };
-
-  const compute = () => {
-    const num = parseInt(myNum, 10);
-    if (isNaN(num) || num < 1 || num > 1000) return;
-    const valid = pairs.filter(p => typeof p.num === 'number' && p.num >= 1 && p.num <= 1000);
-    if (!valid.length) return;
-    const ranked = valid
-      .map(p => ({...p, dist: Math.abs(p.num - num)}))
-      .sort((a,b) => a.dist - b.dist || a.num - b.num)
-      .slice(0, matchCount);
-    setResults(ranked);
-  };
-
-  // React.createElement manually (no Babel, no JSX)
-  return React.createElement('div', null,
-    React.createElement('header', null,
-      React.createElement('h1', null, 'Team Cluster'),
-      React.createElement('p', null, 'Find your nearest neighbors in number space')
-    ),
-
-    // Pairs card
-    React.createElement('div', {className:'card'},
-      React.createElement('h2', null, `Pairs (${pairs.length}/20)`),
-      React.createElement('div', {className:'pairs-grid'},
-        pairs.map((p, i) =>
-          React.createElement('div', {className:'pair-row', key:i},
-            React.createElement('input', {
-              className:'num-input',
-              type:'number', min:1, max:1000,
-              value: p.num !== '' ? p.num : '',
-              placeholder: '#',
-              onChange: (e) => updatePair(i, 'num', e.target.value)
-            }),
-            React.createElement('input', {
-              className:'name-input',
-              type:'text',
-              value: p.name,
-              placeholder: 'Name',
-              onChange: (e) => updatePair(i, 'name', e.target.value)
-            }),
-            React.createElement('button', {
-              className:'btn small',
-              onClick: () => removePair(i),
-              title:'Remove'
-            }, '×')
-          )
-        )
-      ),
-      React.createElement('div', {className:'btn-row'},
-        React.createElement('button', {
-          className:'btn',
-          onClick: addPair,
-          disabled: pairs.length >= 20
-        }, '+ Add Pair'),
-        React.createElement('button', {className:'btn', onClick: shuffle}, '🎲 Shuffle Numbers'),
-        React.createElement('button', {
-          className:'btn',
-          onClick: () => {
-            setPairs(DEFAULT_PAIRS);
-            setMyNum('');
-            setMatchCount(6);
-            setResults([]);
-          }
-        }, '↺ Reset')
-      )
-    ),
-
-    // Controls card
-    React.createElement('div', {className:'card'},
-      React.createElement('h2', null, 'Find Your Cluster'),
-      React.createElement('div', {className:'controls'},
-        React.createElement('div', {className:'field'},
-          React.createElement('label', null, 'Your Number (1–1000)'),
-          React.createElement('input', {
-            type:'number', min:1, max:1000,
-            value: myNum,
-            placeholder: 'e.g. 500',
-            onChange: (e) => { setMyNum(e.target.value); setResults([]); },
-            onKeyDown: (e) => { if (e.key === 'Enter') compute(); }
-          })
-        ),
-        React.createElement('div', {className:'field'},
-          React.createElement('label', null, 'Top Matches'),
-          React.createElement('select', {
-            value: matchCount,
-            onChange: (e) => { setMatchCount(parseInt(e.target.value)); setResults([]); }
-          },
-            ...[1,2,3,4,5,6,7,8,9,10,12,15,20].map(n =>
-              React.createElement('option', {key:n, value:n}, `Top ${n}`)
-            )
-          )
-        ),
-        React.createElement('button', {className:'btn primary', onClick: compute}, '⚡ Rank')
-      ),
-
-      results.length > 0 && React.createElement('div', {className:'results'},
-        results.map((r, i) =>
-          React.createElement('div', {className:'result-card', key:i, style:{animationDelay: `${i*0.06}s`}},
-            React.createElement('span', {className:'rank'}, `#${i+1}`),
-            React.createElement('span', {className:'match-name'}, r.name || '(unnamed)'),
-            React.createElement('span', {className:'match-num'}, r.num),
-            React.createElement('span', {className:'dist'}, `Δ ${r.dist}`)
-          )
-        )
-      ),
-
-      results.length === 0 && React.createElement('div', {className:'empty-state'},
-        pairs.some(p => p.num) && myNum
-          ? 'Enter a number and hit Rank →'
-          : 'Add some number/name pairs above, then enter your number and hit Rank'
-      )
-    ),
-
-    React.createElement('footer', null, 'Team Cluster · numbers 1–1000')
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('app')).render(React.createElement(App));
+document.getElementById('rankbtn').addEventListener('click', doRank);
+document.getElementById('mynum').addEventListener('keydown', e => { if (e.key === 'Enter') doRank(); });
+document.getElementById('mynum').addEventListener('input', doRank);
+document.getElementById('topn').addEventListener('change', doRank);
 </script>
-
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 </body>
 </html>
