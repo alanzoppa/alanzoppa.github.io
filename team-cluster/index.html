@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Cluster</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0a0f;--surface:#12121a;--card:#1a1a26;--border:#2a2a3a;
+    --accent:#6c5ce7;--accent-glow:rgba(108,92,231,.25);
+    --text:#e8e8f0;--dim:#8888a0;--green:#00e676;--red:#ff5252;
+    --radius:14px;--shadow:0 4px 24px rgba(0,0,0,.4);
+  }
+  html{font-size:16px}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg);color:var(--text);min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:2rem 1rem 4rem;
+    background-image:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(108,92,231,.08),transparent);
+  }
+
+  /* ── Header ── */
+  .header{text-align:center;margin-bottom:2.5rem;animation:fadeDown .6s ease-out}
+  .header h1{
+    font-size:2.6rem;font-weight:800;letter-spacing:-.03em;
+    background:linear-gradient(135deg,#6c5ce7,#a29bfe,#74b9ff);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .header p{color:var(--dim);margin-top:.4rem;font-size:1.05rem;font-weight:400}
+
+  /* ── App Shell ── */
+  .app{width:100%;max-width:720px;animation:fadeUp .5s ease-out}
+
+  /* ── Input Section ── */
+  .input-section{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:1.8rem;
+    margin-bottom:1.5rem;box-shadow:var(--shadow);
+  }
+  .input-section label{display:block;font-weight:600;margin-bottom:.45rem;font-size:.9rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+  .input-row{display:flex;gap:1rem;align-items:end;flex-wrap:wrap}
+  .field{flex:1;min-width:140px}
+  .field input,.field select{
+    width:100%;padding:.75rem 1rem;font-size:1rem;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;color:var(--text);outline:none;
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+  .field input::placeholder{color:var(--dim)}
+
+  .btn{
+    padding:.75rem 2rem;font-size:1rem;font-weight:700;
+    background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+    color:#fff;border:none;border-radius:10px;cursor:pointer;
+    transition:transform .15s,box-shadow .2s;white-space:nowrap;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow)}
+  .btn:active{transform:translateY(0)}
+
+  /* ── Pair Editor ── */
+  .pair-section{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:1.8rem;
+    margin-bottom:1.5rem;box-shadow:var(--shadow);
+  }
+  .pair-section h2{font-size:1.15rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+  .pair-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem}
+  .pair-entry{
+    display:flex;gap:.4rem;align-items:center;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:.35rem .5rem;
+    transition:border-color .2s;
+  }
+  .pair-entry:focus-within{border-color:var(--accent)}
+  .pair-entry .num{width:60px;text-align:center}
+  .pair-entry .name{flex:1;min-width:0}
+  .pair-entry input{
+    width:100%;padding:.35rem .5rem;font-size:.88rem;
+    background:transparent;border:none;color:var(--text);outline:none;
+  }
+  .pair-entry input::placeholder{color:var(--dim)}
+  .pair-entry .idx{
+    font-size:.7rem;color:var(--dim);min-width:18px;text-align:center;font-weight:600;
+  }
+  .pair-actions{display:flex;gap:.5rem;margin-top:.8rem}
+  .btn-sm{
+    padding:.4rem 1rem;font-size:.8rem;font-weight:600;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;color:var(--text);cursor:pointer;
+    transition:background .15s,border-color .15s;
+  }
+  .btn-sm:hover{background:var(--border);border-color:var(--accent)}
+
+  /* ── Results ── */
+  .results{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:1.8rem;
+    box-shadow:var(--shadow);min-height:80px;
+  }
+  .results h2{font-size:1.15rem;font-weight:700;margin-bottom:1rem}
+  .results-empty{color:var(--dim);text-align:center;padding:2rem 0;font-style:italic}
+
+  .rank-list{display:flex;flex-direction:column;gap:.6rem}
+  .rank-item{
+    display:flex;align-items:center;gap:1rem;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:.85rem 1.2rem;
+    animation:slideIn .35s ease-out both;
+    transition:border-color .2s,transform .15s;
+  }
+  .rank-item:hover{border-color:var(--accent);transform:translateX(3px)}
+  .rank-pos{
+    font-size:1.4rem;font-weight:800;min-width:2rem;text-align:center;
+    background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .rank-pos.gold{
+    background:linear-gradient(135deg,#ffd700,#ffaa00);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .rank-info{flex:1;min-width:0}
+  .rank-name{font-weight:700;font-size:1.05rem}
+  .rank-num{color:var(--dim);font-size:.88rem;margin-top:.1rem}
+  .rank-dist{
+    font-size:.9rem;font-weight:700;padding:.3rem .7rem;
+    border-radius:6px;white-space:nowrap;
+  }
+  .dist-close{background:rgba(0,230,118,.12);color:#00e676}
+  .dist-mid{background:rgba(255,215,0,.1);color:#ffd700}
+  .dist-far{background:rgba(255,82,82,.1);color:#ff5252}
+
+  /* ── Animations ── */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+  @media(max-width:500px){
+    .header h1{font-size:1.8rem}
+    .input-row{flex-direction:column}
+    .pair-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Team Cluster</h1>
+  <p>Find your closest number neighbors</p>
+</div>
+
+<div class="app">
+  <!-- Pair Editor -->
+  <div class="pair-section">
+    <h2>&#x1F465; Number / Name Pairs</h2>
+    <div class="pair-grid" id="pairGrid"></div>
+    <div class="pair-actions">
+      <button class="btn-sm" onclick="addPair()">&#x2795; Add Pair</button>
+      <button class="btn-sm" onclick="clearPairs()">&#x1F5D1; Clear All</button>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-section">
+    <div class="input-row">
+      <div class="field">
+        <label>Your Number</label>
+        <input type="number" id="myNum" min="1" max="1000" placeholder="1 &#x2013; 1000">
+      </div>
+      <div class="field">
+        <label>Top Matches</label>
+        <select id="topN">
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+      <button class="btn" onclick="compute()">&#x26A1; Rank</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+    <h2>&#x1F3C6; Rankings</h2>
+    <div class="results-empty">Enter your number and hit Rank</div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'teamClusterPairs';
+const DEFAULT_PAIRS = [
+  {n:7,name:'Alice'},{n:42,name:'Bob'},{n:137,name:'Carol'},{n:256,name:'Dave'},
+  {n:314,name:'Eve'},{n:404,name:'Frank'},{n:500,name:'Grace'},{n:618,name:'Heidi'},
+  {n:777,name:'Ivan'},{n:808,name:'Judy'}
+];
+
+let pairs = [];
+
+function loadPairs(){
+  try{const s=localStorage.getItem(STORAGE_KEY);if(s){pairs=JSON.parse(s);return}}catch(e){}
+  pairs=DEFAULT_PAIRS.map(p=>({...p}));
+}
+function savePairs(){localStorage.setItem(STORAGE_KEY,JSON.stringify(pairs))}
+
+function renderPairs(){
+  const g=document.getElementById('pairGrid');
+  g.innerHTML='';
+  pairs.forEach((p,i)=>{
+    const d=document.createElement('div');d.className='pair-entry';
+    d.innerHTML=`<span class="idx">${i+1}</span>`
+      +`<div class="name"><input type="text" value="${esc(p.name)}" placeholder="Name" data-i="${i}" data-f="name"></div>`
+      +`<div class="num"><input type="number" value="${p.n}" min="1" max="1000" placeholder="#" data-i="${i}" data-f="n"></div>`;
+    g.appendChild(d);
+  });
+  g.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input',e=>{
+      const idx=+e.target.dataset.i, f=e.target.dataset.f;
+      if(f==='name') pairs[idx].name=e.target.value;
+      else{let v=parseInt(e.target.value);if(isNaN(v))v=1;if(v<1)v=1;if(v>1000)v=1000;pairs[idx].n=v;}
+      savePairs();
+    });
+  });
+}
+
+function addPair(){
+  if(pairs.length>=20)return;
+  const n=Math.floor(Math.random()*1000)+1;
+  pairs.push({n,name:''});
+  savePairs();renderPairs();
+  const all=document.querySelectorAll('.pair-entry input');
+  if(all.length)all[all.length-1].focus();
+}
+function clearPairs(){pairs=[];savePairs();renderPairs()}
+
+function compute(){
+  const raw=parseInt(document.getElementById('myNum').value);
+  if(isNaN(raw)||raw<1||raw>1000){showError('Enter a valid number (1&#x2013;1000)');return}
+  const topN=parseInt(document.getElementById('topN').value);
+  const valid=pairs.filter(p=>p.name.trim()&&p.n>=1&&p.n<=1000);
+  if(!valid.length){showError('Add at least one named pair with a number');return}
+
+  const ranked=valid.map(p=>({name:p.name.trim(),num:p.n,dist:Math.abs(raw-p.n)}))
+    .sort((a,b)=>a.dist-b.dist||a.num-b.num)
+    .slice(0,topN);
+
+  const el=document.getElementById('results');
+  let html='<h2>&#x1F3C6; Rankings</h2><div class="rank-list">';
+  ranked.forEach((r,i)=>{
+    const cls=i===0?'gold':'';
+    const distCls=r.dist<=50?'dist-close':r.dist<=200?'dist-mid':'dist-far';
+    const delay=i*60;
+    html+=`<div class="rank-item" style="animation-delay:${delay}ms">`
+      +`<span class="rank-pos ${cls}">${i+1}</span>`
+      +`<div class="rank-info"><div class="rank-name">${esc(r.name)}</div><div class="rank-num">Number: ${r.n}</div></div>`
+      +`<span class="rank-dist ${distCls}">&#x00B1;${r.dist}</span>`
+      +`</div>`;
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function showError(msg){
+  const el=document.getElementById('results');
+  el.innerHTML=`<h2>&#x1F3C6; Rankings</h2><div class="results-empty" style="color:var(--red)">${msg}</div>`;
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+loadPairs();renderPairs();
+
+document.getElementById('myNum').addEventListener('keydown',e=>{if(e.key==='Enter')compute()});
+</script>
+</body>
+</html>
