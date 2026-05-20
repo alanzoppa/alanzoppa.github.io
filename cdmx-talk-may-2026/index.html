@@ -375,6 +375,36 @@
     opacity: 0.5;
   }
 
+  /* LLM thinking trace — quieter cousin of .prompt */
+  .thinking {
+    margin: 0.7rem 0 0;
+    padding: 0.55rem 0.8rem;
+    background: rgba(26, 15, 51, 0.6);
+    border-left: 2px solid var(--line-2);
+    border-radius: 4px;
+    font-family: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .thinking::before {
+    content: '<thinking> ';
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent);
+    opacity: 0.7;
+    margin-right: 0.15rem;
+  }
+  .thinking::after {
+    content: ' </thinking>';
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent);
+    opacity: 0.7;
+    margin-left: 0.15rem;
+  }
+
   /* Callout */
   .callout {
     margin-top: 1.6rem;
@@ -423,14 +453,10 @@
   }
   @media (max-width: 900px) { .checklist { grid-template-columns: 1fr; } }
   .checklist li {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.95rem;
     padding: 0.95rem 1.1rem;
     background: linear-gradient(180deg, var(--panel) 0%, var(--bg-2) 100%);
     border: 1px solid var(--line);
     border-radius: 12px;
-    align-items: flex-start;
     position: relative;
   }
   .checklist .tick {
@@ -806,7 +832,7 @@
 </head>
 <body>
   <div class="progress" id="progress"></div>
-  <div class="corner-mark"><span class="glyph"></span><span>Vibe Coding · 2026</span></div>
+  <div class="corner-mark"><span class="glyph"></span><span>Architect Vibes · 2026</span></div>
   <div class="brand">CDMX · May 28</div>
   <div class="counter"><b id="cur">1</b><span class="divider">/</span><span id="total">10</span></div>
 
@@ -826,7 +852,7 @@
         </div>
         <div style="width:clamp(256px,28.8vw,416px); flex-shrink:0;">
           <img src="headshot-8bit.png" alt="Alan Zoppa" style="width:100%; border-radius:12px; border:1px solid var(--line); display:block; box-shadow: 0 0 16px rgba(185,103,255,0.45), 0 0 32px rgba(185,103,255,0.18);">
-          <div class="meta" style="margin-top:0.75em;">Alan Zoppa <span style="color:var(--line-2)">·</span> Chicago <span style="color:var(--line-2)">·</span> May 28, 2026</div>
+          <div class="meta" style="margin-top:0.75em;"><a href="https://github.com/alanzoppa" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">Alan Zoppa</a> <span style="color:var(--line-2)">·</span> Chicago <span style="color:var(--line-2)">·</span> May 28, 2026</div>
         </div>
       </div>
     </section>
@@ -834,25 +860,25 @@
     <!-- 2: Three Questions -->
     <section class="slide" data-title="Three Questions">
       <div class="kicker"><span class="num">01</span><span class="rule"></span><span>The Premise</span></div>
-      <h2>I had my reasons.</h2>
-      <p class="subtitle">The open-weights ecosystem is vibrant and competitive, and it's exciting to play with the latest model as it's crossing the moat.</p>
+      <h2>Open-weights models are exciting and competitive.</h2>
+      <p class="subtitle">It's fun to play with the latest model as it's crossing the moat.</p>
       <ol class="qlist">
         <li>
           <div>
             <span class="q-title">Open-weights models</span>
-            <span class="q-desc">No more than 6 months behind the state-of-the art, low low prices.</span>
+            <span class="q-desc">No more than 6 months behind the state-of-the art, low prices. Constantly distilling SOTA.</span>
           </div>
         </li>
         <li>
           <div>
             <span class="q-title">Agentic Tooling</span>
-            <span class="q-desc">Let's give it higher-level guidelines and stop it when it does something dumb.</span>
+            <span class="q-desc">Watch how it works and correct it when it goes wrong.</span>
           </div>
         </li>
         <li>
           <div>
             <span class="q-title">Embeddings</span>
-            <span class="q-desc">I don't fully understand how embeddings work, but I understand enough to be dangerous. How can I use them to help navigate my own data?</span>
+            <span class="q-desc">I only understand enough to be dangerous. How can I use them to help navigate my own data?</span>
           </div>
         </li>
       </ol>
@@ -881,7 +907,7 @@
             <p>Gym clothes in the office. Missed Meetings. No tests. Things you didn't think you'd have to say.</p>
           </div>
           <div class="callout" style="margin-top:1.4rem">
-            These aren't <b>competence</b> problems. They're <b>judgment</b> problems.
+            These aren't <b>competence</b> problems. They're <b>lessons</b>.
           </div>
         </div>
       </div>
@@ -933,32 +959,32 @@
     <section class="slide" data-title="Tool Ecosystem">
       <div class="kicker"><span class="num">05</span><span class="rule"></span><span>Tools</span></div>
       <h2>Open-source tooling</h2>
-      <p class="subtitle">Knowing which one to reach for is half the battle.</p>
+      <p class="subtitle">Different models are good at different things.</p>
 
       <div class="grid-4" style="margin-top:1.6rem; grid-template-columns:repeat(2,1fr);">
         <div class="card">
-          <div class="label">Guardrails for Interns</div>
+          <div class="label">Low-level guardrails</div>
           <h3>OpenCode</h3>
           <p>Real planning and execution. Shows you its thinking, asks permission only when it matters.</p>
-          <div class="prompt">User does not 🤬 care if the test failure is unrelated, you never push a red build.</div>
+          <div class="prompt">User does not 🤬 care if the test failure appears unrelated, you never push a red build.</div>
         </div>
         <div class="card">
           <div class="label">Flexible but high-maintenance agent</div>
-          <h3>Openclaw</h3>
-          <p>Interesting but often ridiculous, requires lot of maintenance.</p>
+          <h3>OpenClaw</h3>
+          <p>Interesting and really powerful but lots of maintenance.</p>
           <div class="prompt">Why do you keep forgetting this?</div>
         </div>
         <div class="card">
           <div class="label">"Just works" for structured tasks</div>
           <h3>Hermes Agent</h3>
-          <p>Task orchestration, system integration, workflow design</p>
+          <p>Task orchestration, system integration, workflow design. Kanban!</p>
           <div class="prompt">What tests should we add for monitoring my home server?</div>
         </div>
         <div class="card">
           <div class="label">Browser</div>
           <h3>agent-browser</h3>
-          <p>CLI-friendly browser control. Really great for scripting the browser when headless.</p>
-          <div class="prompt">Look at the site before you tell me there are no JS errors.</div>
+          <p>CLI-friendly browser control. Have your agents write deterministic browser code and reuse it.</p>
+          <div class="prompt">/agent-browser Look at the site before you tell me there are no JS errors.</div>
         </div>
       </div>
     </section>
@@ -976,7 +1002,7 @@
           </thead>
           <tbody>
             <tr><td><b>Ollama Pro</b></td><td class="num">$20 / mo</td><td>Generous tokens · DeepSeek v4 · Kimi k2.6 · GLM 5.1</td></tr>
-            <tr><td><b>OpenRouter</b></td><td class="num">~ $0.01</td><td>Embed ~1,600 documents (Qwen 8B Embedding)</td></tr>
+            <tr><td><b>OpenRouter</b></td><td class="num">~ $0.01</td><td>Embed ~1,600 documents · Qwen 8B Embedding (overkill))</td></tr>
             <tr class="total"><td>Total</td><td class="num">~ $20 / mo</td><td>A coding agent that runs all day</td></tr>
           </tbody>
         </table>
@@ -987,50 +1013,33 @@
     <!-- 7: Guardrails -->
     <section class="slide" data-title="Guardrails">
       <div class="kicker"><span class="num">06</span><span class="rule"></span><span>The Fix</span></div>
-      <h2>The solution isn't smarter models — it's better guardrails</h2>
+      <h2>Watch your agents think and use tools</h2>
+      <p class="subtitle">They will find silent workarounds to failing tool calls. Stop this.</p>
 
       <ul class="checklist" style="margin-top:1.4rem;">
         <li>
-          <span class="tick">✓</span>
-          <div>
-            <span class="ck-title">MUST parallelize with subagents</span>
-            <span class="ck-desc">Dispatching is the default. Solo work is the exception.</span>
-          </div>
+          <div class="thinking">I will do step A, then step B, then step C.</div>
+          <div class="prompt">You MUST parallelize any tasks that can be completed independently.</div>
         </li>
         <li>
-          <span class="tick">✓</span>
-          <div>
-            <span class="ck-title">Push after successful complex changes</span>
-            <span class="ck-desc">Commit AND push. All tests green first.</span>
-          </div>
+          <div class="thinking">Code's done, I'm done.</div>
+          <div class="prompt">Run the entire test suite. Commit and push once they're passing.</div>
         </li>
         <li>
-          <span class="tick">✓</span>
-          <div>
-            <span class="ck-title">Test new functionality</span>
-            <span class="ck-desc">Write automated tests as you go. Regression tests where needed.</span>
-          </div>
+          <div class="thinking">This works and is so obvious it doesn't need comments.</div>
+          <div class="prompt">Include thorough tests in your plan. Suggest regression tests as we find failures.</div>
         </li>
         <li>
-          <span class="tick">✓</span>
-          <div>
-            <span class="ck-title">Always specify the subagent type</span>
-            <span class="ck-desc">"I'll dispatch X to @build, Y to @explore."</span>
-          </div>
+          <div class="thinking">This test is unrelated, so I'll commit and push.</div>
+          <div class="prompt">Never push a build with failing tests.</div>
         </li>
         <li>
-          <span class="tick">✓</span>
-          <div>
-            <span class="ck-title">Type safety is preferred</span>
-            <span class="ck-desc">When the language supports it. Free correctness, free docs.</span>
-          </div>
+          <div class="thinking">User is vibe coding and won't read this.</div>
+          <div class="prompt">Use type safety where supported, adhere to language-specific style guidelines.</div>
         </li>
         <li>
-          <span class="tick">✓</span>
-          <div>
-            <span class="ck-title">Don't reinvent the wheel</span>
-            <span class="ck-desc">Prefer robust libraries. Don't re-test library functionality.</span>
-          </div>
+          <div class="thinking">Perfect, just 500 lines of slop with no dependencies!</div>
+          <div class="prompt">Use mature, well-tested third-party libraries wherever possible.</div>
         </li>
       </ul>
 
