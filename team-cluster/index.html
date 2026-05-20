@@ -5,55 +5,236 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Team Cluster — Number Proximity Ranker</title>
 <style>
-:root{--bg:#0a0a0f;--surface:#13131f;--s2:#1a1a2e;--border:#2a2a45;--text:#e0e0f0;--dim:#8888aa;--accent:#7c5cfc;--aglow:#7c5cfc44;--gold:#f0c060;--silver:#c0c0d0;--bronze:#d4a070;--r:16px;--rsm:10px}
+:root{--bg:#08080e;--surface:#0f0f1a;--s2:#161628;--s3:#1e1e38;--border:#2a2a50;--text:#e8e8ff;--dim:#7777aa;--accent:#7c5cfc;--accent2:#a78bfa;--accent3:#60a5fa;--aglow:#7c5cfc44;--gold:#ffd700;--gold-g:#ffd70033;--silver:#c8c8e8;--silver-g:#c8c8e833;--bronze:#e8a060;--bronze-g:#e8a06033;--r:16px;--rsm:10px;--neon:#00ffaa;--hot:#ff3366}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background-image:radial-gradient(ellipse at 50% 0%,#2e1a5c22 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,#1a2e5c22 0%,transparent 60%)}
-.c{width:100%;max-width:720px;display:flex;flex-direction:column;gap:28px}
-h1{font-size:2rem;font-weight:700;text-align:center;background:linear-gradient(135deg,var(--accent),#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.sub{text-align:center;color:var(--dim);font-size:.9rem;display:block;margin-top:4px}
-.g{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px}
-.g h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:14px}
-.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:14px}
-.pr{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid transparent;border-radius:var(--rsm);padding:6px 10px;transition:all .2s}
-.pr:hover{border-color:var(--border);box-shadow:0 2px 10px #0003}
-.pr .ni{background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.85rem;width:52px;padding:4px 2px;text-align:center;outline:none;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
-.pr .ni:focus{border-color:var(--accent)}
+
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;overflow-x:hidden;position:relative}
+
+/* ── Canvas backgrounds ── */
+#starfield,#particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#starfield{opacity:.7}
+#particles{z-index:1}
+
+/* ── Aurora blobs ── */
+.aurora{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.aurora .blob{position:absolute;border-radius:50%;filter:blur(120px);opacity:.12;animation:auroraDrift 20s ease-in-out infinite alternate}
+.aurora .blob:nth-child(1){width:600px;height:600px;top:-200px;left:-100px;background:var(--accent);animation-delay:0s}
+.aurora .blob:nth-child(2){width:500px;height:500px;bottom:-150px;right:-80px;background:var(--accent3);animation-delay:-7s;animation-duration:25s}
+.aurora .blob:nth-child(3){width:400px;height:400px;top:40%;left:50%;background:var(--hot);animation-delay:-14s;animation-duration:18s;opacity:.06}
+@keyframes auroraDrift{0%{transform:translate(0,0) scale(1)}33%{transform:translate(40px,-30px) scale(1.15)}66%{transform:translate(-20px,50px) scale(.9)}100%{transform:translate(30px,20px) scale(1.05)}}
+
+.c{width:100%;max-width:740px;display:flex;flex-direction:column;gap:28px;position:relative;z-index:2}
+
+/* ── Title shimmer ── */
+h1{font-size:2.4rem;font-weight:800;text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3),var(--neon),var(--accent2),var(--accent));background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 6s ease-in-out infinite;filter:drop-shadow(0 0 30px var(--aglow))}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.sub{text-align:center;color:var(--dim);font-size:.88rem;display:block;margin-top:6px;animation:fadeInUp .8s ease both;animation-delay:.2s;opacity:0}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Glassmorphism groups ── */
+.g{background:rgba(15,15,26,.75);backdrop-filter:blur(16px) saturate(1.2);border:1px solid var(--border);border-radius:var(--r);padding:24px;position:relative;overflow:hidden;animation:groupEnter .6s cubic-bezier(.22,1,.36,1) both;transition:border-color .4s,box-shadow .4s}
+.g::before{content:'';position:absolute;inset:-1px;border-radius:var(--r);padding:1px;background:linear-gradient(135deg,var(--accent2)33,transparent 40%,transparent 60%,var(--accent3)33);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s;pointer-events:none;animation:borderSpin 8s linear infinite}
+.g:hover::before{opacity:1}
+.g:hover{border-color:var(--accent2)44;box-shadow:0 0 40px var(--aglow),0 8px 32px rgba(0,0,0,.4)}
+@keyframes borderSpin{0%{background-position:0% 0%}100%{background-position:200% 200%}}
+@keyframes groupEnter{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.g:nth-child(2){animation-delay:.1s}
+.g:nth-child(3){animation-delay:.25s}
+
+.g h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-bottom:14px;position:relative;display:inline-block}
+.g h2::after{content:'';position:absolute;bottom:-4px;left:0;width:100%;height:1px;background:linear-gradient(90deg,var(--accent),transparent);opacity:.5}
+
+/* ── Pair grid ── */
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;margin-bottom:14px}
+.pr{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid transparent;border-radius:var(--rsm);padding:6px 10px;transition:all .25s cubic-bezier(.22,1,.36,1);position:relative}
+.pr:hover{border-color:var(--accent)55;box-shadow:0 0 20px var(--aglow),0 4px 12px rgba(0,0,0,.3);transform:translateY(-2px) scale(1.02)}
+.pr:hover .ni,.pr:hover .nm{border-color:var(--accent)66}
+.pr .ni{background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.88rem;width:52px;padding:5px 2px;text-align:center;outline:none;font-variant-numeric:tabular-nums;-moz-appearance:textfield;transition:all .2s}
+.pr .ni:focus{border-color:var(--accent);box-shadow:0 0 12px var(--aglow)}
 .pr .ni::-webkit-inner-spin-button{display:none}
-.pr .nm{flex:1;background:transparent;border:none;color:var(--text);font-size:.85rem;outline:none;min-width:0}
-.pr .nm::placeholder{color:#555}
+.pr .nm{flex:1;background:transparent;border:none;border-bottom:1px solid transparent;color:var(--text);font-size:.85rem;outline:none;min-width:0;padding:4px 0;transition:border-color .2s}
+.pr .nm::placeholder{color:#444}
+.pr .nm:focus{border-bottom-color:var(--accent)}
+
+/* ── Buttons ── */
 .br{display:flex;gap:8px;flex-wrap:wrap}
-.btn{padding:8px 16px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:.8rem;cursor:pointer;transition:all .2s;font-weight:600}
-.btn:hover{border-color:#555;background:#1f1f3a}
-.btn.p{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 20px var(--aglow)}
-.btn.p:hover{background:#8b6cf8;box-shadow:0 6px 28px #7c5cfc55}
+.btn{padding:8px 16px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:.8rem;cursor:pointer;transition:all .25s cubic-bezier(.22,1,.36,1);font-weight:600;position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 50%);opacity:0;transition:opacity .3s}
+.btn:hover::after{opacity:1}
+.btn:hover{border-color:#6666aa;background:var(--s3);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.btn:active{transform:translateY(1px) scale(.97)}
+
+.btn.p{background:linear-gradient(135deg,var(--accent),#6a4ce0);border-color:var(--accent);color:#fff;box-shadow:0 4px 24px var(--aglow);font-size:.9rem;padding:10px 24px;letter-spacing:.03em}
+.btn.p:hover{background:linear-gradient(135deg,#8b6cf8,var(--accent));box-shadow:0 6px 32px #7c5cfc66,0 0 60px var(--aglow);transform:translateY(-2px) scale(1.03)}
+.btn.p:active{transform:translateY(1px) scale(.98)}
+
+/* Rank button spark effect */
+.btn.p .spark{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;pointer-events:none;animation:sparkFly .6s ease-out forwards}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(0)}}
+
 .btn.s{padding:4px 10px;font-size:.72rem}
-.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+/* ── Cluster finder ── */
 .ct{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
 .fd{display:flex;flex-direction:column;gap:4px}
-.fd label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
-.fd input,.fd select{background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.95rem;outline:none;width:130px;font-variant-numeric:tabular-nums}
-.fd input:focus,.fd select:focus{border-color:var(--accent)}
+.fd label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)}
+.fd input,.fd select{background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);padding:8px 12px;font-size:.95rem;outline:none;width:130px;font-variant-numeric:tabular-nums;transition:all .25s}
+.fd input:focus,.fd select:focus{border-color:var(--accent);box-shadow:0 0 20px var(--aglow)}
 .fd select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
-.rc{display:flex;align-items:center;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:14px 18px;margin-bottom:8px;animation:si .35s ease both;position:relative;overflow:hidden}
-.rc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
-.rc.r1::before{background:var(--gold)}.rc.r2::before{background:var(--silver)}.rc.r3::before{background:var(--bronze)}.rc.rn::before{background:var(--border)}
-.rc .rk{font-size:1.2rem;font-weight:800;min-width:32px;text-align:center}
-.r1 .rk{color:var(--gold)}.r2 .rk{color:var(--silver)}.r3 .rk{color:var(--bronze)}.rn .rk{color:var(--dim)}
+
+/* ── Result rows ── */
+.rc{display:flex;align-items:center;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rsm);padding:14px 18px;margin-bottom:8px;position:relative;overflow:hidden;transition:all .3s cubic-bezier(.22,1,.36,1)}
+.rc:hover{transform:translateX(4px) scale(1.01);box-shadow:0 4px 24px rgba(0,0,0,.4)}
+
+/* Animated left bar */
+.rc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;transition:all .3s}
+.rc.r1::before{background:linear-gradient(180deg,var(--gold),#ff8c00);box-shadow:0 0 12px var(--gold-g);width:4px}
+.rc.r2::before{background:linear-gradient(180deg,var(--silver),#8888cc);box-shadow:0 0 8px var(--silver-g)}
+.rc.r3::before{background:linear-gradient(180deg,var(--bronze),#cc7733);box-shadow:0 0 8px var(--bronze-g)}
+.rc.rn::before{background:var(--border)}
+
+/* Rank glow backgrounds */
+.rc.r1{background:linear-gradient(135deg,rgba(255,215,0,.06),var(--s2) 40%);border-color:var(--gold)33;animation:resultEnter .5s cubic-bezier(.22,1,.36,1) both}
+.rc.r1:hover{box-shadow:0 4px 30px var(--gold-g),0 0 60px rgba(255,215,0,.1)}
+.rc.r2{background:linear-gradient(135deg,rgba(200,200,232,.04),var(--s2) 40%);border-color:var(--silver)22;animation:resultEnter .5s cubic-bezier(.22,1,.36,1) both}
+.rc.r3{background:linear-gradient(135deg,rgba(232,160,96,.04),var(--s2) 40%);border-color:var(--bronze)22;animation:resultEnter .5s cubic-bezier(.22,1,.36,1) both}
+.rc.rn{animation:resultEnter .4s cubic-bezier(.22,1,.36,1) both}
+@keyframes resultEnter{0%{opacity:0;transform:translateX(-30px) scale(.95)}60%{opacity:1;transform:translateX(6px)}100%{transform:translateX(0) scale(1)}}
+
+/* Hover gradient sweep */
+.rc::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,92,252,.06),transparent);transform:translateX(-100%);transition:transform .6s ease;pointer-events:none;border-radius:var(--rsm)}
+.rc:hover::after{transform:translateX(100%)}
+
+.rc .rk{font-size:1.3rem;font-weight:900;min-width:36px;text-align:center;position:relative}
+.r1 .rk{color:var(--gold);text-shadow:0 0 16px var(--gold-g);animation:rankPulse 2s ease-in-out infinite}
+.r2 .rk{color:var(--silver);text-shadow:0 0 8px var(--silver-g)}
+.r3 .rk{color:var(--bronze);text-shadow:0 0 8px var(--bronze-g)}
+.rn .rk{color:var(--dim)}
+@keyframes rankPulse{0%,100%{text-shadow:0 0 16px var(--gold-g)}50%{text-shadow:0 0 28px rgba(255,215,0,.4),0 0 6px var(--gold)}}
+
 .rc .mname{flex:1;font-weight:600;font-size:1rem}
-.rc .mnum{font-weight:700;font-size:1.1rem;color:var(--accent);font-variant-numeric:tabular-nums}
-.rc .dst{font-size:.75rem;color:var(--dim);background:var(--surface);padding:3px 10px;border-radius:100px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.es{text-align:center;padding:30px;color:var(--dim);font-style:italic}
-.er{text-align:center;padding:30px;color:#ff5e7a}
-@keyframes si{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.rc .mnum{font-weight:800;font-size:1.2rem;color:var(--accent2);font-variant-numeric:tabular-nums;text-shadow:0 0 10px var(--aglow);transition:all .3s}
+.rc:hover .mnum{color:var(--accent3);text-shadow:0 0 16px rgba(96,165,250,.4)}
+
+/* Distance badge */
+.rc .dst{font-size:.72rem;color:var(--dim);background:var(--surface);padding:4px 12px;border-radius:100px;font-variant-numeric:tabular-nums;white-space:nowrap;border:1px solid var(--border);transition:all .3s}
+.rc:hover .dst{border-color:var(--accent)44;color:var(--accent2)}
+
+/* Number slide-in */
+@keyframes numSlideIn{0%{opacity:0;transform:translateY(20px) scale(.8)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.num-animate{animation:numSlideIn .4s cubic-bezier(.22,1,.36,1) both}
+
+/* ── Confetti ── */
+#confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:100}
+
+/* ── Empty / error states ── */
+.es{text-align:center;padding:30px;color:var(--dim);font-style:italic;animation:fadeInUp .5s ease both}
+.er{text-align:center;padding:30px;color:var(--hot);animation:shake .5s ease both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ── Footer sparkle ── */
+footer{position:relative}
+footer::before{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+
+/* ── Responsive ── */
 @media(max-width:500px){body{padding:16px 8px}.pg{grid-template-columns:1fr}.ct{flex-direction:column}.fd input,.fd select{width:100%}.br{flex-direction:column}.btn{width:100%}}
 </style>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 </head>
 <body>
+<canvas id="starfield"></canvas>
+<canvas id="particles"></canvas>
+<div class="aurora"><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
+<canvas id="confetti"></canvas>
 <div id="root"></div>
 <script>
-const { useState, useCallback, useMemo } = React;
+/* ── Starfield ── */
+(function(){
+  const c=document.getElementById('starfield'),x=c.getContext('2d');
+  let stars=[],w,h;
+  function resize(){w=c.width=innerWidth;h=c.height=innerHeight;stars=[];for(let i=0;i<200;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+.3,s:Math.random()*.3+.05,o:Math.random()*.8+.2})}
+  resize();addEventListener('resize',resize);
+  function draw(){x.clearRect(0,0,w,h);for(const s of stars){s.y+=s.s;s.o+=Math.sin(Date.now()*.001+s.x)*.005;if(s.y>h){s.y=0;s.x=Math.random()*w}x.beginPath();x.arc(s.x,s.y,s.r,0,6.28);x.fillStyle=`rgba(200,200,255,${Math.max(0,Math.min(1,s.o))})`;x.fill()}requestAnimationFrame(draw)}
+  draw();
+})();
+
+/* ── Floating Particles ── */
+(function(){
+  const c=document.getElementById('particles'),x=c.getContext('2d');
+  let pts=[],w,h,mx=0,my=0;
+  function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+  resize();addEventListener('resize',resize);
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+  for(let i=0;i<50;i++)pts.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2.5+.5,h:220+Math.random()*80,o:Math.random()*.15+.03});
+  function draw(){x.clearRect(0,0,w,h);
+    for(const p of pts){
+      const dx=mx-p.x,dy=my-p.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<200){p.vx+=dx*.00005;p.vy+=dy*.00005}
+      p.x+=p.vx;p.y+=p.vy;p.vx*=.999;p.vy*=.999;
+      if(p.x<-10)p.x=w+10;if(p.x>w+10)p.x=-10;
+      if(p.y<-10)p.y=h+10;if(p.y>h+10)p.y=-10;
+      const g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);
+      g.addColorStop(0,`hsla(${p.h},80%,70%,${p.o})`);
+      g.addColorStop(1,`hsla(${p.h},80%,70%,0)`);
+      x.beginPath();x.arc(p.x,p.y,p.r*3,0,6.28);x.fillStyle=g;x.fill();
+    }
+    // Draw connections
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=dx*dx+dy*dy;
+      if(d<25000){x.beginPath();x.moveTo(pts[i].x,pts[i].y);x.lineTo(pts[j].x,pts[j].y);
+        x.strokeStyle=`rgba(124,92,252,${.04*(1-d/25000)})`;x.stroke()}
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Confetti System ── */
+const Confetti=(function(){
+  const c=document.getElementById('confetti'),x=c.getContext('2d');
+  let pieces=[],running=false;
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();addEventListener('resize',resize);
+  function burst(cx,cy,count){
+    const colors=['#7c5cfc','#a78bfa','#60a5fa','#ffd700','#ff3366','#00ffaa','#ff8c00','#c8c8e8'];
+    for(let i=0;i<count;i++){
+      const angle=Math.random()*6.28,speed=Math.random()*12+4;
+      pieces.push({x:cx,y:cy,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-6,
+        r:Math.random()*6+2,color:colors[Math.floor(Math.random()*colors.length)],
+        rot:Math.random()*6.28,rs:(Math.random()-.5)*.3,
+        life:1,decay:Math.random()*.015+.008,shape:Math.random()>.5?'rect':'circle',
+        w:Math.random()*8+4,h:Math.random()*4+2});
+    }
+    if(!running){running=true;draw()}
+  }
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    pieces=pieces.filter(p=>p.life>0);
+    for(const p of pieces){
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.25;p.vx*=.99;p.rot+=p.rs;p.life-=p.decay;
+      x.save();x.translate(p.x,p.y);x.rotate(p.rot);x.globalAlpha=Math.max(0,p.life);
+      x.fillStyle=p.color;
+      if(p.shape==='rect'){x.fillRect(-p.w/2,-p.h/2,p.w,p.h)}
+      else{x.beginPath();x.arc(0,0,p.r,0,6.28);x.fill()}
+      x.restore();
+    }
+    if(pieces.length>0)requestAnimationFrame(draw);
+    else running=false;
+  }
+  return{burst};
+})();
+
+/* ── React App ── */
+const { useState, useCallback, useMemo, useEffect, useRef } = React;
 
 const SEED_PAIRS = [
   { name: "joey", num: 40 },
@@ -75,6 +256,41 @@ function loadPairs() {
 
 function savePairs(pairs) {
   localStorage.setItem("tc-pairs-react", JSON.stringify(pairs));
+}
+
+/* ── Animated Number Display ── */
+function AnimatedNum({ value, delay }) {
+  const [display, setDisplay] = useState(0);
+  const prevRef = useRef(value);
+  useEffect(() => {
+    if (value === prevRef.current) return;
+    prevRef.current = value;
+    const start = performance.now();
+    const dur = 400;
+    const from = 0;
+    const to = value;
+    function tick(now) {
+      const t = Math.min(1, (now - start) / dur);
+      const ease = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(from + (to - from) * ease));
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }, [value]);
+  // Initial mount animation
+  useEffect(() => {
+    const start = performance.now();
+    const dur = 500;
+    function tick(now) {
+      const t = Math.min(1, (now - start - (delay || 0)) / dur);
+      if (t < 0) { requestAnimationFrame(tick); return; }
+      const ease = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(value * ease));
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }, []);
+  return React.createElement("span", { className: "num-animate" }, display);
 }
 
 function PairRow({ pair, index, onUpdate, onRemove }) {
@@ -106,16 +322,34 @@ function PairRow({ pair, index, onUpdate, onRemove }) {
   );
 }
 
-function ResultRow({ item }) {
+function ResultRow({ item, rankTriggered }) {
   const cls = item.rank <= 1 ? "r1" : item.rank <= 2 ? "r2" : item.rank <= 3 ? "r3" : "rn";
-  const delay = (item.rank - 1) * 0.05;
+  const delay = (item.rank - 1) * 0.08;
+  const ref = useRef(null);
+
+  // Confetti for #1
+  useEffect(() => {
+    if (item.rank === 1 && rankTriggered && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      Confetti.burst(rect.left + rect.width / 2, rect.top + rect.height / 2, 80);
+      // Secondary burst slightly delayed
+      setTimeout(() => Confetti.burst(rect.left + 30, rect.top, 30), 150);
+      setTimeout(() => Confetti.burst(rect.left + rect.width - 30, rect.top, 30), 250);
+    }
+  }, [rankTriggered]);
+
   return React.createElement("div", {
     className: "rc " + cls,
-    style: { animationDelay: delay + "s" }
+    style: { animationDelay: delay + "s" },
+    ref: ref
   },
-    React.createElement("span", { className: "rk" }, "#" + item.rank),
+    React.createElement("span", { className: "rk" },
+      item.rank === 1 ? "\u2b50" : "#" + item.rank
+    ),
     React.createElement("span", { className: "mname" }, item.name || "(unnamed)"),
-    React.createElement("span", { className: "mnum" }, item.num),
+    React.createElement("span", { className: "mnum" },
+      React.createElement(AnimatedNum, { value: item.num, delay: delay * 1000 })
+    ),
     React.createElement("span", { className: "dst" }, "\u0394 " + item.dist)
   );
 }
@@ -125,6 +359,8 @@ function App() {
   const [myNum, setMyNum] = useState("");
   const [topN, setTopN] = useState(5);
   const [results, setResults] = useState(null);
+  const [rankTriggered, setRankTriggered] = useState(0);
+  const rankBtnRef = useRef(null);
 
   const updatePair = useCallback((index, updated) => {
     setPairs(prev => {
@@ -170,6 +406,23 @@ function App() {
     setResults(null);
   }, []);
 
+  const spawnBtnSparks = useCallback(() => {
+    if (!rankBtnRef.current) return;
+    const btn = rankBtnRef.current;
+    for (let i = 0; i < 8; i++) {
+      const spark = document.createElement('span');
+      spark.className = 'spark';
+      const angle = Math.random() * 6.28;
+      const dist = 20 + Math.random() * 30;
+      spark.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+      spark.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+      spark.style.left = '50%';
+      spark.style.top = '50%';
+      btn.appendChild(spark);
+      setTimeout(() => spark.remove(), 600);
+    }
+  }, []);
+
   const doRank = useCallback(() => {
     const n = parseInt(myNum);
     if (isNaN(n) || n < 1 || n > 1000) {
@@ -187,7 +440,9 @@ function App() {
       .slice(0, Math.min(topN, valid.length))
       .map((r, i) => ({ ...r, rank: i + 1 }));
     setResults(ranked);
-  }, [myNum, topN, pairs]);
+    setRankTriggered(t => t + 1);
+    spawnBtnSparks();
+  }, [myNum, topN, pairs, spawnBtnSparks]);
 
   const handleMyNumChange = useCallback((e) => {
     setMyNum(e.target.value);
@@ -202,27 +457,27 @@ function App() {
   let resultsEl;
   if (results === null) {
     resultsEl = React.createElement("div", { className: "es" },
-      "Enter your number and hit Rank"
+      "\u2728 Enter your number and hit Rank \u2728"
     );
   } else if (results.length === 0 && (myNum === "" || isNaN(parseInt(myNum)))) {
     resultsEl = React.createElement("div", { className: "es" },
-      "Enter your number and hit Rank"
+      "\u2728 Enter your number and hit Rank \u2728"
     );
   } else if (results.length === 0) {
     resultsEl = React.createElement("div", { className: "er" },
-      "No valid pairs to rank against"
+      "\u26a0 No valid pairs to rank against"
     );
   } else {
     resultsEl = results.map(r =>
-      React.createElement(ResultRow, { key: r.rank, item: r })
+      React.createElement(ResultRow, { key: r.rank, item: r, rankTriggered: rankTriggered })
     );
   }
 
   return React.createElement("div", { className: "c" },
     // Header
-    React.createElement("header", null,
+    React.createElement("header", { style: { animation: 'fadeInUp .6s ease both' } },
       React.createElement("h1", null, "Team Cluster"),
-      React.createElement("span", { className: "sub" }, "Find your nearest neighbors in number space")
+      React.createElement("span", { className: "sub" }, "Find your nearest neighbors in number space \ud83d\udd2b")
     ),
     // Pairs group
     React.createElement("div", { className: "g" },
@@ -271,14 +526,16 @@ function App() {
             )
           )
         ),
-        React.createElement("button", { className: "btn p", onClick: doRank }, "\u26a1 Rank")
+        React.createElement("button", {
+          className: "btn p", onClick: doRank, ref: rankBtnRef
+        }, "\u26a1 Rank")
       ),
       React.createElement("div", { style: { marginTop: 16 } }, resultsEl)
     ),
     // Footer
     React.createElement("footer", {
-      style: { textAlign: "center", color: "var(--dim)", fontSize: ".7rem", opacity: .4 }
-    }, "Team Cluster \u00b7 numbers 1\u20131000")
+      style: { textAlign: "center", color: "var(--dim)", fontSize: ".7rem", opacity: .5, marginTop: 10 }
+    }, "Team Cluster \u00b7 numbers 1\u20131000 \u00b7 \ud83c\udf0c")
   );
 }
 
