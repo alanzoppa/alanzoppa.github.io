@@ -102,20 +102,20 @@ Six pairs — agent thinking on the left, guardrail on the right:
 ## Media Assets
 
 ### In the directory
-| File | Slide | Description |
-|---|---|---|
-| `index.html` | All | Self-contained slide deck with inline Plotly data |
-| `headshot-8bit.png` | 1 | 8-bit pixel art headshot |
-| `interns.jpg` | 3 | Intern team photo |
-| `interns-comparison.png` | 3-4 | Intern vs agent behavior visual (backup visual) |
-| `tools-ecosystem.png` | 5 | Tool ecosystem diagram |
-| `word_vectors_3d.html` | 8 | Standalone 3D word vectors visualization |
+File                    Slide    Description
+----------------------  -------  -------------------------------------------------
+index.html              All      Self-contained slide deck with inline Plotly data
+headshot-8bit.png       1        8-bit pixel art headshot
+interns.jpg             3        Intern team photo
+interns-comparison.png  3-4      Intern vs agent behavior visual (backup visual)
+tools-ecosystem.png     5        Tool ecosystem diagram
+word_vectors_3d.html    8        Standalone 3D word vectors visualization
 
 ### External / Embedded
-| Resource | Slide | Description |
-|---|---|---|
-| YouTube `XCLMAZbMCr4` | 9 | Mnestic demo screen recording |
-| Plotly CDN (`plotly-3.0.1.min.js`) | 8 | 3D scatter plot library (loaded from CDN) |
+Resource                       Slide    Description
+-----------------------------  -------  -----------------------------------------
+YouTube XCLMAZbMCr4            9        Mnestic demo screen recording
+Plotly CDN (plotly-3.0.1)     8        3D scatter plot library (loaded from CDN)
 
 ---
 

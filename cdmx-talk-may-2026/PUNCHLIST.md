@@ -30,18 +30,18 @@ CDMX May 28, 2026 — "Architect Vibes."
 
 The original `PRESENTATION.md` / `PUNCHLIST.md` described a Marp-based slide deck with separate media files. The final deliverable is a self-contained `index.html` that embeds everything inline (Plotly data, YouTube, styles). No Marp, no separate `SLIDES.md`.
 
-| Original Plan | Final |
-|---|---|
-| Marp `SLIDES.md` | Self-contained `index.html` |
-| `mnestic-demo.mp4` | YouTube embed |
-| `mnestic-architecture.html` | Removed (no architecture slide) |
-| `embedding-viz.html` | Inline Plotly in `index.html` |
-| `guardrails-checklist.png` | Replaced by thinking/rule pairs in slide 7 |
-| `model-decision-matrix.png` | Removed (covered in speaker notes) |
-| `agent-parallelization.gif` | Not needed (covered in guardrails slide) |
-| `guardrails-in-action.gif` | Not needed (covered in guardrails slide) |
-| `token-cost-demo.mp4` | Not needed (simple table on slide 6) |
-| 12 slides | 10 slides |
+Original Plan                     Final
+--------------------------------  -------------------------------------------
+Marp SLIDES.md                    Self-contained index.html
+mnestic-demo.mp4                  YouTube embed
+mnestic-architecture.html         Removed (no architecture slide)
+embedding-viz.html                Inline Plotly in index.html
+guardrails-checklist.png          Replaced by thinking/rule pairs (slide 7)
+model-decision-matrix.png         Removed (covered in speaker notes)
+agent-parallelization.gif         Not needed
+guardrails-in-action.gif          Not needed
+token-cost-demo.mp4               Not needed (simple table on slide 6)
+12 slides                         10 slides
 
 ### Structural Changes
 - OpenClaw added back to tool ecosystem
