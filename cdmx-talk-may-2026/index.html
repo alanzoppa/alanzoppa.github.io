@@ -922,7 +922,7 @@
         <li>
           <div>
             <span class="q-title">Overengineering</span>
-            <span class="q-desc">Reaches for a clever solution when a boring one was right there.</span>
+            <span class="q-desc">Reaching for a clever solution when a boring one was right there.</span>
           </div>
         </li>
         <li>
@@ -1092,16 +1092,29 @@
       <div class="kicker"><span class="num">08</span><span class="rule"></span><span>The Payoff</span></div>
       <h2>Mnestic — live</h2>
 
-      <div class="demo-placeholder">
-        <div class="live"><span class="dot"></span> Live demo</div>
-        <h2 style="background:linear-gradient(180deg,#fff,#ff71ce); -webkit-background-clip:text; background-clip:text; color:transparent;">What you'll see</h2>
-        <ul class="demo-cues">
-          <li>The web UI: notes clustered by &gt;75% cosine similarity</li>
-          <li>An agent querying via MCP (<code>mcp_mnestic_*</code> tools)</li>
-          <li>Zoom transcript → Claude → Mnestic, end-to-end</li>
-          <li>Cross-session recall: "Did Alan remember to email Ale?"</li>
-        </ul>
+      <div class="yt-embed" data-vid="XCLMAZbMCr4" style="flex:1; margin-top:1rem; border-radius:14px; overflow:hidden; border:1px solid var(--line); background:#000; box-shadow:0 24px 48px -24px rgba(0,0,0,0.7); min-height:0; position:relative; cursor:pointer;">
+        <img src="https://img.youtube.com/vi/XCLMAZbMCr4/maxresdefault.jpg"
+             onerror="this.src='https://img.youtube.com/vi/XCLMAZbMCr4/hqdefault.jpg'"
+             alt="Mnestic demo — click to play"
+             style="width:100%; height:100%; object-fit:cover; display:block; opacity:0.85;">
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+          <div style="width:80px; height:80px; border-radius:50%; background:rgba(0,0,0,0.7); border:2px solid #fff; display:flex; align-items:center; justify-content:center;">
+            <div style="width:0; height:0; border-left:24px solid #fff; border-top:14px solid transparent; border-bottom:14px solid transparent; margin-left:6px;"></div>
+          </div>
+        </div>
+        <a href="https://www.youtube.com/watch?v=XCLMAZbMCr4" target="_blank" rel="noopener"
+           style="position:absolute; bottom:0.8rem; right:1rem; color:#fff; text-decoration:none; font-size:0.8rem; opacity:0.7; pointer-events:auto;"
+           onclick="event.stopPropagation()">Open on YouTube ↗</a>
       </div>
+      <script>
+        document.querySelectorAll('.yt-embed').forEach(el => {
+          el.addEventListener('click', () => {
+            const vid = el.dataset.vid;
+            el.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + vid + '?autoplay=1" title="Mnestic demo" style="width:100%; height:100%; border:0; display:block;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+            el.style.cursor = 'default';
+          });
+        });
+      </script>
     </section>
 
     <!-- 10: Closing -->
