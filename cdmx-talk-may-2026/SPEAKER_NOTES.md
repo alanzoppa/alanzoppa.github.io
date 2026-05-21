@@ -22,19 +22,27 @@ I'm going to start with the premise, then the metaphor, then the parallel, the t
 
 **TRANSITION (15 seconds)**
 
-I was interested in three things here. Not "can AI write code" — we all know it can. Deeper questions.
+I have a few interests in specific areas of AI that led me here.
 
 **Open-weights models (60 seconds)**
 
-How far can I push open-weights models? Everyone talks about Claude and GPT-4 — they're the gold standard. But the Chinese companies — Alibaba, Moonshot, Zhipu — are shipping genuinely competitive open models. GLM 5.1, Kimi k2.6, DeepSeek v4. These aren't toys. They're no more than 6 months behind SOTA and they're getting shockingly cheap to run. They're constantly distilling from the frontier models.
+First is an interest in open-weights models. These are models like Kimi, GLM and Deepseek that freely release the runnable, retrainable model. This makes them really cheap to run.
+
+Many of these focus on architecture and generate training data with Opus, GPT, etc. This is distillation. The finished model is typically competitive with the model it was distilled from.
+
+But because the tokens are so cheap, I can almost use them like they're free. That's really transformative.
 
 **Agentic tooling (45 seconds)**
 
-What happens when you watch an agent work and correct it in real time? Claude Code has an enormous system prompt — pages of behavioral guardrails. When you strip that away and give an agent a raw model, what breaks first? You need visibility into what it's thinking.
+Claude is a really powerful, really polished tool. I use it to automate a ton of day-to-day work tasks.
+
+And it hides most of it's thinking from you because it's embarassing. It fumbles around like it's never ever used a browser unless you create a skill. Every agentic tool does this. Hermes is probably the best at self-correction.
+
+Watching them think and use tools gives you important insights into how they're working and why they're not doing what you expect.
 
 **Embeddings (30 seconds)**
 
-How can I use embeddings to navigate my own data? I'll be honest — I only understand enough to be dangerous. I know what goes in and what comes out. The 4,096 dimensions? I wanted to get my hands dirty and see what they actually enable.
+Embeddings are part of how an LLM understands language. They're also lightweight enough that you can usually run them locally. I'm a little underwater on the math here, but I'll explain a bit more later.
 
 ---
 
@@ -42,23 +50,29 @@ How can I use embeddings to navigate my own data? I'll be honest — I only unde
 
 **STORY SETUP (60 seconds)**
 
-Ten years ago I had this group of eight interns. And working with AI agents feels a lot like managing them. Let me explain.
+Ten years ago I had this group of eight interns. In their first week I told them to pick a team name. Anything they wanted. And this is what I walked into the next morning.
 
-I gave them tasks that weren't mission-critical without too much guidance. It was more important to see what they could do on their own, where they were comfortable experimenting, and where they needed unambiguous limits.
+That's Hao Lin. She's been at Microsoft for the last nine years. And Shayna is a Tech Lead at the same company we worked at here for as long.
 
-Often they'd take something in a completely unexpected way, and the results were either delightful or ridiculous.
+One of the rules of the intern program was that we didn't put them on anything mission-critical. There were lots of proofs of concepts.
+
+And that way I didn't have to give them a lot of guidance. We'd check in often and steer but I wanted them to feel like they had all the freedom they liked.
+
+I gave them tasks that weren't mission-critical without too much guidance. The unspoken rule was that we couldn't give them anything mission-critical. It was more important to see what they could do on their own, where they were comfortable experimenting, and where they needed limits.
+
+Often they'd take something in a completely unexpected way, and the results were either delightful or ridiculous. This was both.
 
 **The three cards — point to each (75 seconds)**
 
-*(Point to the photo)* In their first week I told them to pick a team name. I didn't give them any constraints. They came back with something weird and memorable. They used it as a chance to make fun of me because I didn't give them any limits. That's the delight of giving smart people room to surprise you.
+They came up with interesting and weird solutions because they had room to surprise me.
 
-But I'd also have to remind them of things that were obvious. One of them tried to write a stored SQL procedure for what should have been a 12-line Rails controller — massive overengineering.
+Most of those weren't good, but they were interesting. They were lessons. One of them wrote a stored SQL procedure for what should have been a really simple Rails controller.
 
-Another stored his sweaty gym clothes in a small, shared office. Another didn't show up for meetings. No tests. Things you didn't think you'd have to say.
+I grew a lot as a manager, too. This was also the first time I had to send an email about odors in shared spaces, and the first time I had to let someone go.
 
 **The callout (15 seconds)**
 
-And the thing is — these aren't competence problems. They're *lessons*. Knowing what matters and what doesn't.
+And the thing is — these aren't competence problems. They're *lessons*. Whatever they produced during their internship didn't matter. The mistakes were just as helpful as the successes.
 
 ---
 
@@ -66,14 +80,14 @@ And the thing is — these aren't competence problems. They're *lessons*. Knowin
 
 **TRANSITION (15 seconds)**
 
-And coding agents have a lot of the same gaps. Let me show you the parallels.
+And coding agents have a lot of the same gaps.
 
 **Walk the list (90 seconds)**
 
-- **Overengineering** — Reaching for a clever solution when a boring one was right there. The agent will write 200 lines of regex when a library exists.
-- **Reinvents the wheel** — Won't reach for a library or third-party solution without being told to look. If the intern thinks it's a good idea to fork systemd, the agent will think it's a good idea to fork systemd.
-- **Needs reminders for the obvious** — Won't check the build, run tests, or push unless you say so explicitly. The intern who doesn't show up to meetings? Same energy.
-- **No instinct for what's sensitive** — Credentials, secrets, private data — not on the radar without a rule. They will commit secrets to your git repo, in front of God and everybody.
+- **Overengineering** — It'll write a tangle of regex like it just learned about them in class. It doesn't understand your projects scale or how people will use it.
+- **Reinvents the wheel** — Won't reach for a library or third-party solution without being told to look. I had to word this very strongly in my prompt.
+- **Needs reminders for the obvious** — Won't check the build, run tests, or push unless you say so explicitly.
+- **No instinct for what's sensitive** — They will commit secrets to your git repo, in front of God and everybody.
 - **Won't tell you you're wrong** — If the solution means forking systemd, it'll do that. It won't push back and say "this is insane." It'll just quietly execute the terrible plan.
 
 **The key line (15 seconds)**
@@ -86,23 +100,23 @@ Every single one of these is a **judgment gap**, not a capability gap. Agents *c
 
 **SETUP (30 seconds)**
 
-The ecosystem matters. Each tool has a distinct personality. Different models are good at different things. Knowing which one to reach for is half the battle.
+The ecosystem matters. Different models are good at different things.
 
 **OpenCode (45 seconds)**
 
-This is my primary coding agent. Low-level guardrails — real planning and execution. Shows you its thinking, asks permission only when it matters. And one of my favorite rules: "User does not give a fuck if the test failure appears unrelated, you never push a red build." That's the energy you need.
+This is my primary coding agent. Low-level guardrails — real planning and execution. Shows you its thinking, asks permission only when it matters. "Fix your prompt" is usually enough for it to take the right action.
 
 **OpenClaw (30 seconds)**
 
-Interesting and really powerful but lots of maintenance. Flexible but high-maintenance agent. It's learned how to use things just the way I like, but it tends to write spaghetti code. And it knows too much about me — that's actually a liability for focused coding.
+Interesting and really powerful but lots of maintenance. In theory it controls its own memories, but it rewrites them into nonsense if you don't watch it.
 
 **Hermes Agent (30 seconds)**
 
-"Just works" for structured tasks. Task orchestration, system integration, workflow design. Kanban! It's great for things like "what tests should we add for monitoring my home server?" I don't ask it to write application code — that's not its strength.
+"Just works" for structured tasks. Task orchestration, system integration, workflow design. Kanban! It's great for things like "what tests should we add for monitoring my home server?" It plans and orchestrates, then uses opencode for most of the actual coding.
 
 **agent-browser (20 seconds)**
 
-CLI-friendly browser control. Have your agents write deterministic browser code and reuse it. The rule: "Look at the site before you tell me there are no JS errors." Agents don't get lost with a simple CLI tool.
+CLI-friendly browser control. Have your agents write deterministic browser code and reuse it. Sometimes needs a custom skill, but this is a really easey way to make your agents see the web the way you do.
 
 ---
 
@@ -110,19 +124,19 @@ CLI-friendly browser control. Have your agents write deterministic browser code 
 
 **SETUP (15 seconds)**
 
-Let's talk about cost, because that's what makes all of this viable.
+Let's talk about cost, because that's what's really transformative about this. Using the AI freely for whatever talacha you don't want to deal with is the difference. Claude does a great job, but I always feel like I'm on a diet.
 
 **Ollama Pro (45 seconds)**
 
-$20 a month. Ollama Pro is very difficult to exhaust. I've thrown everything at it — DeepSeek v4, Kimi k2.6, GLM 5.1, the big models — and I can't burn through the quota. It does get slow during peak periods, but for async agent work that doesn't matter.
+$20 a month. I've finally built some workflows that exhaust this regularly, but it's a lot for just coding. It does get slow during peak periods, but for async agent work that doesn't matter. The kanban board in hermes is my favorite way to work around this.
 
 **OpenRouter for embeddings (30 seconds)**
 
-OpenRouter because Ollama Pro doesn't have cloud embedding or reranking models. But here's the thing — embedding the whole set of about 1,600 documents cost roughly one cent. $0.01. With Qwen 8B Embedding, which is honestly overkill for this. Embedding models are incredibly cheap.
+OpenRouter because Ollama Pro doesn't have cloud embedding or reranking models. You can totally run Qwen 8B on a MacBook actually, or a smaller version on CPU that's almost as good. But embedding all my notes ever was like a penny or two in openrouter credits.
 
 **The total (15 seconds)**
 
-~$20 a month. That's a coding agent that runs all day. Very capable open-weights models at race-to-the-bottom prices.
+~$20 a month. For models that are typically more capable than Sonnet.
 
 ---
 
@@ -133,8 +147,6 @@ OpenRouter because Ollama Pro doesn't have cloud embedding or reranking models. 
 Watch your agents think and use tools. They will find silent workarounds to failing tool calls. Stop this.
 
 **Walk the pairs — read each thinking line, then the rule (90 seconds)**
-
-*(This slide shows agent thinking on the left, your guardrail on the right. Read each pair.)*
 
 "I will do step A, then step B, then step C." → **You MUST parallelize any tasks that can be completed independently.**
 
@@ -148,49 +160,29 @@ Watch your agents think and use tools. They will find silent workarounds to fail
 
 "Perfect, just 500 lines of slop with no dependencies!" → **Use mature, well-tested third-party libraries wherever possible.**
 
-**Why this works (30 seconds)**
-
-These aren't suggestions. They're mandates. The power is that you're preempting the agent's worst instincts — the thoughts you can't see — with rules that close the judgment gap before it opens.
-
 ---
 
 ## Slide 8: Embeddings — "The Idea" (07)
 
 **SETUP (15 seconds)**
 
-Let me try to explain embeddings the way I wish someone had explained them to me. In only three dimensions.
+I said I'd talk about embeddings a little more. Embeddings are cartesian coordinates in more dimensions. Rather than x y an z, there's typically 256 to 4096 dimensions.
 
-**The concept (45 seconds)**
+The graph on the right shows the most significant 3 dimensions across these words. The "difference" between two words is basically the angle between them. What's interesting is that the words for aunt and uncle have similar relationships across languages. Four different words for rice and four different words for train end up in clusters.
 
-*(Point to the plot)* An embedding is just a coordinate. Every word, sentence, or document gets a position in a high-dimensional space — and similar meanings land near each other.
-
-The angle between two vectors — cosine distance — *is* their semantic distance. Near 0° means same meaning. Near 180° means opposite.
-
-**The equation (15 seconds)**
-
-*(Point to the equation)* uncle − man + woman ≈ aunt. This isn't a gimmick. The vector arithmetic actually works — the direction from "man" to "woman" captures gender, and adding it to "uncle" lands near "aunt."
-
-**The insight (15 seconds)**
-
-"Sad" is close to "unhappy" even though they share no letters. You're matching **meaning**, not keywords. That's what makes semantic search work.
-
-**PCA vs UMAP — toggle it (45 seconds)**
-
-*(Toggle between PCA and UMAP)*
-
-I've got two projections here. PCA on the left — linear, global. Finds the three orthogonal axes of greatest variance. 51.3% of the variance is retained. What you see is what is there.
-
-Now toggle to UMAP — nonlinear. It builds a graph of nearest neighbors, then unfolds it into 3D. Tight clusters get tighter. The stress is much lower — 0.084 vs 0.238. But absolute distances between clusters aren't reliable. What you gain in cluster clarity you lose in global faithfulness.
-
-**The practical takeaway (15 seconds)**
-
-Drag the plot, rotate it, toggle between them. This is what your data looks like when you compress 4,096 dimensions into three. It's a lossy view — but a useful one.
+This is a less honest projection, but forces some relationships in 3-space that you wouldn't see otherwise.
 
 ---
 
 ## Slide 9: Mnestic Demo — "The Payoff" (08)
 
 **SETUP (30 seconds)**
+
+What I actually wanted was a way to help agents navigate my notes and generate them consistently. Before this I copy-pasted stuff from Zoom into Gemini and then into a Google Doc. Now I just have another agent do the whole thing end-to-end. Claude suggested more tools and I had opencode build them.
+
+**
+
+So this is what I built. You can search by cosine distance from your query and get some data about the results. This is not a particularly meaningful search.
 
 So what did I actually build with all of this? Something I'd never have bothered to write by hand.
 
