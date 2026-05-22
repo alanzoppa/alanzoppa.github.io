@@ -241,7 +241,7 @@
   .title-slide .meta {
     margin-top: 3rem;
     color: var(--dim);
-    font-size: 0.85rem;
+    font-size: clamp(0.6rem, 1.1vw, 0.85rem);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     font-weight: 600;
@@ -426,6 +426,11 @@
     border-radius: 12px 0 0 12px;
   }
   .callout b { color: var(--accent-3); font-weight: 700; }
+  .callout em {
+    font-style: normal;
+    font-weight: 700;
+    color: var(--accent-2);
+  }
 
   /* Image frame */
   .img-frame {
@@ -852,7 +857,10 @@
         </div>
         <div style="width:clamp(256px,28.8vw,416px); flex-shrink:0;">
           <img src="headshot-8bit.png" alt="Alan Zoppa" style="width:100%; border-radius:12px; border:1px solid var(--line); display:block; box-shadow: 0 0 16px rgba(185,103,255,0.45), 0 0 32px rgba(185,103,255,0.18);">
-          <div class="meta" style="margin-top:0.75em;"><a href="https://github.com/alanzoppa" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">Alan Zoppa</a> <span style="color:var(--line-2)">·</span> Chicago <span style="color:var(--line-2)">·</span> May 28, 2026</div>
+          <div class="meta" style="margin-top:0.75em;">
+            <a href="https://github.com/alanzoppa" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">Alan Zoppa</a>
+            <div style="margin-top:0.25em;">SimplePractice <span style="color:var(--line-2)">·</span> May 28, 2026</div>
+          </div>
         </div>
       </div>
     </section>
@@ -1063,7 +1071,7 @@
             <b>uncle</b><span class="op">−</span>man<span class="op">+</span>woman<span class="op">≈</span><b>aunt</b>
           </div>
           <div class="callout" style="margin-top:1.2rem">
-            "Sad" is close to "unhappy" even though they share no letters. You're matching <b>meaning</b>, not keywords.
+            English speakers learning Spanish confuse <b>carpeta</b> for <em>carpet</em> and <b>embarazada</b> for <em>embarassed</em>. LLMs don't make this mistake because these words are not close in embedding space.
           </div>
           <div class="proj-info" id="proj-info">
             <div class="proj-info-head">
