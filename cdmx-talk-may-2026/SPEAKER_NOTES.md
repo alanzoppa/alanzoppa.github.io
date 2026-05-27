@@ -10,11 +10,7 @@ CDMX May 28, 2026 — 10 slides
 
 **OPENING (60 seconds)**
 
-I'm going to talk about a personal experiment in managing AI agents like a team of interns. It's fair to call this vibe coding, and to be clear — I wouldn't recommend getting this far from your code when there are production consequences.
-
-But that's exactly what made this experiment interesting. When the stakes are low, you can push things much further than you'd ever dare in a production system. And what I found surprised me.
-
-I'm going to start with the premise, then the metaphor, then the parallel, the tools, the economics, the fix, the idea, and finally the payoff.
+I'm going to talk about a deep dive in managing AI agents like a team of interns. It's fair to call this vibe coding, and to be clear — I wouldn't suggest getting this far from your code when there are production consequences.
 
 ---
 
@@ -22,27 +18,27 @@ I'm going to start with the premise, then the metaphor, then the parallel, the t
 
 **TRANSITION (15 seconds)**
 
-I have a few interests in specific areas of AI that led me here.
+A few of my personal interests led to this.
 
 **Open-weights models (60 seconds)**
 
-First is an interest in open-weights models. These are models like Kimi, GLM and Deepseek that freely release the runnable, retrainable model. This makes them really cheap to run.
+First is an interest in open-weights models. These are models like Kimi, GLM and Deepseek that freely release the runnable, retrainable model.
 
-Many of these focus on architecture and generate training data with Opus, GPT, etc. This is distillation. The finished model is typically competitive with the model it was distilled from.
+Most of these generate training data with Opus, GPT, etc. This is called distillation. The finished model is typically competitive with the model it was distilled from.
 
-But because the tokens are so cheap, I can almost use them like they're free. That's really transformative.
+And because the tokens are so cheap, you can almost use them like they're free. That's really transformative.
 
 **Agentic tooling (45 seconds)**
 
 Claude is a really powerful, really polished tool. I use it to automate a ton of day-to-day work tasks.
 
-And it hides most of it's thinking from you because it's embarassing. It fumbles around like it's never ever used a browser unless you create a skill. Every agentic tool does this. Hermes is probably the best at self-correction.
+But it hides most of it's thinking from you because it's embarassing. It fumbles around like it's never ever used a browser every time.
 
-Watching them think and use tools gives you important insights into how they're working and why they're not doing what you expect.
+Watching agents think and use tools gives you important insights into how they're working and why they're not doing what you expect.
 
 **Embeddings (30 seconds)**
 
-Embeddings are part of how an LLM understands language. They're also lightweight enough that you can usually run them locally. I'm a little underwater on the math here, but I'll explain a bit more later.
+Embeddings are part of how an LLM understands language. They're also lightweight enough that you can usually run them locally. I'm a little underwater on the math here, but I'll explain more in a bit.
 
 ---
 
@@ -52,13 +48,9 @@ Embeddings are part of how an LLM understands language. They're also lightweight
 
 Ten years ago I had this group of eight interns. In their first week I told them to pick a team name. Anything they wanted. And this is what I walked into the next morning.
 
-That's Hao Lin. She's been at Microsoft for the last nine years. And Shayna is a Tech Lead at the same company we worked at here for as long.
+I tried not to give them a lot of guidance. We'd check in often and steer but I wanted them to feel like they had all the freedom they liked.
 
-One of the rules of the intern program was that we didn't put them on anything mission-critical. There were lots of proofs of concepts.
-
-And that way I didn't have to give them a lot of guidance. We'd check in often and steer but I wanted them to feel like they had all the freedom they liked.
-
-I gave them tasks that weren't mission-critical without too much guidance. The unspoken rule was that we couldn't give them anything mission-critical. It was more important to see what they could do on their own, where they were comfortable experimenting, and where they needed limits.
+ The unspoken rule was that we couldn't give them anything mission-critical. It was more important to see what they could do on their own, where they were comfortable experimenting, and where they needed limits.
 
 Often they'd take something in a completely unexpected way, and the results were either delightful or ridiculous. This was both.
 
@@ -66,13 +58,9 @@ Often they'd take something in a completely unexpected way, and the results were
 
 They came up with interesting and weird solutions because they had room to surprise me.
 
-Most of those weren't good, but they were interesting. They were lessons. One of them wrote a stored SQL procedure for what should have been a really simple Rails controller.
+Most of those solutions weren't good, but they were interesting. They were lessons. One of them wrote a stored SQL procedure for what should have been a really simple Rails controller.
 
-I grew a lot as a manager, too. This was also the first time I had to send an email about odors in shared spaces, and the first time I had to let someone go.
-
-**The callout (15 seconds)**
-
-And the thing is — these aren't competence problems. They're *lessons*. Whatever they produced during their internship didn't matter. The mistakes were just as helpful as the successes.
+I grew a lot as a manager, too. This was also the first time I had to send an email about hygiene expectations, and the first time I had to fire someone.
 
 ---
 
@@ -87,12 +75,8 @@ And coding agents have a lot of the same gaps.
 - **Overengineering** — It'll write a tangle of regex like it just learned about them in class. It doesn't understand your projects scale or how people will use it.
 - **Reinvents the wheel** — Won't reach for a library or third-party solution without being told to look. I had to word this very strongly in my prompt.
 - **Needs reminders for the obvious** — Won't check the build, run tests, or push unless you say so explicitly.
-- **No instinct for what's sensitive** — They will commit secrets to your git repo, in front of God and everybody.
-- **Won't tell you you're wrong** — If the solution means forking systemd, it'll do that. It won't push back and say "this is insane." It'll just quietly execute the terrible plan.
-
-**The key line (15 seconds)**
-
-Every single one of these is a **judgment gap**, not a capability gap. Agents *can* do these things — they just don't know they should.
+- **No instinct for what's sensitive** — They will commit secrets to your git repo in front of God and everybody.
+- **Won't tell you you're wrong** — If the solution means forking systemd, it'll quietly execute your terrible plan.
 
 ---
 
@@ -100,7 +84,7 @@ Every single one of these is a **judgment gap**, not a capability gap. Agents *c
 
 **SETUP (30 seconds)**
 
-The ecosystem matters. Different models are good at different things.
+Here are the tools I relied on throughout this.
 
 **OpenCode (45 seconds)**
 
@@ -116,7 +100,7 @@ Interesting and really powerful but lots of maintenance. In theory it controls i
 
 **agent-browser (20 seconds)**
 
-CLI-friendly browser control. Have your agents write deterministic browser code and reuse it. Sometimes needs a custom skill, but this is a really easey way to make your agents see the web the way you do.
+CLI-friendly browser control. Have your agents write deterministic browser code and reuse it. Sometimes needs a custom skill, but this is a really easy way to make your agents see the web the way you do.
 
 ---
 
@@ -144,21 +128,15 @@ OpenRouter because Ollama Pro doesn't have cloud embedding or reranking models. 
 
 **SETUP (30 seconds)**
 
-Watch your agents think and use tools. They will find silent workarounds to failing tool calls. Stop this.
+Watch your agents think and use tools. They will find silent workarounds to failing tool calls. Notice this and stop it.
 
-**Walk the pairs — read each thinking line, then the rule (90 seconds)**
+I had to convince it to parallelize by default. It really wants to do everything in sequence.
 
-"I will do step A, then step B, then step C." → **You MUST parallelize any tasks that can be completed independently.**
+It wants to stop when it's done. You have to tell it how and when to run your tests.
 
-"Code's done, I'm done." → **Run the entire test suite. Commit and push once they're passing.**
+You'll have to tell it to write docs.
 
-"This works and is so obvious it doesn't need comments." → **Include thorough tests in your plan. Suggest regression tests as we go.**
-
-"This test is unrelated, so I'll commit and push." → **Never push a build with failing tests.**
-
-"User is vibe coding and won't read this." → **Use type safety where supported. Adhere to language-specific style guidelines.**
-
-"Perfect, just 500 lines of slop with no dependencies!" → **Use mature, well-tested third-party libraries wherever possible.**
+You'll have to tell it you don't care if the failing test is unrelated.
 
 ---
 
@@ -184,21 +162,21 @@ What I actually wanted was a way to help agents navigate my notes and generate t
 
 So this is what I built. You can search by cosine distance from your query and get some data about the results. This is not a particularly meaningful search.
 
-So what did I actually build with all of this? Something I'd never have bothered to write by hand.
+This is just everything most recent. This is when I had hermes find a local HVAC contractor for me.
 
-I had extensive notes over years and years — different formats, different tools, different levels of quality. I wanted to organize them and find connections between them. I wanted my agents to have deep access to context about my workday.
+Tags, you know how tags work.
 
-**Play the video (3-4 minutes)**
+I don't remember what I was doing on that Feb. 17th...
 
-*(Click to play the YouTube embed — it's a screen recording of Mnestic in action. Narrate over it.)*
+And here's the fun stuff. This is everything with 75%+ cosine similarity. Kinda amazing what we can do with WebGL now.
 
-While this plays, here's what you're seeing. Mnestic is a personal knowledge base with semantic search. Notes come in — Zoom transcripts processed by Claude, manual notes I write, work logs — and they get embedded into a 4,096-dimensional space using qwen3-embedding-8b.
+When we crank the minimum similarity down you start to see this dense cobwebs connecting all the embeddings.
 
-Any agent that speaks MCP can query my entire note history. Hermes, OpenCode, Openclaw — they all use the same MCP tools to search, browse, and recall. Semantic search means "sad" finds "unhappy" even though they share no letters.
+There's also a search graph. We can spin it around the same way, but this shows us the best match in red and the worst matches in blue.
 
-And the similarity cloud — notes with high cosine similarity cluster together. The clusters are meaningful. You can see note series, related topics, and connections you'd never find by searching keywords.
+That's just an excerpt from Snow Crash by Neal Stephenson.
 
-The whole point: cross-session memory. In the next session, an agent can follow threads like "Alan promised to send Ale an email, did he remember?" — that kind of recall is what makes this worth building.
+
 
 ---
 
@@ -208,9 +186,9 @@ The whole point: cross-session memory. In the next session, an agent can follow 
 
 Five takeaways.
 
-**One:** $20 a month gets you a shocking number of tokens. Ollama Pro is generous for a single developer. You can let smarter models than you technically need do the dirty work.
+**One:** $20 a month gets you a shocking number of tokens. Ollama Pro is generous for a single developer. You can let DeepSeek Pro plan and let smarter models than you technically need handle all the talacha.
 
-**Two:** Open-weights models are competitive. GLM 5.1, Kimi k2.6, DeepSeek v4 — the Chinese labs are shipping, and they're distilling from the frontier.
+**Two:** Open-weights models are competitive. GLM 5.1, Kimi k2.6, DeepSeek v4 — the Chinese labs are distillinga and shipping every few months.
 
 **Three:** Plan-then-execute works at scale. Big model plans, smaller models execute, explicit task-to-model mapping. You don't have to use the expensive model for everything.
 
