@@ -916,9 +916,6 @@
             <h3>They need limits that would seem obvious</h3>
             <p>Gym clothes in the office. Missed Meetings. No tests. Things you didn't think you'd have to say.</p>
           </div>
-          <div class="callout" style="margin-top:1.4rem">
-            These aren't <b>competence</b> problems. They're <b>lessons</b>.
-          </div>
         </div>
       </div>
     </section>
@@ -960,9 +957,6 @@
           </div>
         </li>
       </ol>
-      <p class="muted" style="margin-top:1.4rem; max-width:75ch; font-size:1.02rem">
-        Every one of these is a <b style="color:var(--accent)">judgment gap</b>, not a capability gap. Agents <em>can</em> do these things — they just don't know they should.
-      </p>
     </section>
 
     <!-- 5: Tool Ecosystem -->
@@ -976,7 +970,7 @@
           <div class="label">Low-level guardrails</div>
           <h3>OpenCode</h3>
           <p>Great cooperative planning and coding, works with everything.</p>
-          <div class="prompt">User does not 🤬 care if the test failure appears unrelated, you never push a red build.</div>
+          <div class="prompt">User does not 🤬 care if the test failure is unrelated.</div>
         </div>
         <div class="card">
           <div class="label">Flexible but high-maintenance agent</div>
@@ -993,8 +987,8 @@
         <div class="card">
           <div class="label">Browser</div>
           <h3>agent-browser</h3>
-          <p>CLI-friendly browser control. Have your agents write deterministic browser code and reuse it.</p>
-          <div class="prompt">/agent-browser Look at the site before you tell me there are no JS errors.</div>
+          <p>No AI here, but enables CLI-friendly browser control.</p>
+          <div class="prompt">/agent-browser Look before you tell me there are no JS errors.</div>
         </div>
       </div>
     </section>
@@ -1028,7 +1022,7 @@
 
       <ul class="checklist" style="margin-top:1.4rem;">
         <li>
-          <div class="thinking">I will do step A, then step B, then step C.</div>
+          <div class="thinking">I will do step A, then step B...</div>
           <div class="prompt">You MUST parallelize any tasks that can be completed independently.</div>
         </li>
         <li>
@@ -1036,20 +1030,12 @@
           <div class="prompt">Run the entire test suite. Commit and push once they're passing.</div>
         </li>
         <li>
-          <div class="thinking">This works and is so obvious it doesn't need comments.</div>
-          <div class="prompt">Include thorough tests in your plan. Suggest regression tests as we find failures.</div>
+          <div class="thinking">This works I'm sure it's right.</div>
+          <div class="prompt">Include thorough tests in your plan.</div>
         </li>
         <li>
-          <div class="thinking">This test is unrelated, so I'll commit and push.</div>
+          <div class="thinking">This failing test is unrelated, pushing...</div>
           <div class="prompt">Never push a build with failing tests.</div>
-        </li>
-        <li>
-          <div class="thinking">User is vibe coding and won't read this.</div>
-          <div class="prompt">Use type safety where supported, adhere to language-specific style guidelines.</div>
-        </li>
-        <li>
-          <div class="thinking">Perfect, just 500 lines of slop with no dependencies!</div>
-          <div class="prompt">Use mature, well-tested third-party libraries wherever possible.</div>
         </li>
       </ul>
 
@@ -1149,12 +1135,6 @@
           <div>
             <div class="t-title">Plan-then-execute works at scale</div>
             <div class="t-desc">Big model plans, smaller models execute, explicit task-to-model mapping.</div>
-          </div>
-        </li>
-        <li>
-          <div>
-            <div class="t-title">Guardrails matter more than intelligence</div>
-            <div class="t-desc">Clear mandates — not suggestions — close the judgment gap.</div>
           </div>
         </li>
         <li>

@@ -56,11 +56,11 @@ Often they'd take something in a completely unexpected way, and the results were
 
 **The three cards — point to each (75 seconds)**
 
-They came up with interesting and weird solutions because they had room to surprise me.
+Because they had room to surprise me, they came up with interesting and weird solutions 
 
-Most of those solutions weren't good, but they were interesting. They were lessons. One of them wrote a stored SQL procedure for what should have been a really simple Rails controller.
+Most of those solutions weren't good, but they were interesting. They were lessons. One of them wrote a stored SQL procedure for what should have been a 12-line Rails controller.
 
-I grew a lot as a manager, too. This was also the first time I had to send an email about hygiene expectations, and the first time I had to fire someone.
+I grew a lot as a manager, too. This was also the first time I had to send an email about hygiene, and the first time I had to fire someone.
 
 ---
 
@@ -72,11 +72,11 @@ And coding agents have a lot of the same gaps.
 
 **Walk the list (90 seconds)**
 
-- **Overengineering** — It'll write a tangle of regex like it just learned about them in class. It doesn't understand your projects scale or how people will use it.
-- **Reinvents the wheel** — Won't reach for a library or third-party solution without being told to look. I had to word this very strongly in my prompt.
-- **Needs reminders for the obvious** — Won't check the build, run tests, or push unless you say so explicitly.
-- **No instinct for what's sensitive** — They will commit secrets to your git repo in front of God and everybody.
-- **Won't tell you you're wrong** — If the solution means forking systemd, it'll quietly execute your terrible plan.
+- **Overengineering** — They'll write a tangle of regex like they just learned about them in class. They don't understand your projects scale or how people will use it.
+- **Reinvents the wheel** — Won't reach for a library or third-party solution without being told to look.
+- Won't check the build, run tests, or push unless you say so explicitly.
+- They will commit secrets to your git repo in front of God and everybody.
+- **Won't tell you you're wrong** — If the solution means forking systemd, it'll quietly start doing that.
 
 ---
 
@@ -96,11 +96,11 @@ Interesting and really powerful but lots of maintenance. In theory it controls i
 
 **Hermes Agent (30 seconds)**
 
-"Just works" for structured tasks. Task orchestration, system integration, workflow design. Kanban! It's great for things like "what tests should we add for monitoring my home server?" It plans and orchestrates, then uses opencode for most of the actual coding.
+"Just works" for structured tasks. Task orchestration, system integration, workflow design. Kanban!
 
 **agent-browser (20 seconds)**
 
-CLI-friendly browser control. Have your agents write deterministic browser code and reuse it. Sometimes needs a custom skill, but this is a really easy way to make your agents see the web the way you do.
+Not AI, but the perfect tool for giving your agents a command-line browser. This is a really easy way to let them see the web the way you do.
 
 ---
 
@@ -130,13 +130,13 @@ OpenRouter because Ollama Pro doesn't have cloud embedding or reranking models. 
 
 Watch your agents think and use tools. They will find silent workarounds to failing tool calls. Notice this and stop it.
 
-I had to convince it to parallelize by default. It really wants to do everything in sequence.
+I had to convince them to parallelize by default. They really want to do everything in sequence.
 
-It wants to stop when it's done. You have to tell it how and when to run your tests.
+They want to stop when the code's done. You have to tell them how and when to run your tests.
 
-You'll have to tell it to write docs.
+You'll have to tell them to write docs.
 
-You'll have to tell it you don't care if the failing test is unrelated.
+You'll have to tell them you don't care if the failing test is unrelated.
 
 ---
 
@@ -144,11 +144,13 @@ You'll have to tell it you don't care if the failing test is unrelated.
 
 **SETUP (15 seconds)**
 
-I said I'd talk about embeddings a little more. Embeddings are cartesian coordinates in more dimensions. Rather than x y an z, there's typically 256 to 4096 dimensions.
+I said I'd talk about embeddings a little more. Embeddings are cartesian coordinates in more dimensions. Rather than x y an z, there's typically 256 or more.
 
-The graph on the right shows the most significant 3 dimensions across these words. The "difference" between two words is basically the angle between them. What's interesting is that the words for aunt and uncle have similar relationships across languages. Four different words for rice and four different words for train end up in clusters.
+The graph on the right shows the most significant 3 dimensions across these words. It's kind of a 3-space shadow of 4k-space coordinates. The "difference" between two words is the angle between them.
 
-This is a less honest projection, but forces some relationships in 3-space that you wouldn't see otherwise.
+You'll notice that "man" and "woman" have about the same angular relationship as "hombre" and "mujer." The diff between uncle and aunt is about the same.
+
+All the words for "rice" and "train" cluster togehter. It's interesting that the Mandarin version is a little askew. They're likely closer in 4k-space, but there are real differences. Like 火车 is literally "fire car" in Chinese, wheras the others are just straight loan words from English.
 
 ---
 
@@ -156,7 +158,7 @@ This is a less honest projection, but forces some relationships in 3-space that 
 
 **SETUP (30 seconds)**
 
-What I actually wanted was a way to help agents navigate my notes and generate them consistently. Before this I copy-pasted stuff from Zoom into Gemini and then into a Google Doc. Now I just have another agent do the whole thing end-to-end. Claude suggested more tools and I had opencode build them.
+What I actually wanted was a way to help agents navigate my notes and generate them consistently. Before this I copy-pasted stuff from Zoom into Gemini and then into a Google Doc. Now I just have another agent do the whole thing end-to-end. 
 
 **
 
@@ -186,59 +188,10 @@ That's just an excerpt from Snow Crash by Neal Stephenson.
 
 Five takeaways.
 
-**One:** $20 a month gets you a shocking number of tokens. Ollama Pro is generous for a single developer. You can let DeepSeek Pro plan and let smarter models than you technically need handle all the talacha.
+**One:** $20 a month gets you a shocking number of tokens. Ollama Pro is generous for a single developer. You can let DeepSeek Pro plan and let smarter models than you technically need handle implementation.
 
 **Two:** Open-weights models are competitive. GLM 5.1, Kimi k2.6, DeepSeek v4 — the Chinese labs are distillinga and shipping every few months.
 
 **Three:** Plan-then-execute works at scale. Big model plans, smaller models execute, explicit task-to-model mapping. You don't have to use the expensive model for everything.
 
-**Four:** Guardrails matter more than intelligence. Clear mandates — not suggestions — close the judgment gap. The model doesn't need to be smarter. It needs better rules.
-
-**Five:** I built something I wouldn't have written by hand. Mnestic took me from scattered notes across years to a queryable agent knowledge base. The code was written by agents. The architecture was directed by me.
-
-**Close with del Toro (15 seconds)**
-
-To me, the director as dictator makes no sense. The director as prophet makes sense. That's writing code like an architect. You don't lay every brick. You set the vision, you set the guardrails, and you let the interns do the work.
-
-*(Open for questions)*
-
----
-
-## Q&A Preparation
-
-**Likely questions and prepared responses:**
-
-**Q: What's the biggest risk of this approach?**
-A: The same as any delegation — you can't verify everything. If an agent introduces a subtle bug and the tests don't catch it, you might not find it until much later. That's why I said upfront: don't do this for production-critical code.
-
-**Q: How do you decide what to delegate vs. write yourself?**
-A: If it's novel — something I've never done before — I write it. If it's a pattern I've seen a hundred times, I delegate. Agents are great at known patterns, terrible at genuine novelty.
-
-**Q: What happens when the agents disagree with each other?**
-A: They don't talk to each other directly — that's by design. Each subagent gets a self-contained task. The orchestrator resolves conflicts. If two agents produce different implementations, I pick one or merge them.
-
-**Q: How do you handle model-specific quirks?**
-A: Task-to-model mapping. DeepSeek v4 Flash for exploration — fast and token-efficient. Kimi k2.6 for architecture — better judgment. GLM 5.1 for routine work. The matrix prevents the "wrong tool for the job" problem. This is all in my AGENTS.md — it's algorithmic, not guesswork.
-
-**Q: Do you worry about model providers going away?**
-A: Yes. That's partly why I use open-weights models — they can run anywhere. If Ollama Pro disappeared tomorrow, I could run the same models locally or on another provider. The tooling (OpenCode) doesn't care which backend you use.
-
----
-
-## Timing Guide
-
-| Slide | Section | Target Time |
-|---|---|---|
-| 1 | Title / Opening | 1 min |
-| 2 | Three Questions | 2.5 min |
-| 3 | Managing Interns | 2.5 min |
-| 4 | Agents as Interns | 2 min |
-| 5 | Tool Ecosystem | 2.5 min |
-| 6 | Token Economics | 1.5 min |
-| 7 | Guardrails | 2 min |
-| 8 | Embeddings | 2.5 min |
-| 9 | Mnestic Demo (video) | 3-4 min |
-| 10 | Takeaways / Closing | 2 min |
-| | **Total** | **~22-24 min** |
-
-*Buffer: 5-8 minutes for transitions, demo video, and Q&A setup. The video does the heavy lifting on the demo slide — let it play and narrate over it.*
+**Four:** I built something I wouldn't have written by hand. Mnestic took me from scattered notes across years to a queryable agent knowledge base. The code was written by agents. The architecture was directed by me.
