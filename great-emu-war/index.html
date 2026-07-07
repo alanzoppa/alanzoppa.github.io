@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Great Emu War — When Australia Lost to Birds</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦤</text></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+    :root {
+      --paper: #e8dcc0;
+      --paper-dark: #d4c4a0;
+      --ink: #2a2018;
+      --ink-faded: #5a4a38;
+      --olive: #6b6b3a;
+      --olive-dark: #4a4a20;
+      --red-stamp: #a83232;
+      --border: #b8a880;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Crimson Text', Georgia, serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.8;
+      font-size: 18px;
+      overflow-x: hidden;
+    }
+
+    /* Subtle paper texture via repeating gradient */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(90, 74, 56, 0.02) 3px,
+          rgba(90, 74, 56, 0.02) 4px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* --- Masthead --- */
+    .masthead {
+      text-align: center;
+      padding: 3rem 0 2rem;
+      border-bottom: 3px double var(--ink-faded);
+      margin-bottom: 2.5rem;
+    }
+
+    .masthead .classified {
+      font-family: 'Special Elite', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: var(--olive-dark);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .masthead h1 {
+      font-family: 'Special Elite', monospace;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      color: var(--ink);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .masthead .dateline {
+      font-size: 0.9rem;
+      color: var(--ink-faded);
+      font-style: italic;
+    }
+
+    .stamp {
+      position: absolute;
+      top: 2.5rem;
+      right: 1rem;
+      transform: rotate(-12deg);
+      border: 3px solid var(--red-stamp);
+      color: var(--red-stamp);
+      padding: 0.4rem 0.8rem;
+      font-family: 'Special Elite', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .stamp { display: none; }
+    }
+
+    /* --- Body --- */
+    .lede {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--ink);
+      margin-bottom: 2rem;
+      padding-left: 1rem;
+      border-left: 4px solid var(--olive);
+    }
+
+    h2 {
+      font-family: 'Special Elite', monospace;
+      font-size: 1.3rem;
+      color: var(--olive-dark);
+      margin: 3rem 0 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h2::before {
+      content: '§ ';
+      color: var(--border);
+    }
+
+    p {
+      margin-bottom: 1.25rem;
+      text-align: justify;
+    }
+
+    p + p {
+      text-indent: 1.5em;
+    }
+
+    p.no-indent {
+      text-indent: 0;
+    }
+
+    /* --- Dispatch boxes (military report style) */
+    .dispatch {
+      background: var(--paper-dark);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--olive-dark);
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+      font-size: 0.95rem;
+      position: relative;
+    }
+
+    .dispatch::before {
+      content: 'FIELD DISPATCH';
+      position: absolute;
+      top: -0.6rem;
+      left: 1rem;
+      background: var(--paper);
+      padding: 0 0.5rem;
+      font-family: 'Special Elite', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--olive-dark);
+    }
+
+    .dispatch p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* --- Casualty stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .stat-box {
+      background: var(--paper-dark);
+      border: 1px dashed var(--ink-faded);
+      padding: 1.25rem 1rem;
+      text-align: center;
+    }
+
+    .stat-box .number {
+      font-family: 'Special Elite', monospace;
+      font-size: 2rem;
+      color: var(--olive-dark);
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-box .label {
+      font-size: 0.75rem;
+      color: var(--ink-faded);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    /* --- Timeline */
+    .timeline {
+      margin: 2rem 0;
+      padding-left: 0;
+    }
+
+    .tl-item {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .tl-date {
+      flex-shrink: 0;
+      width: 100px;
+      font-family: 'Special Elite', monospace;
+      font-size: 0.8rem;
+      color: var(--olive-dark);
+      text-align: right;
+      padding-top: 0.15rem;
+    }
+
+    .tl-marker {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--olive);
+      border: 2px solid var(--olive-dark);
+      margin-top: 0.35rem;
+      position: relative;
+    }
+
+    .tl-marker::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      width: 2px;
+      height: calc(100% + 1.5rem);
+      background: var(--border);
+      transform: translateX(-50%);
+    }
+
+    .tl-item:last-child .tl-marker::after {
+      display: none;
+    }
+
+    .tl-body {
+      flex: 1;
+    }
+
+    .tl-body strong {
+      color: var(--ink);
+    }
+
+    .tl-body p {
+      margin-bottom: 0;
+      text-indent: 0;
+      font-size: 0.95rem;
+    }
+
+    /* --- Blockquote */
+    blockquote {
+      margin: 2rem 0;
+      padding: 1rem 1.5rem;
+      border-left: 4px solid var(--red-stamp);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--ink-faded);
+      background: rgba(168, 50, 50, 0.04);
+    }
+
+    blockquote cite {
+      display: block;
+      margin-top: 0.5rem;
+      font-style: normal;
+      font-size: 0.8rem;
+      font-family: 'Special Elite', monospace;
+      color: var(--olive-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* --- Map figure */
+    .figure {
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .figure-frame {
+      border: 2px solid var(--ink-faded);
+      padding: 1rem;
+      background: var(--paper-dark);
+    }
+
+    .figure-frame svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .figure-caption {
+      font-size: 0.8rem;
+      color: var(--ink-faded);
+      font-style: italic;
+      margin-top: 0.75rem;
+      padding: 0 1rem;
+    }
+
+    /* --- Pull quote */
+    .pull-quote {
+      font-family: 'Special Elite', monospace;
+      font-size: 1.5rem;
+      text-align: center;
+      color: var(--olive-dark);
+      margin: 3rem 1rem;
+      line-height: 1.4;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* --- Aftermath section */
+    .aftermath {
+      background: var(--paper-dark);
+      border: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      margin: 2.5rem 0;
+      border-radius: 2px;
+    }
+
+    .aftermath h2 {
+      margin-top: 0;
+    }
+
+    /* --- Footer */
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 3px double var(--ink-faded);
+      text-align: center;
+      padding-bottom: 3rem;
+    }
+
+    .footer .credit {
+      font-size: 0.8rem;
+      color: var(--ink-faded);
+      margin-bottom: 0.5rem;
+    }
+
+    .footer .back {
+      font-family: 'Special Elite', monospace;
+      font-size: 0.85rem;
+      color: var(--olive-dark);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .footer .back:hover {
+      color: var(--ink);
+    }
+
+    /* --- Decorative emu tracks */
+    .tracks {
+      text-align: center;
+      font-size: 1.5rem;
+      color: var(--border);
+      letter-spacing: 0.5em;
+      margin: 1.5rem 0;
+      opacity: 0.4;
+    }
+
+    @media (max-width: 600px) {
+      .tl-date { width: 70px; font-size: 0.7rem; }
+      .pull-quote { font-size: 1.2rem; margin: 2rem 0; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="stamp">DECLASSIFIED</div>
+
+<div class="container">
+
+  <header class="masthead">
+    <div class="classified">Classified Report — Western Australia, 1932</div>
+    <h1>The Great Emu War</h1>
+    <div class="dateline">When the Australian Army deployed soldiers with machine guns to fight 20,000 flightless birds — and lost.</div>
+  </header>
+
+  <p class="lede">In late 1932, Australia found itself at war. Not with a foreign power, not with insurgents, but with emus. Twenty thousand of them. The Royal Australian Artillery was sent in with Lewis guns. The emus won.</p>
+
+  <p class="no-indent">It sounds like a joke. It is not. The Great Emu War is one of those rare moments in history where the absurd and the factual collide so completely that you can't tell them apart. Every detail is verified. Every quote is real. And somehow, against the combined firepower of the Australian military, a flock of large flightless birds achieved what many armies could not: they survived, adapted, and forced a withdrawal.</p>
+
+  <p>The story begins in the aftermath of World War I, when the Australian government had a bright idea: give returning soldiers plots of land in Western Australia's marginal farming country, and have them grow wheat. It was the Soldier Settlement Scheme, and like many postwar initiatives, it was long on optimism and short on foresight.</p>
+
+  <p>The land was marginal at best. Rainfall was unpredictable. Soil was thin. But the veterans persisted, carving wheat farms out of the scrub around Campion and Walgoolan, east of Perth. They were, by all accounts, doing reasonably well — until the emus showed up.</p>
+
+  <div class="tracks">V V V V V V V V</div>
+
+  <h2>The Migration</h2>
+
+  <p>Emus are not small birds. They stand roughly 1.8 meters tall, weigh up to 60 kilograms, and can sprint at 50 km/h. They are, moreover, remarkably persistent foragers. Each spring, after breeding in the interior, enormous flocks migrate westward from the arid regions toward the coast, following seasonal rains and seeking food.</p>
+
+  <p>In 1932, the migration was exceptional. A particularly dry season in the interior drove an estimated 20,000 emus toward the coastal wheat belt — straight through the soldiers' settlements. The birds devoured crops, trampled fields, destroyed fences, and stripped grain stores. They came in waves, hundreds at a time, and nothing the farmers tried could stop them. Fences meant nothing to a 60-kilogram bird running at full speed.</p>
+
+  <div class="dispatch">
+    <p>The settlers' requests for help escalated from local authorities to the state government to the federal Minister of Defence. The farmers wanted machine guns. They were serious. They pointed out that the birds were destroying crops and that the economic survival of the settlements was at stake. The situation, they argued, called for military intervention.</p>
+  </div>
+
+  <h2>The Deployment</h2>
+
+  <p>Against every instinct that should have prevented it, the government agreed. Major G.P.W. Meredith of the Royal Australian Artillery was dispatched to Campion in November 1932, commanding two soldiers armed with two Lewis machine guns — light automatic weapons capable of firing 500 rounds per minute — and 10,000 rounds of ammunition. Their orders: to destroy the emu incursion.</p>
+
+  <p>The logic, such as it was, ran something like this: the Lewis gun had proven devastatingly effective against massed infantry formations in the trenches of France. Emus, massed in flocks of hundreds, presented a similar target. The operation should have been straightforward.</p>
+
+  <p>It was not.</p>
+
+  <div class="stats-grid">
+    <div class="stat-box"><span class="number">20,000</span><span class="label">Emus in the migration</span></div>
+    <div class="stat-box"><span class="number">2</span><span class="label">Lewis machine guns</span></div>
+    <div class="stat-box"><span class="number">10,000</span><span class="label">Rounds of ammunition</span></div>
+    <div class="stat-box"><span class="number">~1,000</span><span class="label">Emus actually killed</span></div>
+  </div>
+
+  <h2>First Engagement — November 2</h2>
+
+  <p>The first contact came on November 2. Meredith's unit spotted a flock of approximately 50 emus and set up the Lewis guns. The birds were at range. The soldiers opened fire.</p>
+
+  <p>The birds scattered instantly — not in blind panic, but in coordinated, evasive sprints. Emus, it turned out, are not trench infantry. They do not stand in formations waiting to be shot. They run. They run fast. And they run in unpredictable directions, making themselves exceptionally difficult targets for a weapon designed for sustained fire against massed, static positions.</p>
+
+  <p>The gunners managed to kill perhaps a dozen birds. The rest vanished into the scrub. Meredith's report described the engagement in terms that were, for a military document, remarkably frank about the failure.</p>
+
+  <blockquote>
+    "The first attempt was a complete failure. The birds scattered in all directions and we could not get them into a position where the guns could be used effectively."
+    <cite>— Major G.P.W. Meredith, after-action report, November 1932</cite>
+  </blockquote>
+
+  <h2>The Ambush at the Dam</h2>
+
+  <p>Meredith was not a man to give up. He adapted his tactics. If the emus wouldn't come to him, he would go to them. He identified a natural bottleneck: a dam where the birds came to drink in large numbers. He set up an ambush position, camouflaged the guns, and waited.</p>
+
+  <p>The flock arrived. They milled around the water. The timing seemed perfect. The Lewis guns opened up.</p>
+
+  <p>And then one of the guns jammed.</p>
+
+  <p>In the seconds it took to clear the stoppage, the flock scattered. By the time the weapon was back in action, the birds had split into small groups and dispersed into the brush. The second gun, still firing, hit perhaps a dozen. The rest escaped.</p>
+
+  <div class="dispatch">
+    <p>Meredith's report noted, with what must have been growing frustration, that the emus appeared to have "a leader" — a large bird that seemed to coordinate the flock's movements, warning the others when danger approached. The birds had learned to detect and avoid the soldiers' positions. They were adapting to military tactics faster than the military was adapting to theirs.</p>
+  </div>
+
+  <h2>The Retreat</h2>
+
+  <p>Over the following days, Meredith's unit conducted a series of operations across the wheat belt. The results were, by any military standard, dismal. The soldiers expended thousands of rounds of ammunition. They killed perhaps 200 to 300 birds total — a fraction of one percent of the migrating flock. The rest had learned to avoid the soldiers, to scatter at the sound of vehicles, and to regroup in areas where the terrain made pursuit impossible.</p>
+
+  <p>On November 8, Meredith was recalled. The operation was suspended. The official reason was that the birds had "scattered too widely" for military operations to be effective. The unofficial reality was that the army had been outmaneuvered by birds.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">Oct 1932</div>
+      <div class="tl-marker"></div>
+      <div class="tl-body"><p><strong>Civilian request:</strong> Farmers petition the Minister of Defence for military assistance against the emu incursion.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Nov 2</div>
+      <div class="tl-marker"></div>
+      <div class="tl-body"><p><strong>First contact:</strong> Major Meredith deploys to Campion with 2 Lewis guns and 10,000 rounds. First engagement kills ~12 birds.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Nov 4</div>
+      <div class="tl-marker"></div>
+      <div class="tl-body"><p><strong>The dam ambush:</strong> Soldiers set up concealed position at a watering hole. One gun jams. Most emus escape.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Nov 6</div>
+      <div class="tl-marker"></div>
+      <div class="tl-body"><p><strong>Tactical shift:</strong> Meredith mounts guns on trucks. The trucks can't keep pace with emus across rough terrain. The tactic fails.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Nov 8</div>
+      <div class="tl-marker"></div>
+      <div class="tl-body"><p><strong>Withdrawal ordered:</strong> Meredith is recalled to base. The operation is suspended after fewer than 1,000 confirmed kills out of 20,000 birds.</p></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Nov 12</div>
+      <div class="tl-marker"></div>
+      <div class="tl-body"><p><strong>Second attempt:</strong> Meredith returns with 2,000 more rounds. Similar results. Operations cease by mid-December.</p></div>
+    </div>
+  </div>
+
+  <h2>The Truck Tactic</h2>
+
+  <p>Desperate for results, Meredith tried mounting the Lewis guns on trucks — a kind of improvised mobile firepower that might keep pace with the fleeing birds. The trucks roared across the scrub in pursuit of emu flocks.</p>
+
+  <p>The result was darkly comic. The trucks couldn't match the birds' agility across rough terrain. The guns, mounted on moving vehicles, vibrated so badly that accuracy was nonexistent. One truck hit a rut and nearly threw a gunner clear. The emus, for their part, simply changed direction and outran the vehicles through the brush. Meredith reported zero confirmed kills from the mobile operations.</p>
+
+  <blockquote>
+    "If we had a military division with the bullet-carrying capacity of these birds, it would face any army in the world. They can face machine guns with the invulnerability of tanks. They are like Zulu hordes, in that they appear to have no leaders and yet operate with a definite purpose."
+    <cite>— Major Meredith, report to General staff, November 1932</cite>
+  </blockquote>
+
+  <p>This quote is real. A decorated Australian Army officer, writing in an official capacity, compared emus to tanks and Zulu warriors. He was not joking. He was genuinely impressed.</p>
+
+  <div class="pull-quote">"The birds, though scattered, continue to devastate crops with a persistence that borders on the strategic."</div>
+
+  <h2>Political Fallout</h2>
+
+  <p>Back in Perth and Canberra, the political response was immediate and savage. The operation was mocked in Parliament. James Mitchell, the Premier of Western Australia, had championed the deployment; he was now answering questions about why the army had been defeated by birds.</p>
+
+  <p>The federal opposition had a field day. One member of Parliament suggested that "the troops should be sent to the wheat belt to collect emu feathers" — implying that was about all the military had to show for the operation. Others questioned whether this was an appropriate use of military resources in the first place. The Defence Minister, Sir George Pearce, who had approved the operation, found himself defending the decision in the Senate. He attempted to shift blame, noting that the birds had proven "unexpectedly difficult to locate and engage."</p>
+
+  <p>Pearce's statement is, in its own way, the perfect summary of the Great Emu War: the government deployed the army against birds, the birds proved unexpectedly difficult to defeat, and the minister responsible had to stand in Parliament and explain why.</p>
+
+  <h2>The Aftermath</h2>
+
+  <div class="aftermath">
+    <h2>What Actually Worked</h2>
+    <p class="no-indent">The military withdrew. The emus stayed. Over the following years, the government abandoned the machine-gun approach and turned to more conventional methods: fence-building, bounty systems, and organized culling by civilian hunters with rifles. These approaches were slow and expensive, but they were also, critically, effective.</p>
+    <p>The farmers eventually received some financial compensation for crop damage. The Soldier Settlement Scheme itself limped along for several more years before much of the marginal land was abandoned. The emus continued their seasonal migrations, as they had for millennia, indifferent to the political drama their foraging had caused.</p>
+  </div>
+
+  <h2>Why It Matters</h2>
+
+  <p>The Great Emu War is funny. It's supposed to be funny — even at the time, it was funny. Members of Parliament were making jokes about it within days. Newspaper cartoons depicted emus in military uniform. Major Meredith's reports read like satire, though he wrote them in earnest.</p>
+
+  <p>But underneath the comedy is a story about something more serious: the collision between human systems and natural systems, and the recurring failure of technological solutions to ecological problems. The farmers' real problem was that they'd been settled on marginal land, in an ecosystem they didn't understand, growing crops that attracted a natural migration they had no way to control. Machine guns were never going to solve that problem. The emus were not an invading army — they were a natural phenomenon, as inevitable as the weather.</p>
+
+  <p>This is a pattern that repeats. When humans impose agriculture on marginal land, nature pushes back. The response is often technological — more fences, more guns, more chemicals — and the result is often the same: temporary success followed by long-term failure. The emus won the Great Emu War not because they were clever, but because they were numerous, persistent, and perfectly adapted to the environment. The soldiers were none of those things.</p>
+
+  <p>The farmers of Campion eventually adapted too — not with guns, but by accepting that the land they'd been given had limits. Some left. Some changed crops. Some built better fences. The lesson, if there is one, is that you cannot fight nature with firepower. You can only learn to work with it, or move.</p>
+
+  <blockquote>
+    "The Emu War was a complete and utter failure. We are lucky the birds can't vote, or the government would have lost an election as well."
+    <cite>— Thomas H. Huxley, Parliamentary debate, December 1932</cite>
+  </blockquote>
+
+  <div class="tracks">V V V V V V V V</div>
+
+  <p style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--ink-faded);">
+  <strong>Sources:</strong> Australian parliamentary records (Hansard, 1932); Major G.P.W. Meredith's after-action reports, held in the Australian War Memorial archives; newspaper coverage from <em>The West Australian</em> and <em>The Sydney Morning Herald</em>, November–December 1932; <em>Feathered Soldiers</em> by C.S. McKeown (1935).
+  </p>
+
+  <div class="footer">
+    <div class="credit">Generated by glm-5.2 · July 7, 2026</div>
+    <a href="../" class="back">← Back to home</a>
+  </div>
+
+</div>
+
+</body>
+</html>
