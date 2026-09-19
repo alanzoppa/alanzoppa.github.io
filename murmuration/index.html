@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🐦 murmuration</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦</text></svg>">
+<style>
+  :root{--ink:#ffe9d6;--amber:#ffb347;--teal:#7dd8c8;}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:Georgia,"Iowan Old Style",serif;
+    color:var(--ink);
+    background:
+      linear-gradient(180deg,#1a1030 0%,#3d1d4e 34%,#7a2c52 58%,#c45448 76%,#e8865a 88%,#f5b269 100%);
+    height:100vh;overflow:hidden;
+  }
+  #stage{position:fixed;inset:0}
+  #stage canvas{position:absolute;inset:0;display:block;cursor:grab}
+  #stage canvas:active{cursor:grabbing}
+  .hud{position:absolute;top:20px;left:26px;z-index:4;pointer-events:none}
+  .hud h1{margin:0;font-size:26px;font-weight:700;font-style:italic;letter-spacing:5px;
+    color:#ffe9d6;text-shadow:0 0 18px rgba(255,179,71,.6),0 2px 6px rgba(60,10,40,.8)}
+  .hud p{margin:6px 0 0;font-size:12.5px;letter-spacing:.6px;opacity:.78;font-style:italic}
+  .back{position:absolute;top:20px;right:22px;z-index:5;font-size:12px;font-weight:700;letter-spacing:1px;
+    font-family:ui-monospace,monospace;
+    color:var(--ink);opacity:.65;text-decoration:none;border-bottom:1px dotted var(--ink)}
+  .back:hover{opacity:1}
+  .panel{position:absolute;left:20px;bottom:18px;z-index:4;display:flex;flex-direction:column;gap:9px;
+    padding:13px 16px;border-radius:14px;background:rgba(30,10,36,.55);
+    backdrop-filter:blur(8px);border:1px solid rgba(255,200,150,.22);
+    box-shadow:0 8px 30px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+    font-family:ui-monospace,monospace}
+  .row{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;letter-spacing:1px}
+  .row label{width:84px;opacity:.85}
+  .row input[type=range]{width:118px;accent-color:var(--amber)}
+  .btns{display:flex;gap:8px}
+  .btns button{border:1px solid rgba(255,200,140,.4);border-radius:10px;padding:6px 12px;
+    font:700 12px ui-monospace,monospace;letter-spacing:1px;
+    background:rgba(255,150,60,.16);color:var(--ink);
+    box-shadow:0 2px 10px rgba(255,120,40,.22);cursor:pointer}
+  .btns button:active{transform:scale(.94)}
+  .hint{position:absolute;right:20px;bottom:16px;z-index:4;font-size:11px;letter-spacing:1px;
+    opacity:.6;pointer-events:none;font-family:ui-monospace,monospace}
+  .fx{position:absolute;z-index:6;pointer-events:none;user-select:none;
+    animation:rise 1.1s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(-14deg)}
+    14%{opacity:1}
+    100%{opacity:0;transform:translate(-50%,-260px) scale(1.3) rotate(16deg)}
+  }
+  #err{position:absolute;top:12px;left:12px;right:12px;z-index:9;color:#ffd0a0;font:12px monospace;
+    white-space:pre-wrap;display:none;background:rgba(30,8,20,.92);padding:8px;border-radius:8px}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<div id="stage">
+  <div class="hud"><h1>murmuration</h1><p id="meta">gathering the flock…</p></div>
+  <a class="back" href="../">← home</a>
+  <div class="panel">
+    <div class="row"><label>🐦 flock</label><input id="cohesion" type="range" min="0" max="200" value="100"></div>
+    <div class="row"><label>⏱ time</label><input id="tspeed" type="range" min="0" max="300" value="100"></div>
+    <div class="btns"><button id="hawk">🦅 release the falcon</button><button id="pause">⏸ pause</button></div>
+  </div>
+  <div class="hint">drag to orbit · scroll to zoom · tap to scatter the flock</div>
+  <div id="err"></div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* ───────────────────────── test hooks ───────────────────────── */
+window.__ready=false;
+window.__errs=[];
+const _err=m=>{window.__errs.push(String(m));
+  const d=document.getElementById('err');d.style.display='block';d.textContent+=m+'\n';};
+window.addEventListener('error',e=>_err(e.message||'error'));
+window.addEventListener('unhandledrejection',e=>_err(e.reason||'rejection'));
+console.error=(...a)=>{_err(a.join(' '));};
+console.warn=()=>{};
+
+const Q=new URLSearchParams(location.search);
+const tSpeedV=Math.min(300,Math.max(0,+Q.get('time')||100));
+const cohV   =Math.min(200,Math.max(0,+Q.get('coh')||100));
+
+/* ─────────────────── static set-piece authoring ─────────────────── */
+const vox=new Map();
+const K=(x,y,z)=>x+'|'+y+'|'+z;
+const setV=(x,y,z,c)=>{vox.set(K(Math.round(x),Math.round(y),Math.round(z)),{o:c});};
+const C=h=>new THREE.Color(h);
+
+/* palette — dusk marsh */
+const MARSH_T=C(0x4a6b45), MARSH_S=C(0x3a5537), MUD=C(0x5c4632), SAND=C(0x8a6f4d);
+const WATER=C(0x35507a), WATER_HI=C(0x6f9ec9);
+const REED=C(0x6d8752), REED_TIP=C(0x9a8754);
+const STONE=C(0x6b685f), STONE_D=C(0x54514a);
+const LH_W=C(0xe8e2d4), LH_R=C(0xa33b35), LH_TOP=C(0x2a2a32);
+const BEAM=C(0xffe9a8);
+const TRUNK=C(0x584031), LEAF=C(0x57754a), LEAF_D=C(0x45603c);
+
+/* island: superellipse marsh flat at y=0, under-layer to y=-2 */
+const LX=44, LZ=44, P=3.6;
+const inside=(x,z)=>Math.pow(Math.abs(x)/LX,P)+Math.pow(Math.abs(z)/LZ,P)<=1;
+const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
+
+/* terrain: marsh with two tidal channels + a sandy spit */
+for(let x=-LX;x<=LX;x++)for(let z=-LZ;z<=LZ;z++){
+  if(!inside(x,z))continue;
+  const rim=(Math.abs(x)>=LX-2||Math.abs(z)>=LZ-2);
+  // channel: winding sine bands
+  const chan1 = Math.abs(z - 14*Math.sin(x*.09)) < 2.4 && x>-30 && x<34;
+  const chan2 = Math.abs(x + 18 - 8*Math.sin(z*.14)) < 1.9 && z>-38 && z<20;
+  const spit  = (x>14 && x<30 && z>-6 && z<12 && (x-22)*(x-22)/64+(z-3)*(z-3)/81<1);
+  let c, top=0;
+  if(chan1||chan2){ c=WATER.clone(); top=-1; }
+  else if(spit){ c=SAND; }
+  else{
+    const n=hash(x*.7,z*.7);
+    c = n<.55? MARSH_T.clone() : n<.85? MARSH_S.clone() : MUD.clone();
+  }
+  if(rim) top=-1;
+  for(let y=top;y>=-2;y--) setV(x,y,z, y===top? c : c.clone().multiplyScalar(.6));
+  // sparse water glints (unlit-ish brightness handled by material anyway)
+  if((chan1||chan2) && hash(x*3.1,z*7.7)<.06) setV(x,0,z,WATER_HI.clone());
+  // reeds: tufts on marsh near channel edges
+  if(!chan1&&!chan2&&!spit&&!rim&&hash(x*1.9,z*2.3)<.075){
+    const hgt=2+((hash(x,z)*3)|0);
+    for(let y=1;y<hgt;y++) setV(x,y,z,REED);
+    setV(x,hgt,z,REED_TIP);
+  }
+}
+
+/* lighthouse on a small rock outcrop at (-30, 26) corner */
+const LHX=-30, LHZ=26;
+// rock base
+for(let x=LHX-3;x<=LHX+3;x++)for(let z=LHZ-3;z<=LHZ+3;z++){
+  if((x-LHX)*(x-LHX)+(z-LHZ)*(z-LHZ)>10)continue;
+  const h=2+((hash(x*7,z*3)*2)|0);
+  for(let y=1;y<=h;y++) setV(x,y,z, hash(x,y+z)<.5?STONE:STONE_D);
+}
+// tower: 3x3 shaft, banded white/red, height 16, y=3..18
+const LH_H=18;
+for(let y=3;y<=LH_H;y++){
+  const band=((y/3)|0)%2===0;
+  for(const [dx,dz] of [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]]){
+    setV(LHX+dx,y,LHZ+dz, band?LH_W:LH_R);
+  }
+}
+// gallery + lamp room y=19..21
+for(const [dx,dz] of [[-2,0],[2,0],[0,-2],[0,2],[-1,-1],[-1,1],[1,-1],[1,1]]) setV(LHX+dx,LH_H+1,LHZ+dz,LH_TOP);
+for(const [dx,dz] of [[-1,-1],[0,-1],[1,-1],[-1,0],[0,0],[1,0],[-1,1],[0,1],[1,1]])
+  setV(LHX+dx,LH_H+2,LHZ+dz,LH_TOP);
+const LAMP_Y=LH_H+2;
+
+/* two bare trees on the spit — sparse canopy */
+function tree(px,pz){
+  const hgt=6+((hash(px,pz)*3)|0);
+  for(let y=1;y<=hgt;y++) setV(px,y,pz,TRUNK);
+  for(let dx=-2;dx<=2;dx++)for(let dy=0;dy<=2;dy++)for(let dz=-2;dz<=2;dz++){
+    const d=dx*dx+dy*dy*1.6+dz*dz;
+    if(d>5.2)continue;
+    if(hash(px+dx*3.7,pz+dz*5.1+dy)<.30)continue;   // sparse
+    setV(px+dx,hgt+dy,pz+dz, hash(dx*9+dy,dz*7)<.5?LEAF:LEAF_D);
+  }
+}
+tree(20,0); tree(26,7);
+
+/* ── shell extraction → static mesh ── */
+const solid=[];
+{
+  const dirs=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  for(const [key,v] of vox){
+    const [x,y,z]=key.split('|').map(Number);
+    let open=false;
+    for(const d of dirs) if(!vox.has(K(x+d[0],y+d[1],z+d[2]))){open=true;break;}
+    if(open) solid.push({x,y,z,c:v.o});
+  }
+}
+
+/* ───────────────────────── three.js scene ───────────────────────── */
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+stage.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x2a1538);
+scene.fog=new THREE.FogExp2(0x55283f,.0019);
+const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.1,1200);
+camera.position.set(0,54,158);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,24,-6); controls.enableDamping=true; controls.dampingFactor=.08;
+controls.minDistance=60; controls.maxDistance=380; controls.maxPolarAngle=1.52;
+controls.update();
+
+const geo=new THREE.BoxGeometry(1,1,1);
+const jit=(x,y,z)=>{const t=Math.sin(x*127.1+y*311.7+z*74.7)*43758.5453;return .93+(t-Math.floor(t))*.14;};
+
+/* dusk lighting — warm low sun from the west, cool sky fill, all pinned to scene root */
+scene.add(new THREE.HemisphereLight(0xffb070,0x2a1d3a,.85));
+const sun=new THREE.DirectionalLight(0xffc98a,2.3);
+sun.position.set(-150,72,60);
+sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.left=-110;sun.shadow.camera.right=110;
+sun.shadow.camera.top=110;sun.shadow.camera.bottom=-110;
+sun.shadow.camera.near=30;sun.shadow.camera.far=500;sun.shadow.bias=-.0005;
+scene.add(sun,sun.target);
+const rim=new THREE.DirectionalLight(0x8a6cff,.5); rim.position.set(90,60,-110); scene.add(rim);
+
+const m4=new THREE.Matrix4(), col=new THREE.Color();
+const staticMat=new THREE.MeshStandardMaterial({roughness:.88,metalness:.04});
+const staticMesh=new THREE.InstancedMesh(geo,staticMat,solid.length);
+staticMesh.castShadow=true; staticMesh.receiveShadow=true; staticMesh.frustumCulled=false;
+solid.forEach((v,i)=>{ m4.makeTranslation(v.x,v.y,v.z); staticMesh.setMatrixAt(i,m4);
+  staticMesh.setColorAt(i,col.copy(v.c).multiplyScalar(jit(v.x,v.y,v.z))); });
+scene.add(staticMesh);
+
+/* ── lighthouse beam: unlit warm voxels, rotated each frame ── */
+const beamVox=[];
+{
+  // two opposing cones of voxels, stepping outward from the lamp
+  for(let d=3;d<=20;d++){
+    const r=.5+d*.14;                       // widening
+    const cells=Math.max(1,(d/5)|0);
+    for(let i=0;i<cells;i++){
+      for(const [ox,oy] of [[0,0],[1,0],[-1,0],[0,1],[0,-1]]){
+        if(ox*ox+oy*oy>r*r)continue;
+        beamVox.push({dx:d,ox,oy});
+        if(d>6) beamVox.push({dx:-d,ox,oy});   // back beam, weaker start
+      }
+    }
+  }
+}
+const beamMesh=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial({fog:false,transparent:true,opacity:.5}),beamVox.length);
+beamMesh.frustumCulled=false;
+const beamCol=C(0xffe9a8);
+beamVox.forEach((b,i)=>{
+  const fade=Math.max(.06,1-Math.abs(b.dx)/22);
+  beamMesh.setColorAt(i,col.copy(beamCol).multiplyScalar(fade));
+});
+scene.add(beamMesh);
+
+/* ── voxel sun low on the west horizon: flat disc, warm emissive ── */
+const glowVox=[];
+{
+  const R=20, CY=20, CZ=-190, CX=-60;
+  for(let dx=-R;dx<=R;dx++)for(let dy=-R;dy<=R;dy++){
+    const d=dx*dx+dy*dy;
+    if(d>R*R)continue;
+    const u=Math.sqrt(d)/R;
+    let c;
+    if(u<.25) c=C(0xfff6d8);
+    else if(u<.55) c=C(0xffd98f);
+    else if(u<.8) c=C(0xffa25a);
+    else c=C(0xe86a48);
+    glowVox.push({x:CX+dx, y:CY+dy, z:CZ, c});
+  }
+}
+const glowMesh2=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial({fog:false}),glowVox.length);
+glowMesh2.frustumCulled=false;
+glowVox.forEach((v,i)=>{m4.makeTranslation(v.x,v.y,v.z);glowMesh2.setMatrixAt(i,m4);
+  glowMesh2.setColorAt(i,col.copy(v.c));});
+scene.add(glowMesh2);
+
+/* ── murmuration: typed-array boids, one InstancedMesh ── */
+const N=Math.min(4000,Math.max(200,parseInt(Q.get('n'))||1800));
+const px=new Float32Array(N), py=new Float32Array(N), pz=new Float32Array(N);
+const vx=new Float32Array(N), vy=new Float32Array(N), vz=new Float32Array(N);
+const flap=new Float32Array(N);
+/* flock anchor drift state */
+const anchor=new THREE.Vector3(0,42,0);
+let anchorPhase=Math.random()*7;
+function anchorDrift(t){
+  anchor.set(
+    26*Math.sin(t*.11+anchorPhase)+6*Math.sin(t*.31),
+    42+9*Math.sin(t*.23+1.7)+3*Math.sin(t*.53),
+    20*Math.sin(t*.147+2.4*anchorPhase)+8*Math.cos(t*.27)
+  );
+}
+for(let i=0;i<N;i++){
+  const th=Math.random()*6.283, ph=Math.acos(2*Math.random()-1), r=8+Math.random()*22;
+  px[i]=anchor.x+r*Math.sin(ph)*Math.cos(th);
+  py[i]=anchor.y+r*Math.cos(ph)*.6;
+  pz[i]=anchor.z+r*Math.sin(ph)*Math.sin(th);
+  vx[i]=(Math.random()-.5)*30; vy[i]=(Math.random()-.5)*10; vz[i]=(Math.random()-.5)*30;
+  flap[i]=Math.random()*6.283;
+}
+/* spatial hash on XZ plane */
+const CELL=9, GW=64, GH=64;
+const grid=new Map();
+function boids(dt,t,cohK){
+  const R2=7.5*7.5, SEP=1.6*1.6;
+  const SEP_W=58, ALI_W=1/16, COH_W=(1/85)*cohK, ANCH_W=.9, TGT_W=.55, TAN_W=5.5;
+  const spdMin=13, spdMax=30;
+  grid.clear();
+  for(let i=0;i<N;i++){
+    const k=((px[i]/CELL+GW/2)|0)|((pz[i]/CELL+GH/2)|0)<<8;
+    let a=grid.get(k); if(!a)grid.set(k,a=[]);
+    a.push(i);
+  }
+  const rel=anchor.clone().sub(new THREE.Vector3(0,42,0));
+  for(let i=0;i<N;i++){
+    let ax=0,ay=0,az=0, mx=0,my=0,mz=0,cnt=0;
+    const gx=(px[i]/CELL+GW/2)|0, gz=(pz[i]/CELL+GH/2)|0;
+    for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){
+      const a=grid.get((gx+dx)|((gz+dz)<<8)); if(!a)continue;
+      for(const j of a){
+        if(j===i)continue;
+        const ox=px[i]-px[j], oy=py[i]-py[j], oz=pz[i]-pz[j];
+        const d2=ox*ox+oy*oy+oz*oz;
+        if(d2>R2)continue;
+        cnt++;
+        if(d2<SEP&&d2>1e-6){ const w=1/d2; ax+=ox*w; ay+=oy*w; az+=oz*w; }
+        mx+=(px[j]-px[i]); my+=(py[j]-py[i]); mz+=(pz[j]-pz[i]);
+        ax+=(vx[j]-vx[i])*ALI_W; ay+=(vy[j]-vy[i])*ALI_W; az+=(vz[j]-vz[i])*ALI_W;
+      }
+    }
+    if(cnt){
+      ax+=mx*(COH_W/cnt); ay+=my*(COH_W/cnt); az+=mz*(COH_W/cnt);
+    }
+    // anchor spring + soft ceiling/floor
+    ax+=(anchor.x-px[i])*ANCH_W*.1; ay+=(anchor.y-py[i])*ANCH_W*.12; az+=(anchor.z-pz[i])*ANCH_W*.1;
+    if(py[i]<6)   ay+=(6-py[i])*4;
+    if(py[i]>88)  ay-=(py[i]-88)*4;
+    // tangential swirl around anchor for murmuration ribbons
+    const tx=px[i]-anchor.x, tz=pz[i]-anchor.z;
+    const tl=Math.hypot(tx,tz)||1;
+    ax+=(-tz/tl)*TAN_W; az+=(tx/tl)*TAN_W;
+    // falcon scare: strong radial repulsion in a sphere around the falcon
+    if(falconOn){
+      const fx=px[i]-fPos.x, fy=py[i]-fPos.y, fz=pz[i]-fPos.z;
+      const fd2=fx*fx+fy*fy+fz*fz;
+      if(fd2<26*26){ const f=90/(fd2+18); ax+=fx*f; ay+=fy*f; az+=fz*f; }
+    }
+    vx[i]+=ax*dt; vy[i]+=ay*dt; vz[i]+=az*dt;
+    const s=Math.hypot(vx[i],vy[i],vz[i])||1;
+    const cl=Math.min(spdMax,Math.max(spdMin,s))/s;
+    vx[i]*=cl; vy[i]*=cl; vz[i]*=cl;
+    px[i]+=vx[i]*dt; py[i]+=vy[i]*dt; pz[i]+=vz[i]*dt;
+    flap[i]+=dt*(8+s*.5);
+  }
+}
+const birdGeo=new THREE.BoxGeometry(.9,.42,1.7);
+const birdMat=new THREE.MeshStandardMaterial({roughness:.92,metalness:0});
+const birdMesh=new THREE.InstancedMesh(birdGeo,birdMat,N);
+birdMesh.frustumCulled=false;
+scene.add(birdMesh);
+const qAlign=new THREE.Quaternion(), upA=new THREE.Vector3(0,1,0), vDir=new THREE.Vector3();
+const mC=new THREE.Matrix4();
+
+/* ── falcon: 27-voxel body, flies a lazy patrol, dives on release ── */
+const falconVox=[];
+{
+  const BODY=C(0x4a4340), WING=C(0x5a534e), HEAD=C(0x3a3532), TAIL=C(0x3a3028), BEAK=C(0xd8b040);
+  const p=(x,y,z,c)=>falconVox.push({x,y,z,c});
+  p(0,0,0,BODY);p(0,0,1,BODY);p(0,0,2,BODY);p(0,0,3,HEAD);p(0,1,3,HEAD);
+  p(0,0,4,BEAK);
+  p(0,0,-1,TAIL);p(0,0,-2,TAIL);
+  p(-1,0,1,WING);p(-2,0,1,WING);p(-3,0,0,WING);
+  p( 1,0,1,WING);p( 2,0,1,WING);p( 3,0,0,WING);
+}
+const falconMesh=new THREE.InstancedMesh(geo,new THREE.MeshStandardMaterial({roughness:.7}),falconVox.length);
+falconMesh.frustumCulled=false; falconMesh.castShadow=true;
+falconVox.forEach((v,i)=>falconMesh.setColorAt(i,col.copy(v.c)));
+falconMesh.visible=false;
+scene.add(falconMesh);
+let falconOn=false, falconUntil=0;
+const fPos=new THREE.Vector3(), fVel=new THREE.Vector3(), fTarget=new THREE.Vector3();
+let fState='patrol';
+
+/* ── reeds sway + clouds handled via re-tint skip; clouds in sky mesh ── */
+const cloudVox=[];
+for(let i=0;i<5;i++){
+  const cx=-60+i*30+hash(i,2)*14, cy=58+hash(i,5)*14, cz=-40-hash(i,3)*50;
+  for(let x=-7;x<=7;x++)for(let z=-3;z<=3;z++){
+    if(x*x/49+z*z/9>1)continue;
+    if(hash(x*3.1+i,z*7.7+i)<.45)continue;
+    cloudVox.push({x:cx+x,y:cy,z:cz+z,c:C(0xd8c0c8).multiplyScalar(.55+.45*hash(x,z+i))});
+  }
+}
+const cloudMesh=new THREE.InstancedMesh(geo,new THREE.MeshStandardMaterial({roughness:1}),cloudVox.length);
+cloudMesh.frustumCulled=false;
+cloudVox.forEach((v,i)=>{m4.makeTranslation(v.x,v.y,v.z);cloudMesh.setMatrixAt(i,m4);
+  cloudMesh.setColorAt(i,col.copy(v.c));});
+scene.add(cloudMesh);
+
+/* bloom — gentle, mostly for beam + sunset sky */
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),.38,.6,.82);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ───────────────────────── UI ───────────────────────── */
+const $=id=>document.getElementById(id);
+let paused=false, timeScale=tSpeedV/100, cohK=cohV/100;
+$('tspeed').value=tSpeedV; $('cohesion').value=cohV;
+$('tspeed').addEventListener('input',()=>timeScale=+$('tspeed').value/100);
+$('cohesion').addEventListener('input',()=>cohK=+$('cohesion').value/100);
+$('pause').addEventListener('click',()=>{paused=!paused;$('pause').textContent=paused?'▶ resume':'⏸ pause';});
+$('hawk').addEventListener('click',()=>{
+  falconOn=falconMesh.visible=true;
+  falconUntil=performance.now()+22000;
+  fState='dive'; fDiveT=0;
+  fPos.set(anchor.x-70,78,anchor.z+40);
+  fTarget.copy(anchor);
+});
+const burstEmoji=(x,y)=>{const g=['🐦','✨','🌾','🪶','💨'];
+  for(let i=0;i<7;i++){const s=document.createElement('span');s.className='fx';
+    s.textContent=g[(Math.random()*g.length)|0];
+    s.style.left=(x+(Math.random()*44-22))+'px'; s.style.top=(y+(Math.random()*26-13))+'px';
+    s.style.fontSize=(13+Math.random()*12)+'px'; s.style.animationDelay=(Math.random()*.12)+'s';
+    stage.appendChild(s); setTimeout(()=>s.remove(),1300);}};
+renderer.domElement.addEventListener('pointerdown',e=>{
+  if(!e.isPrimary)return;
+  burstEmoji(e.clientX,e.clientY);
+  // scatter the flock outward from its screen-projected center
+  for(let i=0;i<N;i++){
+    vx[i]+=(px[i]-anchor.x)*.9+(Math.random()-.5)*26;
+    vy[i]+=(py[i]-anchor.y)*.6+(Math.random()-.5)*14;
+    vz[i]+=(pz[i]-anchor.z)*.9+(Math.random()-.5)*26;
+  }
+});
+
+/* ───────────────────────── animate ───────────────────────── */
+document.getElementById('meta').textContent=
+  `${N.toLocaleString()} starlings · one falcon · the long light of evening`;
+
+let t=0, last=performance.now(), beamA=0, fDiveT=0;
+const beamCenter=new THREE.Vector3(LHX,LAMP_Y,LHZ);
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  if(!paused){
+    t+=dt*timeScale;
+    anchorDrift(t);
+    boids(Math.min(.05,dt*timeScale),t,cohK);
+    /* write bird instances */
+    for(let i=0;i<N;i++){
+      vDir.set(vx[i],vy[i],vz[i]).normalize();
+      qAlign.setFromUnitVectors(new THREE.Vector3(0,0,1),vDir);
+      const s=.85+.3*Math.sin(flap[i]);       // wing-pulse scale flicker
+      mC.compose(new THREE.Vector3(px[i],py[i],pz[i]),qAlign,new THREE.Vector3(s,1,1));
+      birdMesh.setMatrixAt(i,mC);
+      const dTone=.62+.38*Math.min(1,py[i]/70);
+      birdMesh.setColorAt(i,col.setRGB(dTone*.16,dTone*.13,dTone*.15));
+    }
+    birdMesh.instanceMatrix.needsUpdate=true;
+    if(birdMesh.instanceColor)birdMesh.instanceColor.needsUpdate=true;
+    /* lighthouse beam sweeps */
+    beamA+=dt*timeScale*.5;
+    const ca=Math.cos(beamA), sa=Math.sin(beamA);
+    beamVox.forEach((b,i)=>{
+      const x=beamCenter.x+b.dx*ca - b.ox*sa*.4;
+      const z=beamCenter.z+b.dx*sa + b.ox*ca*.4;
+      m4.makeTranslation(x, LAMP_Y+b.oy, z);
+      beamMesh.setMatrixAt(i,m4);
+    });
+    beamMesh.instanceMatrix.needsUpdate=true;
+    /* falcon */
+    if(falconOn){
+      if(fState==='dive'){
+        fDiveT+=dt;
+        const k=Math.min(1,fDiveT/2.6);
+        const ease=k*k*(3-2*k);
+        fPos.lerpVectors(new THREE.Vector3(anchor.x-70,78,anchor.z+40),anchor,ease);
+        fPos.y=78-ease*(78-anchor.y)+Math.sin(t*22)*.6;
+        if(k>=1){fState='through';fDiveT=0;}
+      }else if(fState==='through'){
+        fDiveT+=dt;
+        fPos.x=anchor.x-70+fDiveT*46; fPos.y=anchor.y+Math.sin(t*9)*3; fPos.z=anchor.z+40-fDiveT*18;
+        if(fDiveT>3.2){fState='climb';fDiveT=0;}
+      }else if(fState==='climb'){
+        fDiveT+=dt;
+        const k=Math.min(1,fDiveT/3.2);
+        fPos.y=anchor.y+k*(90-anchor.y); fPos.x+=dt*10;
+        if(k>=1){fState='patrol';fDiveT=0;}
+      }else{
+        fDiveT+=dt;
+        const r=52, w=.5;
+        fPos.set(anchor.x+r*Math.cos(t*w), 90, anchor.z+r*Math.sin(t*w));
+        if(now>falconUntil){falconOn=falconMesh.visible=false;}
+      }
+      /* orient + write instances (local -> world via lookat rotation) */
+      fTarget.set(fPos.x+1,fPos.y,fPos.z); // rough forward guess
+      const yaw=Math.atan2(fPos.x-anchor.x,fPos.z-anchor.z)+(fState==='patrol'?Math.PI/2:Math.PI*.92);
+      falconVox.forEach((v,i)=>{
+        const c=Math.cos(yaw), s=Math.sin(yaw);
+        m4.makeTranslation(fPos.x+v.x*c+v.z*s, fPos.y+v.y, fPos.z-v.x*s+v.z*c);
+        falconMesh.setMatrixAt(i,m4);
+      });
+      falconMesh.instanceMatrix.needsUpdate=true;
+    }
+  }
+  controls.update();
+  composer.render();
+  if(!window.__ready&&t>0)window.__ready=true;
+}
+requestAnimationFrame(frame);
+
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight); composer.setSize(innerWidth,innerHeight);
+  bloom.setSize(innerWidth,innerHeight);
+});
+
+/* scene-state hooks for headless tests */
+window.__scene=scene;
+window.__birds={N,px,py,pz,vx,vy,vz};
+window.__setCohesion=v=>{cohK=v;};
+window.__scatter=()=>{for(let i=0;i<N;i++){vx[i]*=3;vy[i]*=3;vz[i]*=3;}};
+window.__analyze=()=>{
+  // flock spread metric: mean distance from anchor
+  let m=0; for(let i=0;i<N;i++)m+=Math.hypot(px[i]-anchor.x,py[i]-anchor.y,pz[i]-anchor.z);
+  return {
+    n:N, anchor:[+anchor.x.toFixed(1),+anchor.anchor?0:+anchor.y.toFixed(1),+anchor.z.toFixed(1)],
+    meanDist:+(m/N).toFixed(2),
+    falcon:falconOn?fState:'off', beamDeg:+((beamA*180/Math.PI)%360).toFixed(1),
+    t:+t.toFixed(2), timeScale, cohK, paused
+  };
+};
+</script>
+</body>
+</html>
