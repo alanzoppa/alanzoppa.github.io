@@ -66,7 +66,6 @@
   <a class="back" href="../">← home</a>
   <div class="panel">
     <div class="row"><span>🌀 spin</span><input id="spin" type="range" min="0" max="60" value="12"></div>
-    <div class="row"><span>☀️ light</span><input id="light" type="range" min="0" max="360" value="200"></div>
     <div class="btns"><button id="pause">⏸ pause</button><button id="boost">💨 boost</button></div>
   </div>
   <div class="hint">drag to orbit · scroll to zoom · tap anywhere</div>
@@ -93,7 +92,6 @@ console.warn  = () => {};
 /* ───────────────────────── params ───────────────────────── */
 const Q = new URLSearchParams(location.search);
 const spinV  = Math.min(60, Math.max(0, +Q.get('spin')  || 12));
-const lightV = Math.min(360,Math.max(0, +Q.get('light') || 200));
 const poseV  = +Q.get('pose') || 0;
 
 /* ───────────────────────── voxel authoring ───────────────────────── */
@@ -110,7 +108,6 @@ const M_U0=C(0x381866), M_U1=C(0x9a2fb0), M_U2=C(0xe646b4), M_U3=C(0xff82d4);   
 const M_CAP=C(0xffd9f2), M_RIM=C(0xffa2dc);
 const ROAD=C(0x150533), EDGE=C(0x35f0ff), DASH=C(0xff3ea5), PLAIN=C(0x22104a), GRID=C(0x35f0ff);
 const TRUNK=C(0xb03cc9), FROND=C(0x2ef0c9), CROWN=C(0xff5fa8), FRUIT=C(0xffd400);
-const SUN_HI=C(0xfff6b0), SUN_Y=C(0xffd66e), SUN_O=C(0xff9e6e), SUN_P=C(0xff6e9e), SUN_M=C(0xff3d8f);
 const CLOUD_T=C(0xcbb8ff), CLOUD_B=C(0xff9ad5);
 
 /* value noise */
@@ -197,18 +194,7 @@ for(const [key,vv] of vox){
   }
 }
 
-/* ── voxel sun: flat disc, 2 thick, striped lower half ── */
-const SUN_R=27, SUN_CY=47, SUN_Z=-97;
-for(let dx=-SUN_R;dx<=SUN_R;dx++)for(let dy=-SUN_R;dy<=SUN_R;dy++){
-  if(dx*dx+dy*dy>SUN_R*SUN_R)continue;
-  const y=SUN_CY+dy;
-  if(dy<0){ const r=-dy; if((r%7)<2&&dy<-4) continue;                       // widening stripes
-            if(r>16&&(r%5)===0) continue; }
-  let c = dy>10? SUN_HI : dy>-2? SUN_Y.clone().lerp(SUN_O,(10-dy)/12)
-              : dy>-12? SUN_O.clone().lerp(SUN_P,(-2-dy)/10)
-              : SUN_P.clone().lerp(SUN_M,Math.min(1,(-12-dy)/15));
-  setG(dx,y,SUN_Z,c); setG(dx,y,SUN_Z-1,c.clone().multiplyScalar(.85));
-}
+/* sun: now a distant voxel SPHERE at scene root — see SUNP + sunVox below */
 
 /* ── palms ── */
 function palm(px,pz,hgt,lean){
@@ -305,15 +291,17 @@ const mat=new THREE.MeshStandardMaterial({roughness:.82,metalness:.06});
 const jit=(x,y,z)=>{const t=Math.sin(x*127.1+y*311.7+z*74.7)*43758.5453;return .955+(t-Math.floor(t))*.09;};
 
 /* lights — pinned to scene root, never parented to the island */
-scene.add(new THREE.HemisphereLight(0x9a7cff,0x2a0f4a,.78));
+scene.add(new THREE.HemisphereLight(0x9a7cff,0x2a0f4a,.95));
+const SUNP=new THREE.Vector3(0,30,-330);            // distant voxel sun — the actual light source
 const sun=new THREE.DirectionalLight(0xffc2e0,2.1);
+sun.position.copy(SUNP);                             // light streams from the sun straight down the highway
 sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
 sun.shadow.camera.left=-130;sun.shadow.camera.right=130;
 sun.shadow.camera.top=130;sun.shadow.camera.bottom=-130;
-sun.shadow.camera.near=20;sun.shadow.camera.far=460;sun.shadow.bias=-.0005;
+sun.shadow.camera.near=200;sun.shadow.camera.far=470;sun.shadow.bias=-.001;
+sun.shadow.camera.updateProjectionMatrix();
 scene.add(sun,sun.target);
-const rim=new THREE.DirectionalLight(0x66e0ff,.85); rim.position.set(-40,55,120); scene.add(rim);
-const setLight=deg=>{const a=deg*Math.PI/180; sun.position.set(Math.sin(a)*150,95,Math.cos(a)*150);};
+const rim=new THREE.DirectionalLight(0x66e0ff,1.15); rim.position.set(-40,55,120); scene.add(rim);
 
 /* island group (spins) */
 const island=new THREE.Group(); island.rotation.y=poseV*Math.PI/180; scene.add(island);
@@ -348,6 +336,32 @@ for(const cl of clouds) for(const v of cl.vox) skyMesh.setColorAt(si++,col.copy(
 for(const st of stars)      skyMesh.setColorAt(si++,col.copy(st.c));
 scene.add(skyMesh);
 
+/* ── distant voxel sun sphere — scene root, fixed: THE light source ──
+   2-unit voxels on a coarse lattice keep it ~5k instances while reading
+   chunky at 470 units away. Latitudinal neon gradient + classic widening
+   slice-gaps in the lower half; open bottom below the last gap.        */
+const SR=22, SS=2;
+const inGap= sy => (sy>=-4&&sy<=-3)||(sy>=-9&&sy<=-7)||(sy>=-14&&sy<=-11)||(sy>=-21&&sy<=-17);
+const stops=[[22,0xfff6b0],[8,0xffd66e],[0,0xff9e6e],[-10,0xff6e9e],[-21,0xff3d8f]];
+const sunCol= sy => { let a=stops[0],b=stops[stops.length-1];
+  for(let i=0;i<stops.length-1;i++) if(sy<=stops[i][0]&&sy>=stops[i+1][0]){a=stops[i];b=stops[i+1];break;}
+  return C(a[1]).lerp(C(b[1]),(a[0]-sy)/((a[0]-b[0])||1)); };
+const sunVox=[];
+for(let sy=-21;sy<=SR;sy++){
+  if(inGap(sy)) continue;
+  const rr=Math.sqrt(SR*SR-sy*sy), ri=rr-1.75;
+  for(let sx=-SR;sx<=SR;sx++)for(let sz=-SR;sz<=SR;sz++){
+    const d2=sx*sx+sz*sz;
+    if(d2>rr*rr||d2<ri*ri) continue;
+    sunVox.push({x:SUNP.x+sx*SS, y:SUNP.y+sy*SS, z:SUNP.z+sz*SS, c:sunCol(sy)});
+  }
+}
+const sunMesh=new THREE.InstancedMesh(new THREE.BoxGeometry(SS,SS,SS), new THREE.MeshBasicMaterial({fog:false}), sunVox.length);
+sunMesh.frustumCulled=false;
+sunVox.forEach((v,i)=>{ m4.makeTranslation(v.x,v.y,v.z); sunMesh.setMatrixAt(i,m4);
+  sunMesh.setColorAt(i,col.copy(v.c).multiplyScalar(jit(v.x,v.y,v.z))); });
+scene.add(sunMesh);
+
 /* bloom */
 const composer=new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene,camera));
@@ -358,12 +372,10 @@ composer.addPass(new OutputPass());
 
 /* ───────────────────────── UI + state ───────────────────────── */
 const $=id=>document.getElementById(id);
-const spinEl=$('spin'), lightEl=$('light');
-spinEl.value=spinV; lightEl.value=lightV;
+const spinEl=$('spin');
+spinEl.value=spinV;
 let spinRPS=spinV/100, paused=false, boostUntil=0;
 spinEl.addEventListener('input',()=>spinRPS=spinEl.value/100);
-setLight(lightV);
-lightEl.addEventListener('input',()=>setLight(+lightEl.value));
 $('pause').addEventListener('click',()=>{paused=!paused;$('pause').textContent=paused?'▶ resume':'⏸ pause';});
 
 const burstEmoji=(x,y)=>{const glyphs=['✨','💖','🔮','🌆','💫'];
@@ -382,7 +394,7 @@ renderer.domElement.addEventListener('pointerdown',e=>{if(e.isPrimary)burstEmoji
 
 /* ───────────────────────── animate ───────────────────────── */
 document.getElementById('voxmeta').textContent =
-  `${(solid.length+glow.length).toLocaleString()} voxels · one infinite sunset · the world turns, the neon stays lit`;
+  `${(solid.length+glow.length+sunVox.length).toLocaleString()} voxels · a real sun, far away · the world turns, the neon stays lit`;
 
 let carZ=62, last=performance.now(), t=0;
 const q0=new THREE.Quaternion(), sc=new THREE.Vector3();
@@ -426,6 +438,8 @@ window.__glowMesh=glowMesh;
 window.__analyze=()=>({
   pose:((island.rotation.y*180/Math.PI)%360+360)%360,
   sun:[sun.position.x,sun.position.y,sun.position.z],
+  sunNdc:(()=>{const v=new THREE.Vector3(SUNP.x,SUNP.y,SUNP.z).project(camera);return[+v.x.toFixed(3),+v.y.toFixed(3)];})(),
+  sunVox:sunVox.length,
   voxels:solid.length, car:car.length, sky:skyCount,
   carZ:+carZ.toFixed(2), paused, spinRPS
 });
