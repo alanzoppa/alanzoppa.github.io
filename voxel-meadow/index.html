@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🐾 chihuahua meadow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<style>
+  :root{--ink:#6b5566;}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(760px 420px at 78% -10%, #ffe3f0 0%, rgba(255,227,240,0) 62%),
+      radial-gradient(700px 420px at 12% 112%, #ffe8c9 0%, rgba(255,232,201,0) 58%),
+      linear-gradient(168deg,#cfe9ff 0%,#e6f2ff 34%,#ffeef4 68%,#ffdcea 100%);
+    height:100vh;overflow:hidden;
+  }
+  .sun-glow{position:absolute;right:9%;top:8%;width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle,#fff9d9 0%,#ffeec2 42%,rgba(255,238,194,0) 70%);
+    pointer-events:none;z-index:1}
+  #stage{position:relative;width:min(1100px,100vw);height:calc(100vh - 20px);max-height:760px;
+    overflow:hidden;border-radius:20px}
+  #stage canvas{position:absolute;inset:0;display:block;cursor:grab}
+  #stage canvas:active{cursor:grabbing}
+  .hud{position:absolute;top:16px;left:20px;z-index:4;pointer-events:none}
+  .hud h1{margin:0;font-size:22px;letter-spacing:.5px;font-weight:800}
+  .hud p{margin:3px 0 0;font-size:12.5px;opacity:.75}
+  .back{position:absolute;top:18px;right:18px;z-index:5;font-size:12px;font-weight:700;
+    color:var(--ink);opacity:.65;text-decoration:none;border-bottom:1px dotted var(--ink)}
+  .back:hover{opacity:1}
+  .panel{position:absolute;left:16px;bottom:14px;z-index:4;display:flex;flex-direction:column;gap:8px;
+    padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.6);
+    backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 8px 24px rgba(150,90,120,.12)}
+  .row{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600}
+  .row input[type=range]{width:120px;accent-color:#e88fb0}
+  .btns{display:flex;gap:8px}
+  .btns button{border:0;border-radius:12px;padding:6px 12px;font-size:12.5px;font-weight:700;
+    background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(150,90,120,.16);cursor:pointer}
+  .btns button:active{transform:scale(.94)}
+  .hint{position:absolute;right:18px;bottom:14px;z-index:4;font-size:11.5px;opacity:.65;pointer-events:none}
+  .heart{position:absolute;z-index:6;pointer-events:none;user-select:none;
+    animation:rise 1.15s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(-12deg)}
+    14%{opacity:1}
+    100%{opacity:0;transform:translate(-50%,-230px) scale(1.35) rotate(14deg)}
+  }
+  #err{position:absolute;top:12px;left:12px;right:12px;z-index:9;color:#b00;font:12px monospace;
+    white-space:pre-wrap;display:none;background:#fff8;padding:8px;border-radius:8px}
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<div id="stage">
+  <div class="sun-glow"></div>
+  <div class="hud"><h1>🐾 chihuahua meadow</h1><p id="voxmeta">growing the grass…</p></div>
+  <a class="back" href="../">← home</a>
+  <div class="panel">
+    <div class="row"><span>🌀 spin</span><input id="spin" type="range" min="0" max="60" value="10"></div>
+    <div class="row"><span>☀️ light</span><input id="light" type="range" min="0" max="360" value="35"></div>
+    <div class="btns"><button id="pause">⏸ pause</button><button id="boop">💗 boop</button></div>
+  </div>
+  <div class="hint">drag to orbit · scroll to zoom · tap anywhere</div>
+  <div id="err"></div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+window.__errs=[]; window.__ready=false; window.__counts={};
+const _err=console.error.bind(console);
+console.error=(...a)=>{window.__errs.push(a.map(String).join(' '));_err(...a)};
+window.addEventListener('error',e=>window.__errs.push(e.message));
+
+/* ══════════ palette ══════════ */
+const C={
+  grass:0x86d69a, grassLite:0xa9e6ae, dirt:0x9c6b4b, dirtDark:0x7a4f36, stone:0x8a8078,
+  water:0x9adcf0, waterDeep:0x7cc4e6, lily:0x6fcf8f, lotus:0xffb3cf,
+  sand:0xe8d5a8, fence:0xfdfbf4, rock:0xb9b2ab, rockDark:0x9a938d,
+  trunk:0x8a5a3c, leaf:0x74c98a, leafLite:0x93dda2, blossom:0xffb9d4, blossomLite:0xffd3e5,
+  mushRed:0xe86a6a, mushDot:0xfdf3ea, mushStem:0xf0e4d4,
+  blanketA:0xf2f0ea, blanketB:0xe0797f, bone:0xf7f0dd, cupWrap:0xc98a5b, cupFrost:0xfdf0f5, cherry:0xe85d6a,
+  sign:0xb98a5f, signDark:0x7a4f36, signText:0xfdf3ea,
+  cream:0xf5e7c8, caramel:0xd99a5b, white:0xfbf4ea,
+  eye:0x241a1c, lash:0x4a3230, glint:0xffffff,
+  blush:0xf49ab0, pinkIn:0xf3b7c9,
+  collRed:0xe85d6a, collBlue:0x6ab6e8, collLav:0xb28ae0, tag:0xf4c84c,
+  tongue:0xf2809e, nose:0x241a1c,
+  wingPink:0xffa8c9, wingPinkD:0xe87ea8, wingLav:0xc3a8f0, wingLavD:0x9f7ed9,
+  wingYel:0xffd97a, wingYelD:0xe8b44a, bflyBody:0x4a3230,
+  cloud:0xffffff, cloudShade:0xf2d9e6,
+  zzz:0xa8c8f0, heartV:0xff7fae, sparkle:0xfff2b8, sparkleW:0xffffff, petal:0xffb9d4,
+};
+
+/* ══════════ static voxel builder ══════════ */
+const vox=new Map(); const key=(x,y,z)=>x+'|'+y+'|'+z;
+const setV=(x,y,z,c)=>vox.set(key(x,y,z),{x,y,z,c});
+const delV=(x,y,z)=>vox.delete(key(x,y,z));
+const box=(x0,x1,y0,y1,z0,z1,c)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)for(let z=z0;z<=z1;z++)setV(x,y,z,c)};
+const ell=(cx,cy,cz,rx,ry,rz,c)=>{
+  for(let x=Math.floor(cx-rx);x<=Math.ceil(cx+rx);x++)
+  for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++)
+  for(let z=Math.floor(cz-rz);z<=Math.ceil(cz+rz);z++){
+    const dx=(x-cx)/rx,dy=(y-cy)/ry,dz=(z-cz)/rz;
+    if(dx*dx+dy*dy+dz*dz<=1.0001)setV(x,y,z,c);
+  }};
+const recolor=(pred,c)=>{for(const v of vox.values()) if(pred(v.x,v.y,v.z,v.c)) v.c=c;};
+
+function shell(list){ /* keep only boundary voxels of a list */
+  const has=new Set(list.map(v=>key(v.x,v.y,v.z)));
+  return list.filter(v=> !has.has(key(v.x+1,v.y,v.z))||!has.has(key(v.x-1,v.y,v.z))||
+                          !has.has(key(v.x,v.y+1,v.z))||!has.has(key(v.x,v.y-1,v.z))||
+                          !has.has(key(v.x,v.y,v.z+1))||!has.has(key(v.x,v.y,v.z-1)));
+}
+
+/* ══════════ dynamic parts ══════════ */
+const parts=[];
+function addPart(anim){ const p={anim, vox:[], start:0}; parts.push(p); return p; }
+const partV=(p,x,y,z,c)=>p.vox.push({d:[x,y,z],c});
+
+/* ══════════ THE FLOATING ISLAND — flat meadow top, beveled rim, tapered base ══════════ */
+const R=48;
+for(let x=-R;x<=R;x++)for(let z=-R;z<=R;z++){
+  const d=Math.hypot(x,z); if(d>R) continue;
+  const bev=Math.max(0,(d-(R-10))/10);
+  const topY=Math.round(20 - bev*bev*5);          // flat 20 until d=38, rim dips to ~15
+  const yLow=Math.round(-16 + (d/R)*(d/R)*16);   // thick center, thin rounded rim
+  for(let y=yLow;y<=topY;y++){
+    const depth=topY-y;
+    setV(x,y,z, depth<3?C.grass : depth<7?C.dirt : C.stone);
+  }
+}
+const topOf=new Map();
+for(const v of vox.values()){ const k=v.x+'|'+v.z;
+  if(!topOf.has(k)||v.y>topOf.get(k)) topOf.set(k,v.y); }
+/* mowing stripes on the flat top */
+recolor((x,y,z,c)=> c===C.grass && ((x+z)%12)<6 && topOf.get(x+'|'+z)-y===0, C.grassLite);
+const G=(x,z)=>topOf.get(Math.round(x)+'|'+Math.round(z))??20;
+
+/* pond — carved into the flat top (all inside the flat zone) */
+const POND={x:-24,z:10,r:13};
+for(let x=-POND.r-3;x<=POND.r+3;x++)for(let z=-POND.r-3;z<=POND.r+3;z++){
+  const px=POND.x+x, pz=POND.z+z, d=Math.hypot(x,z);
+  if(d>POND.r+3) continue;
+  const t=G(px,pz);
+  if(d<=POND.r){ delV(px,t,pz); delV(px,t-1,pz); delV(px,t-2,pz);
+    setV(px,t-2,pz, d<POND.r-5?C.waterDeep:C.water); }
+  else { setV(px,t,pz,C.sand);                        /* sandy beach ring */
+    if((x+z)%4===0) setV(px,t+1,pz,C.rock); }         /* sparse rim boulders */
+}
+{ /* lily pads + lotus sitting ON the water */
+  const WY=G(POND.x,POND.z)-2;
+  for(const [ox,oz,r] of [[-6,4,3],[6,-5,3],[2,8,2]]){
+    const px=POND.x+ox, pz=POND.z+oz;
+    for(let x=-r;x<=r;x++)for(let z=-r;z<=r;z++)
+      if(x*x+z*z<=r*r) setV(px+x,WY+1,pz+z,C.lily);
+    if(r===3){ setV(px,WY+2,pz,C.lotus); setV(px,WY+3,pz,C.lotus); }
+  }
+}
+/* sandy path from the fence gap to the middle */
+for(let z=44;z>=10;z--){ const x=Math.round(3*Math.sin(z/9));
+  for(let dx=-2;dx<=2;dx++){ const px=x+dx, t=G(px,z);
+    const v=vox.get(key(px,t,z)); if(v&&(v.c===C.grass||v.c===C.grassLite)) v.c=C.sand; } }
+/* vines hanging from the underside rim */
+for(const [vx,vz,len] of [[-30,-32,9],[16,-41,12],[42,-12,8],[34,28,10],[-8,43,13],[-42,12,7]]){
+  for(let i=0;i<len;i++) setV(vx,-3-i,vz, i%3===2?C.leaf:(i%2?C.dirtDark:C.dirt));
+  setV(vx,-3-len,vz,C.leaf);
+}
+
+/* ══════════ KAWAII PUP FACTORY ══════════
+   One master voxel list P per pup (last-wins color, region-tagged), then a merge
+   pass assigns each voxel to exactly ONE sink: body sink has absolute priority
+   (structural voxels must never move with a head/tail/ear), then ear > head > tail.
+   All recolors (eyes/blush/blaze) happen INSIDE buildPup before the flush, so
+   late recolors stay with whatever part owns the voxel. */
+function buildPup(sinks, o){
+  const P=[];
+  const put=(x,y,z,c,r)=>{ const v={x,y,z,c,r:r||'b'}; P.push(v); return v; };
+  const putH=(x,y,z,c)=>put(x,y,z,c,'h');
+  const putT=(x,y,z,c)=>put(x,y,z,c,'t');
+  const putE=(x,y,z,c)=>put(x,y,z,c,'e');
+  const coat=o.coat, patch=o.patch||o.coat, inner=o.inner||C.pinkIn, collar=o.collar;
+  function ellS(cx,cy,cz,rx,ry,rz,c,S){ S=S||put;
+    for(let x=Math.floor(cx-rx);x<=Math.ceil(cx+rx);x++)
+    for(let y=Math.floor(cy-ry);y<=Math.ceil(cy+ry);y++)
+    for(let z=Math.floor(cz-rz);z<=Math.ceil(cz+rz);z++){
+      const dx=(x-cx)/rx,dy=(y-cy)/ry,dz=(z-cz)/rz;
+      if(dx*dx+dy*dy+dz*dz<=1.0001) S(x,y,z,c); } }
+  function boxS(x0,x1,y0,y1,z0,z1,c,S){ S=S||put;
+    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)for(let z=z0;z<=z1;z++) S(x,y,z,c); }
+  function paintIf(pred,c){ for(const v of P) if(v.c!==c&&pred(v)) v.c=c; }
+  function collarPaint(yLow,yHigh){
+    for(let y=yLow;y<=yHigh;y++){
+      let rmax=0; for(const v of P) if(v.y===y&&v.c===coat) rmax=Math.max(rmax,Math.hypot(v.x,v.z));
+      for(const v of P) if(v.y===y&&v.c===coat&&Math.hypot(v.x,v.z)>=rmax-1.3) v.c=collar;
+    }
+    let tag=null;
+    for(const v of P) if(v.c===collar&&v.y===yLow&&(!tag||v.z>tag.z)) tag=v;
+    if(tag) tag.c=C.tag;
+  }
+  function head(hx,hy,hz,{up=false,sleep=false,s=1}={}){
+    const RF=Math.round, r=12*s, hr=(up?10:11)*s, rz=r-1*s;
+    const eyyF=hy+2*s, eyyI=RF(eyyF);
+    ellS(hx,hy,hz, r,hr,rz, coat, putH);
+    ellS(hx,hy-4*s,hz+rz-3*s, 5*s,4*s,4*s, C.white, putH);          /* muzzle */
+    boxS(hx-RF(2*s),hx+RF(2*s),hy-RF(3*s),hy-RF(2*s),hz+RF(rz-1*s),hz+RF(rz), C.nose, putH);
+    if(!sleep){
+      putH(hx-RF(1*s),hy-RF(7*s),hz+RF(rz-1*s),C.lash);
+      putH(hx,hy-RF(8*s),hz+RF(rz-1*s),C.lash);
+      putH(hx+RF(1*s),hy-RF(7*s),hz+RF(rz-1*s),C.lash);
+      if(up){ putH(hx-RF(1*s),hy-RF(7*s),hz+RF(rz),C.tongue);
+        putH(hx,hy-RF(8*s),hz+RF(rz+1*s),C.tongue);
+        putH(hx+RF(1*s),hy-RF(7*s),hz+RF(rz),C.tongue); }
+      for(const sx of[-1,1]){                            /* HUGE sparkly eyes */
+        const ex=hx+sx*RF(6*s);
+        paintIf(v=>{ const dx=v.x-ex, dy=(v.y-eyyF)/(1.15*s), dz=(v.z-(hz+rz-5*s))/(1.1*s);
+          return dx*dx+dy*dy+dz*dz<15*s*s && v.z>hz+rz-9*s; }, C.eye);
+        putH(ex-RF(2*s),eyyI+RF(5*s),hz+RF(rz-4*s),C.glint);
+        putH(ex-RF(3*s),eyyI+RF(4*s),hz+RF(rz-4*s),C.glint);
+        putH(ex+RF(2*s),eyyI-RF(3*s),hz+RF(rz-3*s),C.glint);
+      }
+    } else {
+      for(const sx of[-1,1]){ putH(hx+sx*RF(6*s),hy+RF(2*s),hz+RF(rz-4*s),C.lash);
+        for(let i=-1;i<=1;i++) putH(hx+sx*RF(6*s)+i,hy+1,hz+RF(rz-4*s),inner); }
+    }
+    for(const sx of[-1,1])                                 /* blush always */
+      paintIf(v=>{ const dx=(v.x-(hx+sx*RF(10*s)))/(3*s), dy=(v.y-(hy-4*s))/(1.6*s), dz=(v.z-(hz+rz-5*s))/(1.4*s);
+        return dx*dx+dy*dy+dz*dz<1&&v.c===coat; }, inner);
+    paintIf(v=> v.c===coat&&Math.abs(v.x-hx)<=Math.max(1,RF(s))&&v.y>=hy-2*s&&v.z>hz+rz-8*s, C.white); /* blaze */
+    /* ears — splayed giants; right ear of the sleeper routes to its flick part */
+    for(const sx of[-1,1]){
+      if(sleep&&sx<0){ let fy=hy+9, fz=hz-1, fx=hx-6;    /* floppy ear drapes the cheek */
+        for(let i=0;i<10;i++){ putH(RF(fx),RF(fy),RF(fz),patch);
+          putH(RF(fx),RF(fy),RF(fz)+1,inner);
+          fy-=1.05; fz+=.55; fx-=.45; }
+        continue; }
+      const earH=RF(15*s);
+      for(let i=0;i<earH;i++){
+        const w=Math.max(2,RF(7*s)-Math.floor(i/2.4));
+        const yl=RF(hy+hr-2)+i, z0=hz-RF(4*s)+Math.floor(i/3), z1=hz+RF(1*s);
+        const S=(sleep&&sx>0&&sinks.ear)?putE:putH;
+        for(let x=Math.max(1,w-RF(4*s));x<=w;x++) for(let z=z0;z<=z1;z++)
+          S(hx+sx*x, yl, z, patch);
+        for(let x=Math.max(1,w-RF(3*s));x<=w-1;x++) S(hx+sx*x,yl,z1,inner);
+      }
+    }
+  }
+  function tail(tx,ty,tz,{up=false,curl=false}={}){
+    let pts=[];
+    if(up){ for(let i=0;i<13;i++) pts.push([tx, ty+i, tz+Math.round(i/4)]); }
+    else if(curl){ for(let a=0;a<=200;a+=18){ const rr=8-a/200*4, ang=a*Math.PI/180;
+        pts.push([tx+Math.cos(ang)*rr, 3+Math.sin(a/28), tz+Math.sin(ang)*rr]); } }
+    else { for(let a=-60;a<=110;a+=12){ const rr=9,ang=a*Math.PI/180;
+        pts.push([tx+Math.sin(ang)*rr*.6, ty+Math.sin(ang)*rr, tz+Math.cos(ang)*rr*.8-4]); } }
+    const taken=new Set(P.map(v=>v.x+'|'+v.y+'|'+v.z));
+    for(let i=0;i<pts.length;i++){ const [x,y,z]=pts[i];
+      const thick=i<2?2:1;
+      for(let dx=-thick;dx<=thick;dx++)for(let dy=-thick;dy<=thick;dy++)for(let dz=-thick;dz<=thick;dz++){
+        if(dx*dx+dy*dy+dz*dz>thick*1.6) continue;
+        const k=(x+dx)+'|'+(y+dy)+'|'+(z+dz);
+        if(taken.has(k)) continue; taken.add(k);
+        putT(Math.round(x+dx),Math.round(y+dy),Math.round(z+dz), i>pts.length-5?C.white:coat);
+      } }
+  }
+  /* ---- poses ---- */
+  if(o.pose==='sit'){
+    ellS(0,9,-3, 8,8,8, coat);           /* rump */
+    ellS(0,13,3, 6,7,6, coat);           /* chest */
+    boxS(-6,-3,0,10,7,9, coat); boxS(3,6,0,10,7,9, coat);   /* front legs */
+    for(const sx of[-1,1]) for(let y=0;y<=2;y++) for(let z=8;z<=10;z++)
+      for(let x=3;x<=6;x++) put(sx*x,y,z, C.white);          /* white socks */
+    paintIf(v=>v.c===coat&&Math.abs(v.x)<=5&&Math.abs(v.y-16)<=3&&Math.abs(v.z+2)<=5, patch);
+    paintIf(v=>v.c===coat&&Math.abs(v.x)<=5&&Math.abs(v.y-12)<=5&&Math.abs(v.z-4)<=3, C.white);
+    collarPaint(16,18);
+    head(0,27,3);
+    tail(0,10,-11);
+  } else if(o.pose==='bow'){ /* puppy play-bow: face DOWN front, butt UP, tail the tallest flag */
+    ellS(0,3,6, 4,2.5,3.6, coat);                          /* chest on the ground */
+    boxS(-6,-3,0,1,4,12, coat); boxS(3,6,0,1,4,12, coat);  /* forelegs stretched forward */
+    for(const sx of[-1,1]) for(let x=4;x<=6;x++) for(let z=10;z<=12;z++){
+      put(sx*x,0,z,C.white); put(sx*x,1,z,C.white); }      /* white paws in front */
+    ellS(0,7,0, 4.5,3.5,5, coat);                          /* spine rising */
+    ellS(0,12,-5, 5,5,4, coat);                            /* rump UP */
+    boxS(-6,-3,0,14,-8,-3, coat); boxS(3,6,0,14,-8,-3, coat);/* standing hind legs */
+    for(const sx of[-1,1]) for(let x=3;x<=6;x++) for(let y=0;y<=1;y++)
+      for(let z=-8;z<=-6;z++) put(sx*x,y,z,C.white);       /* white hind socks */
+    ellS(0,16,-5, 3.5,2.8,3, patch);                       /* raised saddle patch */
+    paintIf(v=>v.c===coat&&Math.abs(v.x)<=4&&Math.abs(v.y-3)<=2.5&&Math.abs(v.z-8)<=3, C.white);
+    collarPaint(4,5);
+    head(0,6,12,{up:true,s:.65});                          /* face low: chin on the grass */
+    tail(0,17,-7,{up:true});                               /* tail flag — highest point */
+  } else { /* sleep — bean of two mounds, no carve needed */
+    ellS(-2,4,-2, 8,5,8, coat);
+    ellS(4,5,4, 5,3.5,5, coat);
+    paintIf(v=>v.c===coat&&Math.abs(v.x)<=6&&Math.abs(v.y-7)<=3&&Math.abs(v.z+3)<=6, patch);
+    head(6,9,4,{sleep:true,s:.8});                          /* chin flush with the grass */
+    tail(2,3,4,{curl:true});
+  }
+  /* merge duplicates: body sink has ABSOLUTE priority — a voxel tagged 'b' at ANY
+     point keeps body rights (structural voxels never move with head/tail/ear);
+     otherwise ear > head > tail. Last-painted color wins. */
+  const seen=new Map();
+  for(const v of P){ const k=v.x+'|'+v.y+'|'+v.z; const prev=seen.get(k);
+    if(!prev){ seen.set(k,v); continue; }
+    prev.c=v.c;
+    if(v.r==='b'||prev.r==='b'){ prev.r='b'; }
+    else if(v.r==='e'){ prev.r='e'; }
+    else if(v.r==='h'){ prev.r='h'; }
+    else if(v.r==='t'){ prev.r='t'; }
+  }
+  for(const v of seen.values()){
+    const s = v.r==='b'?sinks.body :
+              v.r==='e'?(sinks.ear||sinks.head) :
+              v.r==='h'?sinks.head : sinks.tail;
+    s(v.x,v.y,v.z,v);
+  }
+  return [...seen.values()];
+}
+/* sinks */
+const islandSink=(ox,oy,oz)=>(x,y,z,v)=>setV(ox+x,oy+y,oz+z,v.c);
+const partSink=(p,px,py,pz)=>(x,y,z,v)=>p.vox.push({d:[x-px,y-py,z-pz],o:v});
+
+/* ══════════ the three pups ══════════ */
+const STAR={x:0,z:8}, PLAY={x:-30,z:-14}, SLEEP={x:18,z:28};
+const g1=G(STAR.x,STAR.z), g2=G(PLAY.x,PLAY.z), g3=G(SLEEP.x,SLEEP.z);
+
+const head1=addPart((t,now)=>{ const boost=now<wagBoostUntil;
+  return {pos:[STAR.x,g1+16,STAR.z+3],
+    rot:[0, .13*Math.sin(t*.19)+(boost?.16*Math.sin(t*2.2):0), .15*Math.sin(t*.31)+(boost?.08:0)]}; });
+const tail1=addPart((t,now)=>{ const boost=now<wagBoostUntil;
+  return {pos:[STAR.x,g1+10,STAR.z-11],
+    rot:[0, (boost?.5:.18)*Math.sin(t*(boost?11:3.4)), 0]}; });
+buildPup({ body:islandSink(STAR.x,g1,STAR.z), head:partSink(head1,0,16,3), tail:partSink(tail1,0,10,-11) },
+  {pose:'sit', coat:C.cream, patch:C.caramel, collar:C.collRed});
+
+const HOPF=t=>3*Math.abs(Math.sin(t*1.35));
+const pup2body=addPart(t=>({pos:[PLAY.x,g2+HOPF(t),PLAY.z], rot:[0,0,0]}));
+const head2=addPart((t,now)=>{ const boost=now<wagBoostUntil;
+  return {pos:[PLAY.x,g2+HOPF(t)+6,PLAY.z+12],
+    rot:[0, .2*Math.sin(t*1.35), .12*Math.sin(t*.7)+(boost?.1:0)]}; });
+const tail2=addPart((t,now)=>{ const boost=now<wagBoostUntil;
+  return {pos:[PLAY.x,g2+HOPF(t)+17,PLAY.z-7],
+    rot:[0, (boost?.65:.3)*Math.sin(t*(boost?12:6.5)), 0]}; });
+buildPup({ body:partSink(pup2body,0,0,0), head:partSink(head2,0,6,12), tail:partSink(tail2,0,17,-7) },
+  {pose:'bow', coat:C.white, patch:C.caramel, collar:C.collBlue});
+
+const ear3=addPart(t=>{ const ph=(t%7)/7;
+  const flick=(ph>.86&&ph<.95)? Math.sin((ph-.86)/.09*Math.PI)*.12 : 0;
+  return {pos:[SLEEP.x+10,g3+13,SLEEP.z+1], rot:[0,0,-flick-.04*Math.sin(t*.5)]}; });
+buildPup({ body:islandSink(SLEEP.x,g3,SLEEP.z), head:islandSink(SLEEP.x,g3,SLEEP.z),
+  tail:islandSink(SLEEP.x,g3,SLEEP.z), ear:partSink(ear3,10,13,1) },
+  {pose:'sleep', coat:C.cream, patch:C.caramel, collar:C.collLav});
+
+/* ══════════ props ══════════ */
+{ /* cherry tree */
+  const tx=32,tz=-20, t=G(tx,tz);
+  for(let y=0;y<=28;y++){ const lean=Math.round(Math.sin(y/18)*2);
+    box(tx+lean-1,tx+lean+1, t+y,t+y, tz-1,tz+1, C.trunk); }
+  const bx=tx+2;
+  ell(bx,t+30,tz, 12,7,12, C.leaf); ell(bx-7,t+28,tz-5, 7,5,7, C.leafLite);
+  ell(bx+8,t+27,tz+6, 6,5,6, C.leafLite);
+  for(const [px,py,pz] of [[bx-9,t+34,tz-3],[bx+6,t+35,tz+8],[bx-4,t+26,tz-9],[bx+10,t+31,tz-6],[bx,t+36,tz+2]])
+    ell(px,py,pz, 3.5,3,3.5, (px+py)%3?C.blossom:C.blossomLite);
+  box(bx-3,bx+1,t+13,t+17,tz+3,tz+6,C.fence); setV(bx-1,t+15,tz+3,C.nose);
+  box(bx-2,bx,t+18,t+19,tz+3,tz+5,C.signDark);
+}
+{ /* picket fence along the south rim, gap at the path */
+  for(let deg=-42;deg<=42;deg+=7){
+    if(Math.abs(deg)<9) continue;
+    const a=deg*Math.PI/180, fx=Math.round(Math.sin(a)*45), fz=Math.round(Math.cos(a)*45);
+    const t=G(fx,fz);
+    box(fx-1,fx+1,t+1,t+7,fz-1,fz+1,C.fence);
+    setV(fx,t+8,fz,C.fence);
+    if(Math.abs(deg)<=16){ setV(fx,t+5,fz+1,C.collRed); setV(fx,t+4,fz+1,C.blanketA); }
+  }
+}
+{ /* welcome sign at the gap */
+  const t=G(0,46);
+  box(-1,1,t+1,t+7,46,48,C.sign);
+  box(-5,5,t+7,t+11,45,49,C.sign);
+  box(-6,6,t+8,t+10,44,50,C.signDark);
+  for(const [dx,dy] of [[-4,9],[-3,9],[-3,10],[-2,10],[-1,10],[0,9],[0,10],[1,10],[2,9],[2,10],[3,10],[4,9]])
+    setV(dx,t+dy,49,C.signText);
+  setV(0,t+11,49,C.signText); setV(-1,t+11,49,C.signText); setV(1,t+11,49,C.signText);
+}
+{ /* picnic */
+  const t=G(26,10);
+  for(let x=-6;x<=6;x++)for(let z=-6;z<=6;z++)
+    setV(26+x,t+1,10+z, ((Math.floor((x+6)/3)+Math.floor((z+6)/3))%2)?C.blanketB:C.blanketA);
+  for(let dx=-3;dx<=3;dx++){ setV(26+dx,t+2,10,C.bone);
+    if(Math.abs(dx)===3){ setV(26+dx,t+2,9,C.bone); setV(26+dx,t+2,11,C.bone); } }
+  const cx=31,cz=15,ct=G(cx,cz);
+  for(let x=-1;x<=1;x++)for(let z=-1;z<=1;z++) setV(cx+x,ct+1,cz+z,C.cupWrap);
+  for(let x=-2;x<=2;x++)for(let z=-2;z<=2;z++) if(Math.abs(x)+Math.abs(z)<3) setV(cx+x,ct+2,cz+z,C.cupFrost);
+  setV(cx,ct+3,cz,C.cherry); setV(cx-1,ct+3,cz+1,C.collLav);
+}
+{ /* mushrooms — open lawn SW, clear of every pup */
+  for(const [mx,mz,h,r] of [[-2,-26,6,5],[-10,-30,4,3.5],[4,-36,3,2.5]]){
+    const t=G(mx,mz);
+    box(mx-1,mx+1,t+1,t+h,mz-1,mz+1,C.mushStem);
+    ell(mx,t+h+1,mz, r,2.5,r, C.mushRed);
+    for(const [dx,dz] of [[r-1,0],[-r+1,1],[1,r-1],[0,-r+1]]) setV(mx+dx,t+h+2,mz+dz,C.mushDot);
+  }
+}
+{ /* boulders */
+  for(const [bx,bz,r] of [[-14,38,4],[-40,-4,5],[40,22,3.5]]){
+    const t=G(bx,bz);
+    ell(bx,t+r*.7,bz, r,r*.75,r, C.rock);
+    recolor((x,y,z,c)=>c===C.rock&&Math.hypot(x-bx,z-bz)<r-1&&y>t+r*.4, C.rockDark);
+  }
+}
+{ /* grass tufts */
+  for(const [fx,fz] of [[-8,30],[12,-2],[-20,-22],[8,42],[34,6],[-34,-30],[44,-8],[-44,8]]){
+    const t=G(fx,fz);
+    setV(fx,t+1,fz,C.leafLite); setV(fx,t+2,fz,C.leafLite);
+    setV(fx+1,t+1,fz,C.leaf); setV(fx-1,t+1,fz,C.leaf);
+  }
+}
+
+/* ══════════ butterflies ══════════ */
+function butterfly(cx,cy,cz,r,speed,phase,wc,wd){
+  const pos=t=>{ const a=t*speed+phase;
+    return [cx+Math.cos(a)*r, cy+Math.sin(a*2.3)*4, cz+Math.sin(a)*r, a]; };
+  const body=addPart(t=>{ const [x,y,z,a]=pos(t);
+    return {pos:[x,y,z], rot:[0,-a, .25*Math.sin(a*2.3)]}; });
+  partV(body,0,0,0,C.bflyBody); partV(body,0,1,1,C.bflyBody); partV(body,0,0,2,C.bflyBody);
+  partV(body,0,0,3,C.bflyBody); partV(body,0,0,-1,C.bflyBody);
+  partV(body,-1,2,-2,C.bflyBody); partV(body,1,2,-2,C.bflyBody);
+  for(const sgn of[1,-1]){
+    const wing=addPart(t=>{ const [x,y,z,a]=pos(t); const fl=Math.sin(t*7+phase)*.75;
+      return {pos:[x,y,z], rot:[0,-a, sgn*fl]}; });
+    for(const [wx,wy] of [[1,2],[2,2],[3,1],[4,0],[5,0],[1,3],[2,3],[3,2],[4,1],[2,4],[1,4],[3,3]]){
+      partV(wing, sgn*wx, wy+1, 0, (wx+wy)%3?wc:wd);
+      partV(wing, sgn*wx, wy+1, 1, (wx+wy)%3?wc:wd);
+    }
+  }
+}
+butterfly(PLAY.x+10, g2+32, PLAY.z+8, 11, .9, 0,   C.wingPink, C.wingPinkD);
+butterfly(POND.x,   G(POND.x,POND.z)+13, POND.z, 12, .7, 2.1, C.wingLav, C.wingLavD);
+butterfly(STAR.x+4, g1+15, STAR.z+12, 8, .8, 4.2, C.wingYel, C.wingYelD);
+
+/* ══════════ flowers ══════════ */
+const flowerSpots=[[-10,16],[10,-10],[-20,0],[14,24],[-8,40],[36,4],[-38,10],[6,44],[40,-14],[-14,-34]];
+flowerSpots.forEach(([fx,fz],i)=>{
+  const t=G(fx,fz), tall=6+(i%3)*2;
+  const pet=[C.lotus,C.wingYel,C.wingLav,C.blush][i%4];
+  const p=addPart(tt=>{ const ph=tt*1.3+i*1.17;
+    return {pos:[fx,t,fz], rot:[.13*Math.sin(ph),0,.1*Math.sin(ph*.8)]}; });
+  for(let y=1;y<=tall;y++) partV(p,0,y,0, y%3?C.leaf:C.leafLite);
+  partV(p,1,2,1,C.leaf); partV(p,-1,3,-1,C.leafLite);
+  if(i%2===0){ for(const [dx,dy,dz] of [[-1,1,0],[1,1,0],[0,1,-1],[0,1,1],[0,2,0],[-1,2,0],[1,2,0]])
+      partV(p,dx,tall+dy,dz,pet); }
+  else { for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]])
+      partV(p,dx,tall+1,dz,pet);
+    partV(p,0,tall+1,0,C.wingYel); partV(p,0,tall+2,0,C.wingYel); }
+});
+
+/* ══════════ clouds — drift over the meadow, shadows sweep the grass ══════════ */
+function cloudP(cy,r,speed,phase,sx,sy,sz){
+  const p=addPart(t=>{ const a=t*speed+phase;
+    return {pos:[Math.cos(a)*r, cy+2.5*Math.sin(t*.4+phase), Math.sin(a)*r], rot:[0,-a*.3,0]}; });
+  const e=(cx2,cy2,cz2,rx,ry,rz,c)=>{
+    for(let x=Math.floor(cx2-rx);x<=Math.ceil(cx2+rx);x++)
+    for(let y=Math.floor(cy2-ry);y<=Math.ceil(cy2+ry);y++)
+    for(let z=Math.floor(cz2-rz);z<=Math.ceil(cz2+rz);z++){
+      const dx=(x-cx2)/rx,dy=(y-cy2)/ry,dz=(z-cz2)/rz;
+      if(dx*dx+dy*dy+dz*dz<=1.0001) partV(p,x,y,z,c); } };
+  e(0,0,0,sx,sy,sz,C.cloud); e(-sx*.7,-sy*.3,sz*.3,sx*.6,sy*.7,sz*.6,C.cloud);
+  e(sx*.75,-sy*.25,-sz*.25,sx*.55,sy*.65,sz*.55,C.cloud);
+  for(const v of p.vox) if(v.d[1]<-sy*.35) v.c=C.cloudShade;
+}
+cloudP(58,44, .05, 0,   13,5,9);
+cloudP(64,56,-.035,2.4, 10,4,7);
+cloudP(55,42, .065, 4.4, 8,3.5,6);
+cloudP(61,50, .045, 1.3, 11,4.5,8);
+
+/* ══════════ Zzz above the sleeping pup ══════════ */
+function zPart(x0,z0,off,rot){
+  const p=addPart(t=>{ const cyc=((t*.22)+off)%1;
+    return {pos:[SLEEP.x+x0, g3+20+cyc*15, SLEEP.z+z0], rot,
+      s: cyc<.12?cyc/.12:(cyc>.8?(1-cyc)/.2:1)}; });
+  for(const [x,y] of [[0,0],[1,0],[2,0],[3,0],[2,-1],[1,-2],[0,-3],[1,-3],[2,-3],[3,-3]])
+    partV(p,x,y,0,C.zzz);
+}
+zPart(2,2,0,[0,.4,.15]); zPart(3.5,3,.33,[0,-.3,-.2]); zPart(5,4,.66,[0,.5,.3]);
+
+/* ══════════ hearts pool ══════════ */
+const HEARTN=10, hearts=[];
+const heartCells=[];
+for(const [x,y] of [[1,0],[2,0],[4,0],[5,0],[0,1],[3,1],[6,1],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[1,3],[2,3],[3,3],[4,3],[5,3],[2,4],[3,4],[4,4],[3,5]])
+  heartCells.push([x-3,y-2]);
+for(let i=0;i<HEARTN;i++){
+  const h=addPart((t,now)=>{
+    const st=h.__spawn??-1e9, life=2.3, u=(now-st)/1000;
+    if(u<0||u>life) return {pos:[0,-999,0], s:0};
+    const k=u/life, s=k<.15?k/.15:(k>.75?(1-k)/.25:1);
+    return {pos:[h.__x+Math.sin(u*3+i)*3, h.__y+u*13, h.__z],
+      rot:[0,Math.sin(u*2)*.4,Math.sin(u*2.5)*.3], s};
+  });
+  for(const [x,y] of heartCells) partV(h,x,y,0, i%3?C.heartV:C.wingPink);
+  hearts.push(h);
+}
+let heartCursor=0, lastAmbient=0;
+function spawnHeart(x,y,z){ const h=hearts[heartCursor++%HEARTN];
+  h.__spawn=performance.now(); h.__x=x; h.__y=y; h.__z=z; }
+
+/* ══════════ sparkles + petals ══════════ */
+const twinkleSpots=[[-10,16,10],[10,-10,12],[-24,10,8],[26,10,9],[32,-20,30],[-30,-14,12],[0,8,26],[18,28,14],[40,22,8],[-14,38,10]];
+twinkleSpots.forEach(([sx,sz,h],i)=>{
+  const p=addPart(t=>({pos:[sx,G(sx,sz)+h+2*Math.sin(t*.8+i),sz],
+    rot:[0,0,0], s:Math.max(.05,Math.abs(Math.sin(t*1.8+i*2)))*.9}));
+  partV(p,0,0,0, i%2?C.sparkle:C.sparkleW);
+});
+for(let i=0;i<14;i++){
+  const ang=i*2.399, rr=14+((i*37)%26);
+  const p=addPart(t=>{ const u=((t*.14)+i/14)%1;
+    return {pos:[Math.cos(ang)*rr, G(Math.cos(ang)*rr,Math.sin(ang)*rr)+u*30, Math.sin(ang)*rr],
+      rot:[0,0,0], s:(u<.1?u/.1:(u>.85?(1-u)/.15:1))*.7}; });
+  partV(p,0,0,0, i%3?C.sparkleW:C.sparkle);
+}
+for(let i=0;i<9;i++){
+  const p=addPart(t=>{ const u=((t*.09)+i/9)%1;
+    const bx=34, sway=Math.sin(u*9+i)*3;
+    return {pos:[bx+sway, G(bx,-20)+30-u*28, -20+Math.sin(i*3)*7],
+      rot:[0,u*3,u], s:u<.08?u/.08:(u>.9?(1-u)/.1:1)}; });
+  partV(p,0,0,0,C.blossom); partV(p,1,0,0,C.blossomLite);
+}
+
+/* ══════════ meshes ══════════ */
+const stat=[];
+for(const v of vox.values()){
+  if( vox.has(key(v.x+1,v.y,v.z))&&vox.has(key(v.x-1,v.y,v.z))&&
+      vox.has(key(v.x,v.y+1,v.z))&&vox.has(key(v.x,v.y-1,v.z))&&
+      vox.has(key(v.x,v.y,v.z+1))&&vox.has(key(v.x,v.y,v.z-1))) continue;
+  stat.push(v);
+}
+/* shell every dynamic part once, here (all parts now exist) */
+for(const p of parts){
+  p.vox=shell(p.vox.map(v=>({x:v.d[0],y:v.d[1],z:v.d[2],c:v.o?v.o.c:v.c,d:v.d,o:v.o})))
+        .map(v=>({d:v.d,o:v.o,c:v.c}));
+}
+let dynCount=0; for(const p of parts){ p.start=dynCount; dynCount+=p.vox.length; }
+window.__counts.static=stat.length; window.__counts.dynamic=dynCount;
+
+const geo=new THREE.BoxGeometry(1,1,1);
+const mat=new THREE.MeshStandardMaterial({roughness:.93,metalness:0});
+const m4=new THREE.Matrix4(), col=new THREE.Color();
+const jit=(x,y,z)=>{const t=Math.sin(x*127.1+y*311.7+z*74.7)*43758.5453;return .965+(t-Math.floor(t))*.07;};
+
+const staticMesh=new THREE.InstancedMesh(geo,mat,stat.length);
+staticMesh.castShadow=true; staticMesh.receiveShadow=true; staticMesh.frustumCulled=false;
+stat.forEach((v,i)=>{
+  m4.makeTranslation(v.x,v.y,v.z); staticMesh.setMatrixAt(i,m4);
+  col.setHex(v.c).multiplyScalar(jit(v.x,v.y,v.z)); staticMesh.setColorAt(i,col);
+});
+staticMesh.instanceColor.needsUpdate=true;
+
+const dynMesh=new THREE.InstancedMesh(geo,mat,dynCount);
+dynMesh.castShadow=true; dynMesh.receiveShadow=true; dynMesh.frustumCulled=false;
+parts.forEach(p=>p.vox.forEach((v,j)=>{
+  m4.makeTranslation(v.d[0],v.d[1],v.d[2]); dynMesh.setMatrixAt(p.start+j,m4);
+  col.setHex(v.c).multiplyScalar(jit(v.d[0],v.d[1],v.d[2])); dynMesh.setColorAt(p.start+j,col);
+}));
+dynMesh.instanceColor.needsUpdate=true;
+
+/* blink — dark eye voxels in the two awake pups' head parts */
+const eyeBlink=[];
+parts.forEach(p=>p.vox.forEach((v,j)=>{ if(v.c===C.eye) eyeBlink.push({i:p.start+j, open:v.c, closed:C.lash}); }));
+let blinkUntil=0, nextBlink=performance.now()+2600;
+function doBlink(now){
+  blinkUntil=now+130; nextBlink=now+2400+Math.random()*3400;
+  for(const e of eyeBlink){ col.setHex(e.closed); dynMesh.setColorAt(e.i,col); }
+  dynMesh.instanceColor.needsUpdate=true;
+}
+function unblink(){
+  for(const e of eyeBlink){ col.setHex(e.open); dynMesh.setColorAt(e.i,col); }
+  dynMesh.instanceColor.needsUpdate=true;
+}
+
+/* ══════════ scene — the island turns, the lights never do ══════════ */
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(stage.clientWidth,stage.clientHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.06;
+stage.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,stage.clientWidth/stage.clientHeight,.1,900);
+camera.position.set(78,64,168);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,18,0); controls.enableDamping=true; controls.dampingFactor=.08;
+controls.minDistance=70; controls.maxDistance=340;
+controls.minPolarAngle=.12; controls.maxPolarAngle=Math.PI*.68;
+
+const island=new THREE.Group();
+island.add(staticMesh); island.add(dynMesh);
+scene.add(island);
+
+scene.add(new THREE.HemisphereLight(0xd4ecff,0xffd9e8,.9));
+const sun=new THREE.DirectionalLight(0xfff2df,2.6);
+sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+const sc=sun.shadow.camera;
+sc.left=-52; sc.right=52; sc.top=70; sc.bottom=-52; sc.near=2; sc.far=260;
+sc.updateProjectionMatrix();
+sun.shadow.bias=-.0002; sun.shadow.normalBias=.03;
+sun.target.position.set(0,10,0);
+scene.add(sun,sun.target);
+const rim=new THREE.DirectionalLight(0xa8c8ff,.95); rim.position.set(-16,12,-18); scene.add(rim);
+const setSunAz=deg=>{const a=deg*Math.PI/180; sun.position.set(Math.sin(a)*60,72,Math.cos(a)*60);};
+setSunAz(35);
+
+/* ══════════ interaction ══════════ */
+let spinOn=true, spinSpeed=.10, paused=false, wagBoostUntil=0;
+document.getElementById('spin').addEventListener('input',e=>spinSpeed=e.target.value/100);
+document.getElementById('light').addEventListener('input',e=>setSunAz(+e.target.value));
+const pauseBtn=document.getElementById('pause');
+pauseBtn.addEventListener('click',()=>{paused=!paused;pauseBtn.textContent=paused?'▶ play':'⏸ pause';});
+function heartBurstCss(cx,cy){
+  const r=stage.getBoundingClientRect();
+  for(let i=0;i<8;i++){
+    const h=document.createElement('div'); h.className='heart';
+    h.textContent=['💗','💕','💖','🌸','🐾'][i%5];
+    h.style.left=(cx-r.left+(Math.random()*50-25))+'px';
+    h.style.top =(cy-r.top +(Math.random()*14-7))+'px';
+    h.style.animationDelay=(Math.random()*.12)+'s';
+    h.style.fontSize=(15+Math.random()*15)+'px';
+    stage.appendChild(h); setTimeout(()=>h.remove(),1400);
+  }
+}
+function boop(cx,cy){
+  wagBoostUntil=performance.now()+2500;
+  heartBurstCss(cx,cy);
+  for(let i=0;i<6;i++)
+    spawnHeart(STAR.x+(Math.random()*30-15), g1+34+Math.random()*8, STAR.z+(Math.random()*30-15));
+}
+document.getElementById('boop').addEventListener('click',e=>boop(e.clientX,e.clientY));
+renderer.domElement.addEventListener('pointerdown',e=>boop(e.clientX,e.clientY));
+
+{ const q=new URLSearchParams(location.search);
+  if(q.has('pose')) island.rotation.y=(+q.get('pose')||0)*Math.PI/180;
+  const L=q.get('light'); if(L!==null){ setSunAz(+L||0); document.getElementById('light').value=L; }
+  const s=q.get('spin'); if(s!==null){ spinSpeed=+s||0; document.getElementById('spin').value=Math.min(60,Math.round(spinSpeed*100)); }
+}
+
+/* ══════════ main loop ══════════ */
+document.getElementById('voxmeta').textContent=
+  `${stat.length.toLocaleString()} static + ${dynCount.toLocaleString()} animated voxels · three good dogs · the world turns, the light stays put`;
+
+const Q=new THREE.Quaternion(), EU=new THREE.Euler(), S=new THREE.Vector3(),
+      P=new THREE.Vector3(), T2=new THREE.Matrix4(), M2=new THREE.Matrix4();
+let t=0,last=performance.now();
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt=Math.min((now-last)/1000,.05); last=now;
+  if(!paused){ t+=dt; if(spinOn) island.rotation.y+=spinSpeed*dt; }
+  if(now>nextBlink) doBlink(now);
+  else if(blinkUntil&&now>blinkUntil){ unblink(); blinkUntil=0; }
+  if(now-lastAmbient>9000&&now>wagBoostUntil){ lastAmbient=now; spawnHeart(STAR.x,g1+40,STAR.z); }
+  for(const p of parts){
+    const tr=p.anim(t,now);
+    EU.set(tr.rot?tr.rot[0]:0, tr.rot?tr.rot[1]:0, tr.rot?tr.rot[2]:0); Q.setFromEuler(EU);
+    P.set(tr.pos[0],tr.pos[1],tr.pos[2]);
+    S.setScalar(tr.s??1);
+    M2.compose(P,Q,S);
+    for(let j=0;j<p.vox.length;j++){
+      const v=p.vox[j];
+      T2.makeTranslation(v.d[0],v.d[1],v.d[2]);
+      T2.premultiply(M2);
+      dynMesh.setMatrixAt(p.start+j,T2);
+    }
+  }
+  dynMesh.instanceMatrix.needsUpdate=true;
+  controls.update();
+  renderer.render(scene,camera);
+}
+requestAnimationFrame(loop);
+
+new ResizeObserver(()=>{
+  const w=stage.clientWidth,h=stage.clientHeight; if(!w||!h)return;
+  renderer.setSize(w,h); camera.aspect=w/h; camera.updateProjectionMatrix();
+}).observe(stage);
+
+/* ══════════ test hooks ══════════ */
+window.__sample=()=>{try{
+  const src=renderer.domElement;
+  const c2=document.createElement('canvas'); c2.width=160;c2.height=160;
+  const g=c2.getContext('2d');
+  g.drawImage(src,(src.width-160)/2,(src.height-160)/2,160,160,0,0,160,160);
+  const d=g.getImageData(0,0,160,160).data; let h=0;
+  for(let i=0;i<d.length;i+=101)h=(h*31+d[i])>>>0;
+  return h;
+}catch(e){return 'ERR '+e.message}};
+window.__analyze=()=>{try{
+  return {counts:{...window.__counts},
+    pose_deg:Math.round(island.rotation.y*180/Math.PI*10)/10,
+    sun:[Math.round(sun.position.x*10)/10,Math.round(sun.position.y*10)/10,Math.round(sun.position.z*10)/10],
+    light_slider:document.getElementById('light').value,
+    spin:spinSpeed, spinOn, paused};
+}catch(e){return {err:e.message}}};
+window.__ready=true;
+window.__pup={g1,g2,g3, star:STAR, play:PLAY, sleep:SLEEP}; /* test access to module state */
+window.__bowFacts=()=>{try{
+  const span=(pi,dy)=>{ const p=parts[pi]; let y0=99,y1=-99;
+    for(const v of p.vox){ y0=Math.min(y0,v.d[1]); y1=Math.max(y1,v.d[1]); }
+    return [g2+dy+y0, g2+dy+y1, p.vox.length]; };
+  return {ground:g2, body:span(2,0), head:span(3,6), tail:span(4,17)};
+}catch(e){return {err:e.message}}};
+/* fragment locator: for a given part index, flood-fill and report each fragment's
+   size + bounds, so we can see WHAT is disconnected */
+window.__fragdump=(pi)=>{try{
+  const N6=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  const p=parts[pi];
+  const set=new Set(p.vox.map(v=>v.d[0]+'|'+v.d[1]+'|'+v.d[2]));
+  const seen=new Set(); const frags=[];
+  for(const v of p.vox){
+    const k=v.d[0]+'|'+v.d[1]+'|'+v.d[2];
+    if(seen.has(k)) continue;
+    const st=[k]; seen.add(k);
+    let x0=99,x1=-99,y0=99,y1=-99,z0=99,z1=-99,n=0;
+    while(st.length){ const c=st.pop(); n++;
+      const [x,y,z]=c.split('|').map(Number);
+      x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);z0=Math.min(z0,z);z1=Math.max(z1,z);
+      for(const [dx,dy,dz] of N6){ const nk=(x+dx)+'|'+(y+dy)+'|'+(z+dz);
+        if(set.has(nk)&&!seen.has(nk)){ seen.add(nk); st.push(nk); } } }
+    frags.push({n,x:[x0,x1],y:[y0,y1],z:[z0,z1]});
+  }
+  frags.sort((a,b)=>b.n-a.n);
+  return {part:pi, total:p.vox.length, fragments:frags.length,
+    top:frags.slice(0,8), restCount:frags.slice(8).length};
+}catch(e){return {err:e.message}}};
+/* geometric verification: connectivity of the static world + part attachment +
+   pose facts (bow rump height vs chest, head clearance, pond composition) */
+window.__geo=()=>{try{
+  const N6=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  /* 1) static mesh connectivity — every voxel must reach every other */
+  const keys=[...vox.keys()]; const idx=new Map(keys.map((k,i)=>[k,i]));
+  const seen=new Uint8Array(keys.length); let comps=0, largest=0;
+  for(let s=0;s<keys.length;s++){
+    if(seen[s]) continue; comps++;
+    const stack=[s]; seen[s]=1; let size=0;
+    while(stack.length){
+      const cur=stack.pop(); size++;
+      const [cx,cy,cz]=keys[cur].split('|').map(Number);
+      for(const [dx,dy,dz] of N6){
+        const i=idx.get((cx+dx)+'|'+(cy+dy)+'|'+(cz+dz));
+        if(i!==undefined&&!seen[i]){ seen[i]=1; stack.push(i); }
+      }
+    }
+    largest=Math.max(largest,size);
+  }
+  /* 2) each dynamic part: internally connected? (wings/particles exempt: they're
+        deliberately separate pieces — check parts flagged 'solid' only) */
+  const partInfo=parts.map((p,pi)=>{
+    if(p.__loose) return {pi, loose:true};
+    const set=new Set(p.vox.map(v=>v.d[0]+'|'+v.d[1]+'|'+v.d[2]));
+    let pcs=0, big=0;
+    const pseen=new Set();
+    for(const v of p.vox){
+      const k=v.d[0]+'|'+v.d[1]+'|'+v.d[2];
+      if(pseen.has(k)) continue; pcs++;
+      const st=[k]; pseen.add(k); let sz=0;
+      while(st.length){ const c=st.pop(); sz++; const [x,y,z]=c.split('|').map(Number);
+        for(const [dx,dy,dz] of N6){ const nk=(x+dx)+'|'+(y+dy)+'|'+(z+dz);
+          if(set.has(nk)&&!pseen.has(nk)){ pseen.add(nk); st.push(nk); } } }
+      big=Math.max(big,sz);
+    }
+    return {pi, pieces:pcs, biggest:big, size:p.vox.length};
+  });
+  /* 3) pose facts DERIVED from actual part voxels (parts[2]=bow body, [3]=bow head, [4]=bow tail) */
+  const P={};
+  const partBounds=(pi,ox,oy,oz)=>{ const p=parts[pi];
+    let y0=99,y1=-99;
+    for(const v of p.vox){ y0=Math.min(y0,v.d[1]); y1=Math.max(y1,v.d[1]); }
+    return {ymin:oy+y0, ymax:oy+y1, size:p.vox.length}; };
+  P.bow={ body:partBounds(2,PLAY.x,g2,PLAY.z), head:partBounds(3,PLAY.x,g2,PLAY.z),
+    tail:partBounds(4,PLAY.x,g2,PLAY.z),
+    rumpAboveChest: partBounds(2,PLAY.x,g2,PLAY.z).ymax > partBounds(3,PLAY.x,g2,PLAY.z).ymax };
+  P.sleep={ ground:g3 };
+  /* 4) pond composition */
+  let water=0, sandAround=0;
+  for(const v of vox.values()){
+    if(v.c===C.water||v.c===C.waterDeep) water++;
+    const d=Math.hypot(v.x-POND.x, v.z-POND.z);
+    if(v.c===C.sand&&d>POND.r&&d<POND.r+5&&v.y>=G(v.x,v.z)-1) sandAround++;
+  }
+  P.pond={ waterVoxels:water, sandRing:Math.min(99,sandAround), radius:POND.r };
+  return {staticComponents:comps, staticSize:keys.length, largestComponent:largest,
+    parts:partInfo.filter(x=>!x.loose), P};
+}catch(e){return {err:e.message}}};
+setTimeout(()=>{ if(window.__errs.length){ const d=document.getElementById('err');
+  d.style.display='block'; d.textContent=window.__errs.join('\n'); } },1500);
+</script>
+</body>
+</html>
