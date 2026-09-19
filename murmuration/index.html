@@ -281,22 +281,38 @@ const N=Math.min(4000,Math.max(200,parseInt(Q.get('n'))||1800));
 const px=new Float32Array(N), py=new Float32Array(N), pz=new Float32Array(N);
 const vx=new Float32Array(N), vy=new Float32Array(N), vz=new Float32Array(N);
 const flap=new Float32Array(N);
-/* flock anchor drift state */
-const anchor=new THREE.Vector3(0,42,0);
+/* flock anchor drift state — now wanders vertically and occasionally pours low */
+const anchor=new THREE.Vector3(0,30,0);
 let anchorPhase=Math.random()*7;
-function anchorDrift(t){
-  anchor.set(
-    26*Math.sin(t*.11+anchorPhase)+6*Math.sin(t*.31),
-    42+9*Math.sin(t*.23+1.7)+3*Math.sin(t*.53),
-    20*Math.sin(t*.147+2.4*anchorPhase)+8*Math.cos(t*.27)
-  );
+let pourNext=14+Math.random()*10;     // seconds until next dive event
+let pourK=0;                          // 0..1 pour intensity
+function anchorDrift(t,dt){
+  // slow horizontal drift
+  const hx = 26*Math.sin(t*.11+anchorPhase)+6*Math.sin(t*.31);
+  const hz = 20*Math.sin(t*.147+2.4*anchorPhase)+8*Math.cos(t*.27);
+  // baseline cruising altitude, gently breathing 16..34
+  let hy = 25+9*Math.sin(t*.23+1.7)+3*Math.sin(t*.53);
+  // pour events: dive toward the marsh and skim
+  pourNext -= dt;
+  if(pourNext<=0){
+    pourNext = 18+Math.random()*22;     // next pour in 18-40s
+    pourK = 1;
+  }
+  if(pourK>0){
+    // smoothstep in-out over ~6 seconds
+    const k = pourK;
+    const dive = Math.sin(k*Math.PI);    // 0→1→0
+    hy = hy*(1-dive) + 7*dive;           // drop to just above the reeds
+    pourK = Math.max(0, pourK - dt/6);
+  }
+  anchor.set(hx, hy, hz);
 }
 for(let i=0;i<N;i++){
-  const th=Math.random()*6.283, ph=Math.acos(2*Math.random()-1), r=8+Math.random()*22;
+  const th=Math.random()*6.283, ph=Math.acos(2*Math.random()-1), r=6+Math.random()*16;
   px[i]=anchor.x+r*Math.sin(ph)*Math.cos(th);
-  py[i]=anchor.y+r*Math.cos(ph)*.6;
+  py[i]=anchor.y+r*Math.cos(ph)*.75;   // wider vertical spread, no more pancake
   pz[i]=anchor.z+r*Math.sin(ph)*Math.sin(th);
-  vx[i]=(Math.random()-.5)*30; vy[i]=(Math.random()-.5)*10; vz[i]=(Math.random()-.5)*30;
+  vx[i]=(Math.random()-.5)*30; vy[i]=(Math.random()-.5)*14; vz[i]=(Math.random()-.5)*30;
   flap[i]=Math.random()*6.283;
 }
 /* spatial hash on XZ plane */
@@ -332,14 +348,18 @@ function boids(dt,t,cohK){
     if(cnt){
       ax+=mx*(COH_W/cnt); ay+=my*(COH_W/cnt); az+=mz*(COH_W/cnt);
     }
-    // anchor spring + soft ceiling/floor
-    ax+=(anchor.x-px[i])*ANCH_W*.1; ay+=(anchor.y-py[i])*ANCH_W*.12; az+=(anchor.z-pz[i])*ANCH_W*.1;
-    if(py[i]<6)   ay+=(6-py[i])*4;
-    if(py[i]>88)  ay-=(py[i]-88)*4;
-    // tangential swirl around anchor for murmuration ribbons
-    const tx=px[i]-anchor.x, tz=pz[i]-anchor.z;
+    // anchor spring — vertical pull stronger so pours actually pull the flock down
+    ax+=(anchor.x-px[i])*ANCH_W*.1; ay+=(anchor.y-py[i])*ANCH_W*.28; az+=(anchor.z-pz[i])*ANCH_W*.1;
+    if(py[i]<4)   ay+=(4-py[i])*4;
+    // soft ceiling: gradual, lets excited birds climb higher
+    if(py[i]>92)  ay-=(py[i]-92)*1.2;
+    // tangential swirl — horizontal + a vertical wobble term so ribbons undulate in 3D
+    const tx=px[i]-anchor.x, ty=py[i]-anchor.y, tz=pz[i]-anchor.z;
     const tl=Math.hypot(tx,tz)||1;
-    ax+=(-tz/tl)*TAN_W; az+=(tx/tl)*TAN_W;
+    const swirlTilt=Math.sin(t*.6 + i*.37);  // per-bird phase offsets the loop plane
+    ax+=(-tz/tl)*TAN_W;
+    az+=( tx/tl)*TAN_W;
+    ay+= swirlTilt*TAN_W*.14*Math.min(1,Math.hypot(tx,tz)/22);
     // falcon scare: strong radial repulsion in a sphere around the falcon
     if(falconOn){
       const fx=px[i]-fPos.x, fy=py[i]-fPos.y, fz=pz[i]-fPos.z;
@@ -416,7 +436,7 @@ $('hawk').addEventListener('click',()=>{
   falconOn=falconMesh.visible=true;
   falconUntil=performance.now()+22000;
   fState='dive'; fDiveT=0;
-  fPos.set(anchor.x-70,78,anchor.z+40);
+  fPos.set(anchor.x-70,64,anchor.z+40);
   fTarget.copy(anchor);
 });
 const burstEmoji=(x,y)=>{const g=['🐦','✨','🌾','🪶','💨'];
@@ -447,7 +467,7 @@ function frame(now){
   const dt=Math.min(.05,(now-last)/1000); last=now;
   if(!paused){
     t+=dt*timeScale;
-    anchorDrift(t);
+    anchorDrift(t,dt*timeScale);
     boids(Math.min(.05,dt*timeScale),t,cohK);
     /* write bird instances */
     for(let i=0;i<N;i++){
@@ -477,8 +497,8 @@ function frame(now){
         fDiveT+=dt;
         const k=Math.min(1,fDiveT/2.6);
         const ease=k*k*(3-2*k);
-        fPos.lerpVectors(new THREE.Vector3(anchor.x-70,78,anchor.z+40),anchor,ease);
-        fPos.y=78-ease*(78-anchor.y)+Math.sin(t*22)*.6;
+        fPos.lerpVectors(new THREE.Vector3(anchor.x-70,64,anchor.z+40),anchor,ease);
+        fPos.y=64-ease*(64-anchor.y)+Math.sin(t*22)*.6;
         if(k>=1){fState='through';fDiveT=0;}
       }else if(fState==='through'){
         fDiveT+=dt;
@@ -487,12 +507,12 @@ function frame(now){
       }else if(fState==='climb'){
         fDiveT+=dt;
         const k=Math.min(1,fDiveT/3.2);
-        fPos.y=anchor.y+k*(90-anchor.y); fPos.x+=dt*10;
+        fPos.y=anchor.y+k*(58-anchor.y); fPos.x+=dt*10;
         if(k>=1){fState='patrol';fDiveT=0;}
       }else{
         fDiveT+=dt;
         const r=52, w=.5;
-        fPos.set(anchor.x+r*Math.cos(t*w), 90, anchor.z+r*Math.sin(t*w));
+        fPos.set(anchor.x+r*Math.cos(t*w), 58, anchor.z+r*Math.sin(t*w));
         if(now>falconUntil){falconOn=falconMesh.visible=false;}
       }
       /* orient + write instances (local -> world via lookat rotation) */
