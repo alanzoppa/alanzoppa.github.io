@@ -3,40 +3,117 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VOXELWAVE</title>
+<title>🌆 voxelwave</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌆</text></svg>">
 <style>
-  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#04010e}
-  canvas{display:block;width:100vw;height:100vh;cursor:pointer}
-  .fx{position:fixed;inset:0;pointer-events:none}
-  #scan{background:repeating-linear-gradient(0deg,rgba(3,0,14,.20) 0 1px,transparent 1px 3px)}
-  #vig{background:radial-gradient(ellipse at 50% 42%,transparent 52%,rgba(3,0,14,.60) 100%)}
+  :root{--ink:#e6d4ff;--accent:#ff5fa8;--cyan:#35f0ff;}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:ui-monospace,"SF Mono","Cascadia Code","Courier New",monospace;
+    color:var(--ink);
+    background:
+      radial-gradient(900px 520px at 78% -12%, rgba(255,47,146,.28) 0%, rgba(255,47,146,0) 62%),
+      radial-gradient(820px 520px at 8% 112%, rgba(53,240,255,.16) 0%, rgba(53,240,255,0) 58%),
+      linear-gradient(168deg,#070118 0%,#140636 42%,#2b0b52 78%,#3a1060 100%);
+    height:100vh;overflow:hidden;
+  }
+  #stage{position:fixed;inset:0}
+  #stage canvas{position:absolute;inset:0;display:block;cursor:grab}
+  #stage canvas:active{cursor:grabbing}
+  .hud{position:absolute;top:18px;left:22px;z-index:4;pointer-events:none}
+  .hud h1{margin:0;font-size:24px;font-weight:800;letter-spacing:4px;
+    background:linear-gradient(92deg,var(--cyan) -10%,#c9a7ff 35%,var(--accent) 75%,#ffd9f2 110%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 14px rgba(255,95,168,.45))}
+  .hud p{margin:5px 0 0;font-size:12px;letter-spacing:1px;opacity:.72}
+  .back{position:absolute;top:20px;right:20px;z-index:5;font-size:12px;font-weight:700;letter-spacing:1px;
+    color:var(--ink);opacity:.65;text-decoration:none;border-bottom:1px dotted var(--ink)}
+  .back:hover{opacity:1}
+  .panel{position:absolute;left:18px;bottom:16px;z-index:4;display:flex;flex-direction:column;gap:9px;
+    padding:13px 15px;border-radius:16px;background:rgba(18,7,42,.58);
+    backdrop-filter:blur(9px);border:1px solid rgba(214,150,255,.22);
+    box-shadow:0 8px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06)}
+  .row{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;letter-spacing:1px}
+  .row input[type=range]{width:120px;accent-color:var(--accent)}
+  .btns{display:flex;gap:8px}
+  .btns button{border:1px solid rgba(255,150,220,.35);border-radius:11px;padding:6px 12px;
+    font:700 12px inherit;font-family:inherit;letter-spacing:1px;
+    background:rgba(255,95,168,.14);color:var(--ink);
+    box-shadow:0 2px 10px rgba(255,47,146,.25);cursor:pointer}
+  .btns button:active{transform:scale(.94)}
+  .hint{position:absolute;right:20px;bottom:16px;z-index:4;font-size:11px;letter-spacing:1px;opacity:.6;pointer-events:none}
+  .fx{position:absolute;z-index:6;pointer-events:none;user-select:none;
+    animation:rise 1.1s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(-14deg)}
+    14%{opacity:1}
+    100%{opacity:0;transform:translate(-50%,-260px) scale(1.4) rotate(16deg)}
+  }
+  #err{position:absolute;top:12px;left:12px;right:12px;z-index:9;color:#ff9ad5;font:12px monospace;
+    white-space:pre-wrap;display:none;background:rgba(20,6,40,.9);padding:8px;border-radius:8px}
 </style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div id="scan" class="fx"></div>
-<a class="back" href="../" style="position:fixed;top:16px;left:16px;z-index:50;font:600 14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:rgba(255,255,255,.85);text-decoration:none;background:rgba(20,4,40,.55);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:7px 14px;backdrop-filter:blur(6px)">← home</a>
-<div id="vig" class="fx"></div>
-<script>
-(() => {
-'use strict';
-const cv = document.getElementById('c');
-const ctx = cv.getContext('2d');
-window.__errors = []; window.__fps = 0; window.__cols = 0; window.__palms = 0;
-window.addEventListener('error', e => window.__errors.push(String(e.message)));
-cv.addEventListener('click', () => { paused = !paused; });
+<div id="stage">
+  <div class="hud"><h1>VOXELWAVE</h1><p id="voxmeta">warming up the neon…</p></div>
+  <a class="back" href="../">← home</a>
+  <div class="panel">
+    <div class="row"><span>🌀 spin</span><input id="spin" type="range" min="0" max="60" value="12"></div>
+    <div class="row"><span>☀️ light</span><input id="light" type="range" min="0" max="360" value="200"></div>
+    <div class="btns"><button id="pause">⏸ pause</button><button id="boost">💨 boost</button></div>
+  </div>
+  <div class="hint">drag to orbit · scroll to zoom · tap anywhere</div>
+  <div id="err"></div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-// ---------- world constants ----------
-const ROAD = 5;     // half-width of the glowing highway (lateral units)
-const RISE = 13;     // lateral distance over which mountains reach full height
-const HMAX = 15;     // max mountain height (voxels)
-const SPEED = 3.6;   // scroll rows per second
+/* ───────────────────────── test hooks ───────────────────────── */
+window.__ready = false;
+window.__errs = [];
+const _err = m => { window.__errs.push(String(m));
+  const d = document.getElementById('err'); d.style.display='block'; d.textContent += m+'\n'; };
+window.addEventListener('error', e => _err(e.message || 'error'));
+window.addEventListener('unhandledrejection', e => _err(e.reason || 'rejection'));
+console.error = (...a) => { _err(a.join(' ')); };
+console.warn  = () => {};
 
-let W=0,H=0,DPR=1,TW=52,HW=26,hh=13,VZ=26,HOR=0,CR=0,UD=0,EXTRA=0;
-let sunCv=null,SUNR=0,stars=[];
-let t=0, uiT=0, last=performance.now(), paused=false, fpsN=0, fpsT=0;
+/* ───────────────────────── params ───────────────────────── */
+const Q = new URLSearchParams(location.search);
+const spinV  = Math.min(60, Math.max(0, +Q.get('spin')  || 12));
+const lightV = Math.min(360,Math.max(0, +Q.get('light') || 200));
+const poseV  = +Q.get('pose') || 0;
 
-// ---------- value noise ----------
+/* ───────────────────────── voxel authoring ───────────────────────── */
+const vox = new Map();                      // "x|y|z" -> {o:THREE.Color}
+const K = (x,y,z) => x+'|'+y+'|'+z;
+const setV = (x,y,z,c) => { vox.set(K(Math.round(x),Math.round(y),Math.round(z)), {o:c}); };
+const setG = (x,y,z,c) => { vox.set(K(Math.round(x),Math.round(y),Math.round(z)), {o:c,g:true}); }; // glow (unlit neon)
+const box = (x0,x1,y0,y1,z0,z1,c) => { for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)for(let z=z0;z<=z1;z++)setV(x,y,z,c); };
+const has = (x,y,z) => vox.has(K(x,y,z));
+
+const C = h => new THREE.Color(h);
+/* palette */
+const M_U0=C(0x381866), M_U1=C(0x9a2fb0), M_U2=C(0xe646b4), M_U3=C(0xff82d4);   // mountain ramp
+const M_CAP=C(0xffd9f2), M_RIM=C(0xffa2dc);
+const ROAD=C(0x150533), EDGE=C(0x35f0ff), DASH=C(0xff3ea5), PLAIN=C(0x22104a), GRID=C(0x35f0ff);
+const TRUNK=C(0xb03cc9), FROND=C(0x2ef0c9), CROWN=C(0xff5fa8), FRUIT=C(0xffd400);
+const SUN_HI=C(0xfff6b0), SUN_Y=C(0xffd66e), SUN_O=C(0xff9e6e), SUN_P=C(0xff6e9e), SUN_M=C(0xff3d8f);
+const CLOUD_T=C(0xcbb8ff), CLOUD_B=C(0xff9ad5);
+
+/* value noise */
 const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.floor(n);};
 function vnoise(x,y){
   const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi;
@@ -46,240 +123,292 @@ function vnoise(x,y){
 }
 function fbm(x,y){let s=0,a=.5,f=1,n=0;for(let i=0;i<4;i++){s+=vnoise(x*f,y*f)*a;n+=a;a*=.5;f*=2.03}return s/n}
 
-// ---------- palette ----------
-const rgbA=a=>`rgb(${a[0]|0},${a[1]|0},${a[2]|0})`;
-const lerp=(a,b,u)=>a+(b-a)*u;
-const RAMP=[];   // RAMP[h][variant] = [top, right, left]
-{
-  const lo=[58,17,96], hi=[255,79,174], capA=[255,143,208], capB=[255,233,248];
-  for(let h=0;h<=HMAX;h++){
-    const u=Math.min(1,h/HMAX);
-    let base=[0,1,2].map(i=>lerp(lo[i],hi[i],Math.pow(u,0.9)));
-    if(h>=HMAX-2){const v=(h-(HMAX-2))/2;base=[0,1,2].map(i=>lerp(capA[i],capB[i],v*0.8));}
-    RAMP.push([0.94,1,1.06].map(m=>[
-      rgbA(base.map(c=>lerp(c,255,0.32)*m)),
-      rgbA(base.map(c=>c*0.45*m)),
-      rgbA(base.map(c=>c*0.72*m))
-    ]));
+/* ── island footprint: superellipse 76 (x) × 140 (z) ── */
+const LX=38, LZ=70, P=4;
+const inside=(x,z)=>Math.pow(Math.abs(x)/LX,P)+Math.pow(Math.abs(z)/LZ,P)<=1;
+const ROAD_HW=8, SHOULDER=12, MPEAK=52;
+
+/* floor slab: y −3..0, superellipse footprint */
+for(let x=-LX;x<=LX;x++)for(let z=-LZ;z<=LZ;z++){
+  if(!inside(x,z))continue;
+  const top = (Math.abs(x)>=LX-3||Math.abs(z)>=LZ-3)?-1:0;      // stepped rim
+  for(let y=top;y>=-3;y--) setV(x,y,z,PLAIN);
+}
+/* mountains flanking the road, terrace-quantized */
+for(let x=-LX;x<=LX;x++)for(let z=-LZ;z<=LZ;z++){
+  const ax=Math.abs(x);
+  if(ax<ROAD_HW+2||!inside(x,z))continue;
+  const ramp=Math.min(1,(ax-ROAD_HW-2)/(LX-ROAD_HW-4));
+  const n=(fbm(x*.052,z*.052)-.30)/.70;
+  if(n<=0)continue;
+  let h=Math.floor((Math.pow(n,1.15)*MPEAK*Math.pow(ramp,1.25)+ramp*2)/3)*3;
+  if(h<1)continue;
+  for(let y=1;y<=h;y++) setV(x,y,z,PLAIN);   // placeholder; recolored below
+}
+/* ── recolor pass: floor + mountain palettes ── */
+for(const [key,vv] of vox){
+  const o=vv.o;
+  const [x,y,z]=key.split('|').map(Number);
+  const ax=Math.abs(x);
+  if(y>=1&&ax>ROAD_HW){                      // mountain column voxel
+    const hCol=(()=>{let h=0;while(has(x,h+1,z))h++;return h;})();
+    const u=Math.min(1,hCol/MPEAK);
+    let c=u<.33? M_U0.clone().lerp(M_U1,u/.33)
+        :u<.66? M_U1.clone().lerp(M_U2,(u-.33)/.33)
+              : M_U2.clone().lerp(M_U3,(u-.66)/.34);
+    const dh=hCol-y;                          // height up this column
+    if(dh===0&&hCol>=42) c=M_CAP.clone().lerp(C(0xffffff),(hCol-42)/10*.6);   // pale caps
+    if(dh===0)          c=c.clone().lerp(M_RIM,.38);                          // glowing terrace rims
+    else if(dh===1)     c=c.clone().lerp(M_RIM,.14);
+    o.copy(c);
+    continue;
   }
-}
-const LEAFC  = [rgbA([46,240,201]), rgbA([10,110,96]),   rgbA([18,158,124])];
-const CROWNC = [rgbA([255,113,206]), rgbA([140,26,100]), rgbA([190,56,140])];
-const TRUNKC = [rgbA([185,90,196]), rgbA([70,20,95]),    rgbA([120,44,140])];
-
-// ---------- terrain ----------
-function terrainH(gx,gy){
-  const d=Math.abs(gx-gy)-ROAD;
-  if(d<=0) return 0;
-  const amp=Math.min(1,d/RISE);
-  let n=(fbm(gx*0.045,gy*0.045)-0.24)/0.76;
-  if(n<=0) return 0;
-  n=Math.pow(n,1.2);
-  let h=Math.floor(n*HMAX*Math.pow(amp,1.35)+amp*1.6);
-  return h>HMAX?HMAX:h;
-}
-
-// ---------- sun ----------
-function makeSun(R){
-  const S=R*2+8, s=document.createElement('canvas');
-  s.width=s.height=S;
-  const g=s.getContext('2d');
-  const gr=g.createLinearGradient(0,4,0,S-4);
-  gr.addColorStop(0,'#fff9ae');gr.addColorStop(0.42,'#ffc46b');
-  gr.addColorStop(0.72,'#ff5e9e');gr.addColorStop(1,'#ff2a92');
-  g.fillStyle=gr;g.beginPath();g.arc(S/2,S/2,R,0,7);g.fill();
-  g.globalCompositeOperation='destination-out';
-  for(let i=0;i<6;i++) g.fillRect(0,S/2+R*0.08+i*R*0.145,S,1.5+i*2.2);
-  return s;
-}
-
-// ---------- layout ----------
-function resize(){
-  DPR=Math.min(window.devicePixelRatio||1,2);
-  W=window.innerWidth;H=window.innerHeight;
-  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-  TW=Math.max(44,Math.min(84,Math.round(H/14)));
-  HW=Math.round(TW/2);          // half tile width
-  hh=Math.round(TW/4);          // half tile height (diamond half)
-  VZ=2*hh;                      // voxel vertical step
-  HOR=Math.round(H*0.40);
-  CR=Math.ceil((W/2+TW*2)/HW);
-  UD=Math.ceil((H-HOR)/hh)+2;
-  EXTRA=Math.ceil(HOR/hh)+2;
-  SUNR=Math.round(Math.min(H*0.17,W*0.11));
-  sunCv=makeSun(SUNR);
-  stars=[];
-  const n=Math.round(W*H/9000);
-  for(let i=0;i<n;i++)stars.push({x:Math.random()*W,y:Math.random()*HOR*0.96,r:Math.random()*1.6+0.6,sp:Math.random()*2+0.6,ph:Math.random()*6.283});
-}
-
-// ---------- draw primitives ----------
-function drawFloor(x,y,gx,gy){
-  const inRoad=Math.abs(gx-gy)<=ROAD;
-  ctx.fillStyle=inRoad?(((Math.floor(gx)+Math.floor(gy))&1)?'#1c0638':'#170531'):'#0c0120';
-  ctx.beginPath();
-  ctx.moveTo(x,y-hh);ctx.lineTo(x+HW,y);ctx.lineTo(x,y+hh);ctx.lineTo(x-HW,y);ctx.closePath();
-  ctx.fill();
-  if(inRoad){
-    const bright=(Math.floor(gx+gy)%5===0);
-    ctx.strokeStyle=bright?'rgba(1,205,254,0.85)':'rgba(1,205,254,0.30)';
-    ctx.lineWidth=bright?1.6:1;
-  }else{
-    ctx.strokeStyle='rgba(123,58,214,0.22)';ctx.lineWidth=1;
-  }
-  ctx.stroke();
-}
-
-function drawCol(x,baseY,h,vi){
-  const yT=baseY-h*VZ,S=h*VZ,c=RAMP[h][vi];
-  ctx.fillStyle=c[1];
-  ctx.beginPath();ctx.moveTo(x,yT+hh);ctx.lineTo(x+HW,yT);ctx.lineTo(x+HW,yT+S);ctx.lineTo(x,yT+hh+S);ctx.closePath();ctx.fill();
-  ctx.fillStyle=c[2];
-  ctx.beginPath();ctx.moveTo(x,yT+hh);ctx.lineTo(x-HW,yT);ctx.lineTo(x-HW,yT+S);ctx.lineTo(x,yT+hh+S);ctx.closePath();ctx.fill();
-  ctx.fillStyle=c[0];
-  ctx.beginPath();ctx.moveTo(x,yT-hh);ctx.lineTo(x+HW,yT);ctx.lineTo(x,yT+hh);ctx.lineTo(x-HW,yT);ctx.closePath();ctx.fill();
-}
-
-function cube(cx,gy,zb,c){
-  const yT=gy-(zb+1)*VZ;
-  ctx.fillStyle=c[1];
-  ctx.beginPath();ctx.moveTo(cx,yT+hh);ctx.lineTo(cx+HW,yT);ctx.lineTo(cx+HW,yT+VZ);ctx.lineTo(cx,yT+hh+VZ);ctx.closePath();ctx.fill();
-  ctx.fillStyle=c[2];
-  ctx.beginPath();ctx.moveTo(cx,yT+hh);ctx.lineTo(cx-HW,yT);ctx.lineTo(cx-HW,yT+VZ);ctx.lineTo(cx,yT+hh+VZ);ctx.closePath();ctx.fill();
-  ctx.fillStyle=c[0];
-  ctx.beginPath();ctx.moveTo(cx,yT-hh);ctx.lineTo(cx+HW,yT);ctx.lineTo(cx,yT+hh);ctx.lineTo(cx-HW,yT);ctx.closePath();ctx.fill();
-}
-
-// ---------- palms (ride the scrolling terrain, fade in/out smoothly) ----------
-function maybePalm(x,baseY,gx,gy){
-  const i=Math.round(gx),j=Math.round(gy);
-  const d=Math.abs(i-j)-ROAD;
-  if(d<1||d>6) return false;
-  if(hash(i*7.13+13,j*7.71+31)>0.14) return false;
-  const h=terrainH(i,j);
-  if(h>3) return false;
-  const f=Math.abs(gx-i)+Math.abs(gy-j);
-  const a=1.6-f*2.4;
-  if(a<=0.03) return false;
-  ctx.globalAlpha=a>1?1:a;
-  drawPalm(x,baseY,h);
-  ctx.globalAlpha=1;
-  return true;
-}
-function drawPalm(x,baseY,h){
-  const topZ=h+3;
-  const put=(a,b,z,c)=>cube(x+(a-b)*HW, baseY+(a+b)*hh, z, c);
-  put(-1,0,topZ-1,LEAFC); put(0,-1,topZ-1,LEAFC);      // back fronds
-  put(-2,0,topZ-2,LEAFC); put(0,-2,topZ-2,LEAFC);
-  const yT=baseY-topZ*VZ, S=3*VZ;                      // trunk
-  ctx.fillStyle=TRUNKC[1];
-  ctx.beginPath();ctx.moveTo(x,yT+hh);ctx.lineTo(x+HW,yT);ctx.lineTo(x+HW,yT+S);ctx.lineTo(x,yT+hh+S);ctx.closePath();ctx.fill();
-  ctx.fillStyle=TRUNKC[2];
-  ctx.beginPath();ctx.moveTo(x,yT+hh);ctx.lineTo(x-HW,yT);ctx.lineTo(x-HW,yT+S);ctx.lineTo(x,yT+hh+S);ctx.closePath();ctx.fill();
-  put(0,0,topZ,CROWNC);                                // pink crown cube
-  put(1,0,topZ-1,LEAFC); put(0,1,topZ-1,LEAFC);         // front fronds
-  put(2,0,topZ-2,LEAFC); put(0,2,topZ-2,LEAFC);
-}
-
-// ---------- title ----------
-function spacedText(str,x,y,gap){
-  const ws=[],n=str.length;let tot=0;
-  for(let i=0;i<n;i++){const w=ctx.measureText(str[i]).width;ws.push(w);tot+=w+gap}
-  tot-=gap;let px=x-tot/2;
-  for(let i=0;i<n;i++){ctx.fillText(str[i],px+ws[i]/2,y);px+=ws[i]+gap}
-}
-function drawTitle(){
-  const fs=Math.round(Math.max(30,H*0.058));
-  ctx.save();
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font=`700 ${fs}px "Courier New",monospace`;
-  const y=H*0.12+Math.sin(uiT*0.8)*5;
-  ctx.globalCompositeOperation='lighter';
-  ctx.fillStyle='rgba(1,205,254,.75)';spacedText('VOXELWAVE',W/2-3,y,fs*0.22);
-  ctx.fillStyle='rgba(255,47,146,.75)';spacedText('VOXELWAVE',W/2+3,y,fs*0.22);
-  ctx.fillStyle='rgba(255,255,255,.95)';spacedText('VOXELWAVE',W/2,y,fs*0.22);
-  ctx.font=`400 ${Math.round(fs*0.30)}px "Courier New",monospace`;
-  ctx.fillStyle='rgba(185,238,255,.72)';
-  spacedText('NEON TERRAIN // 1984',W/2,y+fs*0.95,fs*0.10);
-  ctx.restore();
-}
-
-// ---------- main draw ----------
-function draw(){
-  const CX=W/2+Math.sin(t*0.16)*W*0.015;
-  // sky
-  const sky=ctx.createLinearGradient(0,0,0,HOR+2);
-  sky.addColorStop(0,'#04010e');sky.addColorStop(0.38,'#1c0646');
-  sky.addColorStop(0.66,'#4c0f7c');sky.addColorStop(0.86,'#93207f');sky.addColorStop(1,'#e0399b');
-  ctx.fillStyle=sky;ctx.fillRect(0,0,W,HOR+2);
-  ctx.fillStyle='#07010f';ctx.fillRect(0,HOR,W,H-HOR);
-  // stars
-  for(const s of stars){
-    ctx.globalAlpha=0.20+0.80*(0.5+0.5*Math.sin(uiT*s.sp+s.ph));
-    ctx.fillStyle='#cfe8ff';ctx.fillRect(s.x,s.y,s.r,s.r);
-  }
-  ctx.globalAlpha=1;
-  // sun (fixed X: infinitely far, no parallax with camera sway)
-  const sunX=W/2, sunY=HOR-SUNR*0.30;
-  ctx.drawImage(sunCv,sunX-SUNR-4,sunY-SUNR-4);
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  const hg=ctx.createRadialGradient(sunX,sunY,SUNR*0.55,sunX,sunY,SUNR*2.5);
-  hg.addColorStop(0,'rgba(255,90,170,0.32)');hg.addColorStop(1,'rgba(255,90,170,0)');
-  ctx.fillStyle=hg;ctx.fillRect(sunX-SUNR*2.5,sunY-SUNR*2.5,SUNR*5,SUNR*5);
-  ctx.restore();
-  // terrain (painter's algorithm: far rows first, straight vertical scroll)
-  let drawn=0,palms=0;
-  for(let r=-EXTRA;r<=UD;r++){
-    const baseY=HOR+r*hh;
-    if(baseY<-VZ) continue;
-    for(let c=-CR;c<=CR;c++){
-      if((c^r)&1) continue;
-      const x=CX+c*HW;
-      if(x+HW<0||x-HW>W) continue;
-      const gx=(r-2*t+c)/2, gy=(r-2*t-c)/2;
-      const h=terrainH(gx,gy);
-      drawn++;
-      if(h===0){
-        if(r>=0 && baseY-hh<H+4) drawFloor(x,baseY,gx,gy);
-        continue;
-      }
-      const yT=baseY-h*VZ;
-      if(yT-hh>H+4) continue;
-      const vi=(hash(Math.floor(gx)*0.37+7,Math.floor(gy)*0.53+3)*3)|0;
-      drawCol(x,baseY,h,vi);
-      if(r>=1&&maybePalm(x,baseY,gx,gy)) palms++;
+  if(y===0||y===-1){                          // surface floor
+    let c;
+    if(ax<=ROAD_HW){
+      c=ROAD.clone();
+      if(ax>=ROAD_HW-1){ c=EDGE.clone(); vv.g=true; }                       // cyan edge lines
+      else if(ax<=1&&((z%10)+10)%10<5){ c=DASH.clone(); vv.g=true; }         // pink center dash
+    }else if(ax<=SHOULDER){ c=C(0x1a0a3a); }
+    else{
+      c=PLAIN.clone();
+      const gx=((x%14)+14)%14===0, gz=((z%14)+14)%14===0;
+      if(gx||gz){ c=GRID.clone().multiplyScalar(.85); vv.g=true; }           // neon plains grid
     }
+    if(y===-1) c.multiplyScalar(.55);
+    o.copy(c);
   }
-  window.__cols=drawn;window.__palms=palms;
-  // horizon haze
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  const hz=ctx.createLinearGradient(0,HOR-50,0,HOR+60);
-  hz.addColorStop(0,'rgba(255,62,152,0)');hz.addColorStop(0.45,'rgba(255,62,152,0.20)');hz.addColorStop(1,'rgba(255,62,152,0)');
-  ctx.fillStyle=hz;ctx.fillRect(0,HOR-50,W,110);
-  // neon pool on the road
-  const rg=ctx.createLinearGradient(0,HOR,0,H);
-  rg.addColorStop(0,'rgba(255,47,146,0.16)');rg.addColorStop(0.5,'rgba(255,47,146,0.05)');rg.addColorStop(1,'rgba(1,205,254,0.10)');
-  ctx.fillStyle=rg;
-  ctx.beginPath();ctx.moveTo(CX-30,HOR);ctx.lineTo(CX+30,HOR);ctx.lineTo(CX+W*0.35,H);ctx.lineTo(CX-W*0.35,H);ctx.closePath();ctx.fill();
-  ctx.restore();
-  drawTitle();
 }
 
+/* ── voxel sun: flat disc, 2 thick, striped lower half ── */
+const SUN_R=27, SUN_CY=47, SUN_Z=-97;
+for(let dx=-SUN_R;dx<=SUN_R;dx++)for(let dy=-SUN_R;dy<=SUN_R;dy++){
+  if(dx*dx+dy*dy>SUN_R*SUN_R)continue;
+  const y=SUN_CY+dy;
+  if(dy<0){ const r=-dy; if((r%7)<2&&dy<-4) continue;                       // widening stripes
+            if(r>16&&(r%5)===0) continue; }
+  let c = dy>10? SUN_HI : dy>-2? SUN_Y.clone().lerp(SUN_O,(10-dy)/12)
+              : dy>-12? SUN_O.clone().lerp(SUN_P,(-2-dy)/10)
+              : SUN_P.clone().lerp(SUN_M,Math.min(1,(-12-dy)/15));
+  setG(dx,y,SUN_Z,c); setG(dx,y,SUN_Z-1,c.clone().multiplyScalar(.85));
+}
+
+/* ── palms ── */
+function palm(px,pz,hgt,lean){
+  const leanX=Math.sign(px)*lean;
+  for(let y=1;y<=hgt;y++){
+    const x=Math.round(px+leanX*(y/hgt));
+    setV(x,y,pz,TRUNK.clone().multiplyScalar(1-.06*((hgt-y)%2)));
+    setV(x+1,y,pz,TRUNK.clone().multiplyScalar(.55));
+  }
+  const tx=Math.round(px+leanX), ty=hgt;
+  const fr=(dx,dz,drop)=>setV(tx+dx,ty-drop,pz+dz,FROND.clone().multiplyScalar(1-.08*drop));
+  fr(-3,0,2);fr(-2,0,1);fr(-1,0,0);fr(1,0,0);fr(2,0,1);fr(3,0,2);
+  fr(0,-3,2);fr(0,-2,1);fr(0,-1,0);fr(0,1,0);fr(0,2,1);fr(0,3,2);
+  fr(-2,-2,3);fr(2,-2,3);fr(-2,2,3);fr(2,2,3);
+  setV(tx,ty+1,pz,CROWN);
+  setV(tx-1,ty,pz-1,FRUIT);setV(tx+1,ty,pz+1,FRUIT.clone().multiplyScalar(.8));
+}
+palm(-12,-52,15,2); palm(12,-34,17,-2); palm(-12,-12,13,1);
+palm(12,  6,16,-1); palm(-12, 22,14,2); palm(12, 42,17,-2);
+
+/* ───────────────────────── dynamic parts ───────────────────────── */
+/* car (drives toward the sun, loops) — Map-keyed, no duplicate coords */
+const car=[]; const carMap=new Map(); const headIdx=[];
+{
+  const BODY=C(0xff2a92), GLASS=C(0x9ef3ff), WHEEL=C(0x1c1030), HUB=C(0xe8e8ff),
+        LIGHT=C(0xfff3b0), TAIL=C(0xff2030), ROOF=C(0xff5fb8);
+  const ck=(x,y,z)=>x+'|'+y+'|'+z;
+  const put=(x,y,z,c)=>carMap.set(ck(x,y,z),{x,y,z,c});
+  const bx=(x0,x1,y0,y1,z0,z1,c)=>{for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)for(let z=z0;z<=z1;z++)put(x,y,z,c);};
+  for(const [wx,wz] of [[-3,-3],[3,-3],[-3,3],[3,3]]){ put(wx,1,wz,WHEEL); put(wx,2,wz,WHEEL.clone().multiplyScalar(.85)); }
+  bx(-2,2,2,3,-4,4,BODY);                 // body slab
+  bx(-2,2,4,4,-2,2,GLASS);                // glass cabin
+  bx(-2,2,5,5,-1,1,ROOF);                // roof
+  put(-2,3,-4,LIGHT);put(-1,3,-4,LIGHT);put(1,3,-4,LIGHT);put(2,3,-4,LIGHT);  // headlights
+  put(-2,3,4,TAIL);put(-1,3,4,TAIL);put(1,3,4,TAIL);put(2,3,4,TAIL);          // taillights
+  put(-2,3,-3,HUB);put(2,3,-3,HUB);put(-2,3,3,HUB);put(2,3,3,HUB);            // chrome trim
+  for(const [,v] of carMap) car.push(v);
+  car.forEach((v,i)=>{ if(v.z===-4&&v.y===3) headIdx.push(i); });   // headlight indices
+}
+/* clouds + stars (sky, lives at scene root) */
+const clouds=[];
+function cloudShape(){
+  const v=[];
+  const b=(x0,x1,z0,z1,y,c)=>{for(let x=x0;x<=x1;x++)for(let z=z0;z<=z1;z++)v.push({x,y,z,c});};
+  b(-9,8,-3,3,0,CLOUD_T); b(-6,2,-2,2,1,CLOUD_T); b(4,7,-1,1,1,CLOUD_T); b(-3,0,-1,1,2,CLOUD_T);
+  for(const q of v) if(q.y===0&&hash(q.x*3.1,q.z*7.7)<.38) q.c=CLOUD_B;
+  return v;
+}
+for(let i=0;i<4;i++){
+  clouds.push({a0:i*1.62+.4, w:.028+hash(i,7)*.03, r:86+hash(i,3)*22, h:66+hash(i,11)*18, vox:cloudShape()});
+}
+const stars=[];
+for(let i=0;i<150;i++){
+  const th=hash(i,1)*6.283, ph=Math.acos(hash(i,2)*.85);   // upper dome
+  const r=108+hash(i,3)*30;
+  stars.push({x:Math.sin(ph)*Math.cos(th)*r, y:26+Math.cos(ph)*r*.9, z:Math.sin(ph)*Math.sin(th)*r,
+              sp:.8+hash(i,4)*2.4, ph:hash(i,5)*6.283,
+              c:[C(0xffffff),C(0xaef6ff),C(0xffb8e8)][i%3]});
+}
+
+/* ───────────────────────── shell extraction ───────────────────────── */
+const solid=[], glow=[];
+{
+  const dirs=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+  for(const [key,v] of vox){
+    const [x,y,z]=key.split('|').map(Number);
+    let open=false;
+    for(const d of dirs) if(!vox.has(K(x+d[0],y+d[1],z+d[2]))){open=true;break;}
+    if(open) (v.g?glow:solid).push({x,y,z,c:v.o});
+  }
+}
+
+/* ───────────────────────── three.js scene ───────────────────────── */
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.12;
+stage.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0c0322);
+scene.fog=new THREE.FogExp2(0x1a0640,.0016);
+const camera=new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.1,900);
+camera.position.set(58,50,138);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,16,0); controls.enableDamping=true; controls.dampingFactor=.08;
+controls.minDistance=55; controls.maxDistance=340; controls.maxPolarAngle=1.5;
+controls.update();
+
+const geo=new THREE.BoxGeometry(1,1,1);
+const mat=new THREE.MeshStandardMaterial({roughness:.82,metalness:.06});
+const jit=(x,y,z)=>{const t=Math.sin(x*127.1+y*311.7+z*74.7)*43758.5453;return .955+(t-Math.floor(t))*.09;};
+
+/* lights — pinned to scene root, never parented to the island */
+scene.add(new THREE.HemisphereLight(0x9a7cff,0x2a0f4a,.78));
+const sun=new THREE.DirectionalLight(0xffc2e0,2.1);
+sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.left=-130;sun.shadow.camera.right=130;
+sun.shadow.camera.top=130;sun.shadow.camera.bottom=-130;
+sun.shadow.camera.near=20;sun.shadow.camera.far=460;sun.shadow.bias=-.0005;
+scene.add(sun,sun.target);
+const rim=new THREE.DirectionalLight(0x66e0ff,.85); rim.position.set(-40,55,120); scene.add(rim);
+const setLight=deg=>{const a=deg*Math.PI/180; sun.position.set(Math.sin(a)*150,95,Math.cos(a)*150);};
+
+/* island group (spins) */
+const island=new THREE.Group(); island.rotation.y=poseV*Math.PI/180; scene.add(island);
+
+const staticMesh=new THREE.InstancedMesh(geo,mat,solid.length);
+staticMesh.castShadow=true; staticMesh.receiveShadow=true; staticMesh.frustumCulled=false;
+const m4=new THREE.Matrix4(), col=new THREE.Color();
+solid.forEach((v,i)=>{ m4.makeTranslation(v.x,v.y,v.z); staticMesh.setMatrixAt(i,m4);
+  staticMesh.setColorAt(i,col.copy(v.c).multiplyScalar(jit(v.x,v.y,v.z))); });
+island.add(staticMesh);
+
+/* neon voxels — unlit, ignore fog, feed bloom */
+const glowMesh=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial({fog:false}),glow.length);
+glowMesh.frustumCulled=false;
+glow.forEach((v,i)=>{ m4.makeTranslation(v.x,v.y,v.z); glowMesh.setMatrixAt(i,m4);
+  glowMesh.setColorAt(i,col.copy(v.c).multiplyScalar(jit(v.x,v.y,v.z))); });
+island.add(glowMesh);
+
+/* car dyn mesh (child of island → drives along the road as the world turns) */
+const carMesh=new THREE.InstancedMesh(geo,mat,car.length);
+carMesh.castShadow=true; carMesh.frustumCulled=false;
+car.forEach((v,i)=>carMesh.setColorAt(i,col.copy(v.c).multiplyScalar(jit(v.x,v.y,v.z))));
+island.add(carMesh);
+
+/* sky dyn mesh (clouds + stars, scene root) */
+const skyCount=clouds.reduce((a,c)=>a+c.vox.length,0)+stars.length;
+const skyMesh=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial({fog:false}),skyCount);
+skyMesh.frustumCulled=false;
+let skyBase=[];   // base colors aligned to instance indices
+let si=0;
+for(const cl of clouds) for(const v of cl.vox) skyMesh.setColorAt(si++,col.copy(v.c).multiplyScalar(jit(v.x,v.y,v.z)));
+for(const st of stars)      skyMesh.setColorAt(si++,col.copy(st.c));
+scene.add(skyMesh);
+
+/* bloom */
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),.62,.55,.72);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ───────────────────────── UI + state ───────────────────────── */
+const $=id=>document.getElementById(id);
+const spinEl=$('spin'), lightEl=$('light');
+spinEl.value=spinV; lightEl.value=lightV;
+let spinRPS=spinV/100, paused=false, boostUntil=0;
+spinEl.addEventListener('input',()=>spinRPS=spinEl.value/100);
+setLight(lightV);
+lightEl.addEventListener('input',()=>setLight(+lightEl.value));
+$('pause').addEventListener('click',()=>{paused=!paused;$('pause').textContent=paused?'▶ resume':'⏸ pause';});
+
+const burstEmoji=(x,y)=>{const glyphs=['✨','💖','🔮','🌆','💫'];
+  for(let i=0;i<7;i++){const s=document.createElement('span');s.className='fx';
+    s.textContent=glyphs[(Math.random()*glyphs.length)|0];
+    s.style.left=(x+(Math.random()*44-22))+'px'; s.style.top=(y+(Math.random()*26-13))+'px';
+    s.style.fontSize=(13+Math.random()*12)+'px'; s.style.animationDelay=(Math.random()*.12)+'s';
+    stage.appendChild(s); setTimeout(()=>s.remove(),1300);}};
+
+$('boost').addEventListener('click',()=>{
+  boostUntil=performance.now()+2400;
+  const p=new THREE.Vector3(0,4,carZ).applyMatrix4(island.matrixWorld).project(camera);
+  burstEmoji((p.x*.5+.5)*innerWidth,(-p.y*.5+.5)*innerHeight);
+});
+renderer.domElement.addEventListener('pointerdown',e=>{if(e.isPrimary)burstEmoji(e.clientX,e.clientY);});
+
+/* ───────────────────────── animate ───────────────────────── */
+document.getElementById('voxmeta').textContent =
+  `${(solid.length+glow.length).toLocaleString()} voxels · one infinite sunset · the world turns, the neon stays lit`;
+
+let carZ=62, last=performance.now(), t=0;
+const q0=new THREE.Quaternion(), sc=new THREE.Vector3();
 function frame(now){
   requestAnimationFrame(frame);
-  const dt=Math.min(0.06,(now-last)/1000);last=now;uiT+=dt;
-  fpsN++;fpsT+=dt;
-  if(fpsT>=0.5){window.__fps=Math.round(fpsN/fpsT);fpsN=0;fpsT=0;}
-  if(!paused)t+=dt*SPEED;
-  draw();
+  const dt=Math.min(.05,(now-last)/1000); last=now;
+  if(!paused){ t+=dt;
+    island.rotation.y+=spinRPS*dt*Math.PI*2;
+    const boosting=now<boostUntil;
+    carZ-=dt*(boosting?26:8.5);
+    if(carZ<-64)carZ=62;
+    const bounce=(Math.sin(t*7)*.5+.5)*.3;   // 0..0.3 suspension bob, never clips the road
+    car.forEach((v,i)=>{ m4.makeTranslation(v.x, v.y+bounce, carZ+v.z);
+      carMesh.setMatrixAt(i,m4); });
+    const boostGlow=boosting?1:0;
+    headIdx.forEach(i=>carMesh.setColorAt(i,col.setHSL(.13,.55,boostGlow?.95:.62)));
+    carMesh.instanceColor.needsUpdate=true; carMesh.instanceMatrix.needsUpdate=true;
+    si=0;
+    for(const cl of clouds){ const th=cl.a0+t*cl.w;
+      for(const v of cl.vox){ m4.makeTranslation(cl.r*Math.cos(th)+v.x, cl.h+v.y, cl.r*Math.sin(th)+v.z);
+        skyMesh.setMatrixAt(si++,m4); } }
+    for(const st of stars){ const s=.3+.7*(0.5+0.5*Math.sin(t*st.sp+st.ph));
+      sc.setScalar(s); m4.compose(new THREE.Vector3(st.x,st.y,st.z),q0,sc); skyMesh.setMatrixAt(si++,m4); }
+    skyMesh.instanceMatrix.needsUpdate=true;
+  }
+  controls.update();
+  composer.render();
+  if(!window.__ready&&t>0) window.__ready=true;
 }
-resize();
-window.addEventListener('resize',resize);
-// test hook: manually advance the animation (headless browsers throttle rAF)
-window.__step=(dt)=>{t+=dt*SPEED;uiT+=dt;draw();};
 requestAnimationFrame(frame);
-})();
+
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight); composer.setSize(innerWidth,innerHeight);
+  bloom.setSize(innerWidth,innerHeight);
+});
+
+/* scene-state hooks for headless tests */
+window.__analyze=()=>({
+  pose:((island.rotation.y*180/Math.PI)%360+360)%360,
+  sun:[sun.position.x,sun.position.y,sun.position.z],
+  voxels:solid.length, car:car.length, sky:skyCount,
+  carZ:+carZ.toFixed(2), paused, spinRPS
+});
 </script>
 </body>
 </html>
