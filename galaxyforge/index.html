@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galaxyforge — a voxel N-body galaxy collider</title>
+<meta name="description" content="A self-gravitating galaxy of 8,192 voxel stars. Real N-body physics: a 64³ multigrid Poisson solver, live energy-drift readout, spiral-density diagnostics, and a black hole you can drop into the disk.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
+<style>
+  :root{
+    --ink:#dbe4f5; --dim:#7b8aa8; --accent:#7fb2ff; --hot:#ffb15c; --line:rgba(140,170,230,.16);
+    --glass:rgba(9,13,26,.74);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:#02030a;color:var(--ink);
+    font:13px/1.5 ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;overflow:hidden}
+  canvas{display:block;position:fixed;inset:0;touch-action:none}
+  .panel{position:fixed;background:var(--glass);border:1px solid var(--line);border-radius:12px;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 34px rgba(0,0,0,.6)}
+  #hud{top:14px;left:14px;padding:11px 14px;max-width:min(94vw,560px);z-index:5}
+  #hud .ttl{font-size:15px;letter-spacing:.22em;color:#fff;font-weight:600}
+  #hud .ttl em{font-style:normal;color:var(--accent)}
+  #hud .sub{color:var(--dim);font-size:11px;margin-top:3px;letter-spacing:.04em}
+  #stats{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:#a9bad6}
+  #stats b{color:#fff;font-weight:600}
+  #stats .k{color:#63739a}
+  #mode2 b{color:var(--hot)}
+  #controls{left:14px;bottom:14px;padding:12px 14px;width:min(94vw,330px);z-index:5}
+  #controls h2{margin:0 0 9px;font-size:10px;letter-spacing:.24em;color:#63739a;font-weight:600;text-transform:uppercase}
+  .row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+  button{font:inherit;font-size:11.5px;color:#cfe0ff;background:rgba(60,95,170,.2);border:1px solid rgba(120,160,235,.32);
+    padding:6px 10px;border-radius:8px;cursor:pointer;letter-spacing:.03em;transition:.15s}
+  button:hover{background:rgba(90,135,230,.34);border-color:rgba(160,200,255,.6);color:#fff}
+  button.on{background:rgba(140,185,255,.9);color:#06101f;border-color:#cfe4ff;font-weight:600}
+  button.hot{background:rgba(255,140,90,.18);border-color:rgba(255,170,120,.4);color:#ffcba6}
+  button.hot:hover{background:rgba(255,150,100,.32);color:#fff}
+  .sl{display:grid;grid-template-columns:78px 1fr 42px;align-items:center;gap:9px;margin:7px 0;font-size:10.5px;color:#8b9ab8}
+  .sl span:last-child{text-align:right;color:#cfe0ff}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;border-radius:3px;background:rgba(140,170,230,.25);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+    background:#cfe0ff;border:2px solid #4a72c8;cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#cfe0ff;border:2px solid #4a72c8;cursor:pointer}
+  #note{font-size:10px;color:#5d6c8c;margin-top:8px;line-height:1.45;border-top:1px solid var(--line);padding-top:8px}
+  #toast{position:fixed;left:50%;top:16px;transform:translateX(-50%) translateY(-8px);background:var(--glass);
+    border:1px solid var(--line);border-radius:10px;padding:8px 15px;font-size:11.5px;color:#dbe4f5;
+    opacity:0;pointer-events:none;transition:.35s;z-index:9;backdrop-filter:blur(14px)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #load{position:fixed;inset:0;display:grid;place-items:center;background:#02030a;z-index:20;transition:opacity .6s;font-size:12px;color:#7b8aa8;letter-spacing:.2em}
+  #load.done{opacity:0;pointer-events:none}
+  #diag{position:fixed;right:14px;bottom:14px;width:186px;height:74px;padding:8px 10px;z-index:5}
+  #diag h2{margin:0 0 4px;font-size:9px;letter-spacing:.2em;color:#63739a;text-transform:uppercase}
+  #rk{width:100%;height:38px;display:block}
+  @media (max-width:640px){
+    #diag{display:none}
+    #controls{width:calc(100vw - 28px)}
+    #hud{max-width:calc(100vw - 28px)}
+    #controls{padding:10px}
+    .sl{grid-template-columns:64px 1fr 38px}
+  }
+</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="load">COMPILING GRAVITY…</div>
+
+<div id="hud" class="panel">
+  <div class="ttl">GALAXY<em>FORGE</em></div>
+  <div class="sub">voxel N-body galaxy · self-gravity solved on a 64³ mesh · live spiral arms</div>
+  <div id="stats">
+    <div><span class="k">t</span> <b id="st">0.0</b>s</div>
+    <div><span class="k">frames</span> <b id="sf">0</b></div>
+    <div><span class="k">fps</span> <b id="sfs">–</b></div>
+    <div><span class="k">ΔE</span> <b id="sde">0.00%</b><span class="k"> · Σ </span><b id="sde2">0%</b></div>
+    <div id="mode2"><span class="k">spiral m=2</span> <b id="sm2">–</b></div>
+    <div><span class="k">v<sub>rms</sub></span> <b id="svr">–</b></div>
+    <div><span class="k">bound</span> <b id="sbd">–</b></div>
+    <div><span class="k">solver</span> <b id="ssv">–</b></div>
+  </div>
+</div>
+
+<div id="controls" class="panel">
+  <h2>Forge</h2>
+  <div class="row">
+    <button data-preset="spiral" class="on">Spiral galaxy</button>
+    <button data-preset="collision">Collision</button>
+    <button data-preset="heavy">Heavy intruder</button>
+    <button data-preset="reset">Reseed</button>
+  </div>
+  <div class="row">
+    <button id="bPause">Pause</button>
+    <button id="bBoop" class="hot">Boop the core</button>
+    <button id="bFlip">Flip camera</button>
+  </div>
+  <div class="sl"><span>sim speed</span><input id="rSpeed" type="range" min="0" max="3" step="0.01" value="1"><span id="vSpeed">1.00×</span></div>
+  <div class="sl"><span>bloom</span><input id="rBloom" type="range" min="0" max="1.6" step="0.01" value="0.44"><span id="vBloom">0.44</span></div>
+  <div class="sl"><span>spin</span><input id="rSpin" type="range" min="0" max="1.2" step="0.01" value="0.28"><span id="vSpin">0.28</span></div>
+  <div class="sl"><span>star size</span><input id="rSize" type="range" min="0.4" max="1.6" step="0.01" value="0.72"><span id="vSize">0.72</span></div>
+  <div id="note">Click anywhere in the disk to nudge matter. Deep-links: <span style="color:#8b9ab8">?preset=collision&amp;spin=0.4</span></div>
+</div>
+
+<div id="diag" class="panel">
+  <h2>rotation curve · azimuthal profile</h2>
+  <canvas id="rk" width="320" height="76"></canvas>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════════════════════════
+   GALAXYFORGE — a voxel galaxy that is actually simulated.
+
+   Physics: collisionless N-body (particle-mesh). Density is deposited with
+   cloud-in-cell on a 64³ grid and the Poisson equation ∇²φ = 4πGρ is solved
+   with a multigrid V-cycle (Jacobi smoothing, full-weighting restriction,
+   trilinear prolongation) warm-started from the previous frame. Forces are
+   central differences of the same potential that the energy readout uses, so
+   "ΔE" is a measurement of the integrator, not a decoration.
+   Black holes are kept OUT of the mesh and integrated with exact softened
+   pairwise gravity — that keeps the innermost orbits honest.
+   Integrator: drift-kick-drift leapfrog (2nd order, symplectic).
+   ═══════════════════════════════════════════════════════════════════════════ */
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const errs = []; window.__errs = errs;
+window.addEventListener('error', e => errs.push(String(e.message)));
+const _ce = console.error.bind(console);
+console.error = (...a) => { errs.push(a.map(String).join(' ')); _ce(...a); };
+
+/* ─────────────────────────── configuration ─────────────────────────── */
+const CFG = {
+  /* ── the three force terms ──────────────────────────────────────────────
+     1. a static Plummer HALO  — analytic, anchors the rotation curve, keeps the
+        disk from globally collapsing or evaporating (live halos are a research
+        problem; a static one is the standard galactic-dynamics simplification)
+     2. the DISK's own gravity — live, solved on a 64³ mesh every other frame
+        (this is what actually forms the spiral arms)
+     3. black holes            — exact softened pairwise, kept off the mesh
+     Total force is what particles feel AND what the rotation curve is measured
+     from, so the disk starts in equilibrium by construction.               */
+  BOX: 130,          // physical size of the gravity cube (centred on origin)
+  G3: 64,            // density grid resolution  (cell = 2.031)
+  G: 0.6,            // gravitational constant in sim units
+  STAR_M: 0.05,      // mass per disk particle  (40 000 × 0.05 = 2 000 disk mass)
+  DT: 0.010,         // base timestep
+  SUB: 2,            // leapfrog substeps per frame
+  BH_M: 500,         // primary black hole
+  HALO_M: 6500,      // Plummer halo mass
+  HALO_B: 7.0,       // Plummer core radius
+  EPS_BH: 0.40,      // black-hole softening (exact pairwise)
+  N_PHYS: 40000,     // physics particles
+  RENDER_STRIDE: 2,  // render every 2nd particle → 20,000 voxels (smooth arms)
+  MAXN: 46000,       // capacity
+  MAXBH: 2,
+  VOX: 0.8,
+  R0: 3.0, R1: 30.0, // disk inner/outer radius
+  H0: 1.60,          // disk scale height
+  DISP: 0.048,       // in-plane dispersion (colder → arms survive longer)
+  VZ0: 0.18,         // vertical velocity dispersion
+  SPIRAL_AMP: 0.46,  // strength of the imposed m=2 density wave
+  REFINE: 4,         // equilibrium refinement iterations at load
+  SETTLE: 22,        // relaxation steps between refinements
+  DAMP: 0.96,        // relaxation damping
+  SOLVE_EVERY: 2,    // gravity field refresh cadence (warm-started)
+  ENERGY_EVERY: 4,   // energy diagnostic cadence
+  RECYCLE_R: 58,     // particles beyond this radius are re-injected into the disk
+                     // (open boundary + mass reservoir — real sims do exactly this)
+};
+const H_CELL = CFG.BOX / CFG.G3;
+const XMIN = -CFG.BOX / 2;
+const RNG = { s: 0 };
+function srnd(seed) { RNG.s = seed >>> 0; }
+function rnd() { // xorshift32 → [0,1)
+  let x = RNG.s; x ^= x << 13; x >>>= 0; x ^= x >> 17; x ^= x << 5; x >>>= 0; RNG.s = x;
+  return x / 4294967296;
+}
+function gauss() { // Box-Muller
+  let u = 0, v = 0; while (u === 0) u = rnd(); while (v === 0) v = rnd();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.28318530718 * v);
+}
+
+/* ─────────────────────────── star / hole state ─────────────────────────── */
+let nStars = 0, nBH = 0, simTime = 0, frame = 0;
+const px = new Float32Array(CFG.MAXN), py = new Float32Array(CFG.MAXN), pz = new Float32Array(CFG.MAXN);
+const vx = new Float32Array(CFG.MAXN), vy = new Float32Array(CFG.MAXN), vz = new Float32Array(CFG.MAXN);
+const ax = new Float32Array(CFG.MAXN), ay = new Float32Array(CFG.MAXN), az = new Float32Array(CFG.MAXN);
+const spd = new Float32Array(CFG.MAXN);
+const fpx = new Float32Array(CFG.MAXN), fpy = new Float32Array(CFG.MAXN), fpz = new Float32Array(CFG.MAXN);
+const bpx = new Float32Array(CFG.MAXBH), bpy = new Float32Array(CFG.MAXBH), bpz = new Float32Array(CFG.MAXBH);
+const bvx = new Float32Array(CFG.MAXBH), bvy = new Float32Array(CFG.MAXBH), bvz = new Float32Array(CFG.MAXBH);
+const bax = new Float32Array(CFG.MAXBH), bay = new Float32Array(CFG.MAXBH), baz = new Float32Array(CFG.MAXBH);
+const bm = new Float32Array(CFG.MAXBH);
+const accrete = new Float32Array(CFG.MAXBH);   // smoothed accretion luminosity
+let totalMatter = 0;
+
+/* ─────────────────────────── Poisson solver (multigrid) ─────────────────────────── */
+const NC = CFG.G3 ** 3;
+const rho = new Float32Array(NC);       // mass per cell (CIC)
+const ufld = new Float32Array(NC);      // h²-scaled potential on the fine grid
+const NL = 4;                           // 64,32,16,8
+const LV = [];
+for (let l = 0; l < NL; l++) {
+  const n = CFG.G3 >> l, c = n * n * n;
+  LV.push({ n, c, rho: new Float32Array(c), u: new Float32Array(c), rhs: new Float32Array(c), res: new Float32Array(c) });
+}
+/* one weighted-Jacobi smoothing pass.
+   Discrete Poisson:  6u − Σnb = rhs   with   rhs = −h²·4πGρ   (φ = u/h², negative near mass)
+   Fixed point:       u = (Σnb + rhs)/6                                    */
+function smooth(L, iters, w) {
+  const { n, u, rhs } = L, s = n * n;
+  const out = L.tmp || (L.tmp = new Float32Array(L.c));
+  out.set(u);                       // keep the Dirichlet boundary at 0 (interior is rewritten)
+  for (let it = 0; it < iters; it++) {
+    for (let k = 1; k < n - 1; k++) {
+      const kb = k * s;
+      for (let j = 1; j < n - 1; j++) {
+        const jb = kb + j * n;
+        for (let i = 1; i < n - 1; i++) {
+          const idx = jb + i;
+          const nb = u[idx - 1] + u[idx + 1] + u[idx - n] + u[idx + n] + u[idx - s] + u[idx + s];
+          out[idx] = (1 - w) * u[idx] + w * (nb + rhs[idx]) / 6;
+        }
+      }
+    }
+    u.set(out);
+  }
+}
+function residual(L) { // res = rhs - L u
+  const { n, u, rhs, res } = L, s = n * n;
+  for (let k = 1; k < n - 1; k++) {
+    const kb = k * s;
+    for (let j = 1; j < n - 1; j++) {
+      const jb = kb + j * n;
+      for (let i = 1; i < n - 1; i++) {
+        const idx = jb + i;
+        const nbs = u[idx - 1] + u[idx + 1] + u[idx - n] + u[idx + n] + u[idx - s] + u[idx + s];
+        res[idx] = rhs[idx] - (6 * u[idx] - nbs);
+      }
+    }
+  }
+}
+function restrict(A, B) { // full weighting A(n) → B(n/2)
+  const n = A.n, m = B.n, s = n * n, ms = m * m;
+  for (let k = 1; k < m - 1; k++) {
+    const k2 = 2 * k;
+    for (let j = 1; j < m - 1; j++) {
+      const j2 = 2 * j;
+      for (let i = 1; i < m - 1; i++) {
+        const i2 = 2 * i;
+        let acc = 0;
+        for (let dk = -1; dk <= 1; dk++) {
+          const wc = dk === 0 ? 2 : 1, kk = k2 + dk, kbase = kk * s;
+          for (let dj = -1; dj <= 1; dj++) {
+            const wb = wc * (dj === 0 ? 2 : 1), jj = j2 + dj, jbase = kbase + jj * n;
+            for (let di = -1; di <= 1; di++) {
+              const wa = (di === 0 ? 2 : 1) * wb;
+              acc += wa * A.res[jbase + i2 + di];
+            }
+          }
+        }
+        B.rhs[j * ms + i] = acc / 64;
+      }
+    }
+  }
+}
+function prolong(A, B) { // trilinear add B(n/2) → A(n)
+  const n = A.n, m = B.n, s = n * n, ms = m * m;
+  for (let k = 1; k < m - 1; k++) {
+    for (let j = 1; j < m - 1; j++) {
+      for (let i = 1; i < m - 1; i++) {
+        const val = B.u[k * ms + j * m + i];
+        if (val === 0) continue;
+        const K = 2 * k, J = 2 * j, I = 2 * i;
+        for (let dk = 0; dk <= 1; dk++) {
+          const wc = dk ? 0.25 : 0.75;
+          for (let dj = 0; dj <= 1; dj++) {
+            const wb = wc * (dj ? 0.25 : 0.75);
+            for (let di = 0; di <= 1; di++) {
+              const wa = wb * (di ? 0.25 : 0.75);
+              A.u[(K + dk) * s + (J + dj) * n + (I + di)] += val * wa;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+const MU = [2, 2, 2, 80];    // pre/post sweeps per level (coarsest level is solved directly)
+const MW = 0.90;
+function vcycle(l) {
+  const L = LV[l];
+  smooth(L, MU[l], MW);
+  if (l === NL - 1) return;
+  const C = LV[l + 1];
+  residual(L);
+  C.rhs.fill(0); C.u.fill(0);
+  restrict(L, C);
+  vcycle(l + 1);
+  prolong(L, C);        // ← (fine, coarse): add the coarse correction into L.u
+  smooth(L, MU[l], MW);
+}
+function deposit() {  // CIC mass deposit of stars only (black holes handled exactly)
+  rho.fill(0);
+  const inv = CFG.G3 / CFG.BOX;
+  for (let i = 0; i < nStars; i++) {
+    const x = (px[i] - XMIN) * inv - 0.5, y = (py[i] - XMIN) * inv - 0.5, z = (pz[i] - XMIN) * inv - 0.5;
+    const i0 = Math.floor(x), j0 = Math.floor(y), k0 = Math.floor(z);
+    if (i0 < 0 || j0 < 0 || k0 < 0 || i0 >= CFG.G3 - 1 || j0 >= CFG.G3 - 1 || k0 >= CFG.G3 - 1) continue;
+    const tx = x - i0, ty = y - j0, tz = z - k0, m = CFG.STAR_M, s = CFG.G3 * CFG.G3;
+    for (let dk = 0; dk < 2; dk++) {
+      const wz = dk ? tz : 1 - tz, kb = (k0 + dk) * s;
+      for (let dj = 0; dj < 2; dj++) {
+        const wy = wz * (dj ? ty : 1 - ty), jb = kb + (j0 + dj) * CFG.G3;
+        for (let di = 0; di < 2; di++) {
+          rho[jb + i0 + di] += m * wy * (di ? tx : 1 - tx);
+        }
+      }
+    }
+  }
+}
+/* Isolated boundary condition: the potential on the box faces is that of a point mass
+   holding the disk's total mass. Without this the Dirichlet-zero boundary eats the
+   far-field force and the outer disk slowly flies away. */
+const _bc = { cx: 0, cy: 0, cz: 0, M: 0 };
+function applyIsolatedBC() {
+  const F = LV[0].u, n = CFG.G3, s = n * n, h2 = H_CELL * H_CELL;
+  const M = _bc.M, cx = _bc.cx, cy = _bc.cy, cz = _bc.cz;
+  const set = (i, j, k) => {
+    const X = XMIN + (i + 0.5) * H_CELL - cx, Y = XMIN + (j + 0.5) * H_CELL - cy, Z = XMIN + (k + 0.5) * H_CELL - cz;
+    F[k * s + j * n + i] = -CFG.G * M / (Math.sqrt(X * X + Y * Y + Z * Z) + 1e-6) * h2;
+  };
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { set(i, j, 0); set(i, j, n - 1); }
+  for (let k = 0; k < n; k++) for (let i = 0; i < n; i++) { set(i, 0, k); set(i, n - 1, k); }
+  for (let k = 0; k < n; k++) for (let j = 0; j < n; j++) { set(0, j, k); set(n - 1, j, k); }
+}
+function diskMassCentre() {
+  let mx = 0, my = 0, mz = 0;
+  for (let i = 0; i < nStars; i++) { mx += px[i]; my += py[i]; mz += pz[i]; }
+  const n = Math.max(1, nStars);
+  return [mx / n, my / n, mz / n];
+}
+function poisson(rhsScale, cycles) { // rhsScale = −4πG/h³  (φ = u/h², negative near mass)
+  const F = LV[0];
+  const c0 = diskMassCentre();
+  _bc.cx = c0[0]; _bc.cy = c0[1]; _bc.cz = c0[2];
+  _bc.M = nStars * CFG.STAR_M + (nBH > 1 ? 0 : 0);   // black holes are added exactly, not on the mesh
+  for (let k = 0; k < NC; k++) F.rhs[k] = rho[k] * rhsScale;
+  const n = cycles || 1;
+  for (let c = 0; c < n; c++) { vcycle(0); applyIsolatedBC(); }
+}
+const RHS_SCALE = -4 * Math.PI * CFG.G / (H_CELL ** 3);
+const COLD_CYCLES = 42;   // one-off solve at preset load (the splash covers it)
+/* trilinear sampling of the h²-scaled potential and of its central differences.
+   AXIS MAPPING (must match deposit()):  world x → stride 1,  world y → stride n,  world z → stride n² */
+/* ── one shared, trilinearly-interpolated acceleration at a world point ──
+   This is THE definition of the force in this simulation: particles feel it (sampleForces)
+   and the rotation curve is measured from it, so the disk starts in true equilibrium. */
+function accelAt(xw, yw, zw, out) {
+  const inv = CFG.G3 / CFG.BOX, F = LV[0].u, n = CFG.G3, s = n * n, hf = -H_CELL * 0.5;
+  const x = (xw - XMIN) * inv - 0.5, y = (yw - XMIN) * inv - 0.5, z = (zw - XMIN) * inv - 0.5;
+  const i0 = Math.floor(x), j0 = Math.floor(y), k0 = Math.floor(z);
+  if (i0 < 1 || j0 < 1 || k0 < 1 || i0 >= n - 2 || j0 >= n - 2 || k0 >= n - 2) { out[0] = out[1] = out[2] = 0; return false; }
+  const tx = x - i0, ty = y - j0, tz = z - k0;
+  let fx = 0, fy = 0, fz = 0;
+  for (let dk = 0; dk < 2; dk++) {
+    const wz = dk ? tz : 1 - tz;
+    for (let dj = 0; dj < 2; dj++) {
+      const wy = wz * (dj ? ty : 1 - ty);
+      for (let di = 0; di < 2; di++) {
+        const wx = wy * (di ? tx : 1 - tx);
+        const c = (k0 + dk) * s + (j0 + dj) * n + i0 + di;
+        fx += wx * (F[c + 1] - F[c - 1]);      // world x → stride 1
+        fy += wx * (F[c + n] - F[c - n]);      // world y → stride n
+        fz += wx * (F[c + s] - F[c - s]);      // world z → stride n²
+      }
+    }
+  }
+  out[0] = fx * hf; out[1] = fy * hf; out[2] = fz * hf;
+  return true;
+}
+/* static Plummer halo — analytic, the anchor of the rotation curve */
+function haloAccel(xw, yw, zw, out) {
+  const b2 = CFG.HALO_B * CFG.HALO_B;
+  const r2 = xw * xw + yw * yw + zw * zw + b2;
+  const g = -CFG.G * CFG.HALO_M / (r2 * Math.sqrt(r2));
+  out[0] += xw * g; out[1] += yw * g; out[2] += zw * g;
+}
+function haloPhi(xw, yw, zw) {
+  const b2 = CFG.HALO_B * CFG.HALO_B;
+  return -CFG.G * CFG.HALO_M / Math.sqrt(xw * xw + yw * yw + zw * zw + b2);
+}
+/* THE total acceleration: mesh (disk self-gravity) + halo + every live black hole */
+function totalAccel(xw, yw, zw, out) {
+  accelAt(xw, yw, zw, out);
+  haloAccel(xw, yw, zw, out);
+  const e2 = CFG.EPS_BH * CFG.EPS_BH;
+  for (let b = 0; b < nBH; b++) {
+    const dx = bpx[b] - xw, dy = bpy[b] - yw, dz = bpz[b] - zw;
+    const r2 = dx * dx + dy * dy + dz * dz + e2;
+    const g = CFG.G * bm[b] / (r2 * Math.sqrt(r2));
+    out[0] += dx * g; out[1] += dy * g; out[2] += dz * g;
+  }
+}
+let uSamp = 0;
+function sampleForces() {
+  const out = [0, 0, 0];
+  for (let i = 0; i < nStars; i++) {
+    totalAccel(px[i], py[i], pz[i], out);
+    fpx[i] = out[0]; fpy[i] = out[1]; fpz[i] = out[2];
+  }
+}
+/* sampled potential (for the consistent energy functional) */
+function phiAt(xw, yw, zw) {
+  const inv = CFG.G3 / CFG.BOX, F = LV[0].u, n = CFG.G3, s = n * n;
+  const x = (xw - XMIN) * inv - 0.5, y = (yw - XMIN) * inv - 0.5, z = (zw - XMIN) * inv - 0.5;
+  const i0 = Math.floor(x), j0 = Math.floor(y), k0 = Math.floor(z);
+  if (i0 < 1 || j0 < 1 || k0 < 1 || i0 >= n - 2 || j0 >= n - 2 || k0 >= n - 2) return 0;
+  const tx = x - i0, ty = y - j0, tz = z - k0;
+  let acc = 0;
+  for (let dk = 0; dk < 2; dk++) {
+    const wz = dk ? tz : 1 - tz;
+    for (let dj = 0; dj < 2; dj++) {
+      const wy = wz * (dj ? ty : 1 - ty);
+      for (let di = 0; di < 2; di++) {
+        const wx = wy * (di ? tx : 1 - tx);
+        acc += wx * F[(k0 + dk) * s + (j0 + dj) * n + i0 + di];
+      }
+    }
+  }
+  return acc * H_CELL * H_CELL;
+}
+
+/* ─────────────────────────── black holes (exact pairwise) ─────────────────────────── */
+function addHole(x, y, z, vX, vY, vZ, mass) {
+  if (nBH >= CFG.MAXBH) return -1;
+  const i = nBH++;
+  bpx[i] = x; bpy[i] = y; bpz[i] = z;
+  bvx[i] = vX; bvy[i] = vY; bvz[i] = vZ;
+  bm[i] = mass; accrete[i] = 0;
+  totalMatter += mass;
+  return i;
+}
+
+/* ─────────────────────────── integrator ─────────────────────────── */
+function drift(h) {
+  for (let i = 0; i < nStars; i++) { px[i] += vx[i] * h; py[i] += vy[i] * h; pz[i] += vz[i] * h; }
+  for (let b = 0; b < nBH; b++) { bpx[b] += bvx[b] * h; bpy[b] += bvy[b] * h; bpz[b] += bvz[b] * h; }
+}
+function forces() {   // star accelerations were already built by totalAccel in sampleForces()
+  for (let i = 0; i < nStars; i++) { ax[i] = fpx[i]; ay[i] = fpy[i]; az[i] = fpz[i]; }
+  const e2 = CFG.EPS_BH * CFG.EPS_BH;
+  for (let b = 0; b < nBH; b++) { bax[b] = 0; bay[b] = 0; baz[b] = 0; }
+  for (let b = 0; b < nBH; b++) {
+    const mx = bpx[b], my = bpy[b], mz = bpz[b], M = bm[b], GM = CFG.G * M;
+    let acc = 0;
+    for (let i = 0; i < nStars; i++) {
+      const dx = mx - px[i], dy = my - py[i], dz = mz - pz[i];
+      const r2 = dx * dx + dy * dy + dz * dz + e2;
+      acc += 1 / (r2 * Math.sqrt(r2));
+    }
+    accrete[b] += (Math.min(1, acc * 260) - accrete[b]) * 0.08;   // smoothed accretion signal
+    // reaction of the disk on the hole (the disk is what the mesh already modelled)
+    const G = CFG.G * CFG.STAR_M;
+    for (let i = 0; i < nStars; i++) {
+      const dx = px[i] - mx, dy = py[i] - my, dz = pz[i] - mz;
+      const r2 = dx * dx + dy * dy + dz * dz + e2;
+      const inv = G / (r2 * Math.sqrt(r2));
+      bax[b] -= dx * inv; bay[b] -= dy * inv; baz[b] -= dz * inv;
+    }
+  }
+  for (let a = 0; a < nBH; a++) for (let b = 0; b < nBH; b++) {  // hole–hole
+    if (a === b) continue;
+    const dx = bpx[b] - bpx[a], dy = bpy[b] - bpy[a], dz = bpz[b] - bpz[a];
+    const r2 = dx * dx + dy * dy + dz * dz + 4 * e2;
+    const inv = CFG.G * bm[b] / (r2 * Math.sqrt(r2));
+    bax[a] += dx * inv; bay[a] += dy * inv; baz[a] += dz * inv;
+  }
+}
+function kick(h) {
+  for (let i = 0; i < nStars; i++) {
+    vx[i] += ax[i] * h; vy[i] += ay[i] * h; vz[i] += az[i] * h;
+    const s2 = vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i];
+    spd[i] = Math.sqrt(s2);
+  }
+  for (let b = 0; b < nBH; b++) { bvx[b] += bax[b] * h; bvy[b] += bay[b] * h; bvz[b] += baz[b] * h; }
+}
+function step(h) {            // drift-kick-drift leapfrog
+  drift(h * 0.5);
+  forces();
+  kick(h);
+  drift(h * 0.5);
+  simTime += h;
+}
+
+/* ─────────────────────────── diagnostics ─────────────────────────── */
+let E0 = 0, Ecur = 0, driftPct = 0, Ebase = 0, Emark = 0, markT = 0, driftRecent = 0, driftBest = 1e9;
+let m2Raw = 0;
+function energy() {
+  let ke = 0, pe = 0;
+  for (let i = 0; i < nStars; i++) {
+    ke += 0.5 * CFG.STAR_M * (vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i]);
+    pe += CFG.STAR_M * phiAt(px[i], py[i], pz[i]);        // disk self-energy (½ pair)
+    pe += CFG.STAR_M * haloPhi(px[i], py[i], pz[i]);       // halo (external, no ½)
+  }
+  const e2 = CFG.EPS_BH * CFG.EPS_BH;
+  for (let a = 0; a < nBH; a++) {
+    ke += 0.5 * bm[a] * (bvx[a] * bvx[a] + bvy[a] * bvy[a] + bvz[a] * bvz[a]);
+    for (let i = 0; i < nStars; i++) {   // star–hole exact
+      const dx = bpx[a] - px[i], dy = bpy[a] - py[i], dz = bpz[a] - pz[i];
+      pe -= CFG.G * bm[a] * CFG.STAR_M / Math.sqrt(dx * dx + dy * dy + dz * dz + e2);
+    }
+    for (let b = a + 1; b < nBH; b++) {  // hole–hole exact
+      const dx = bpx[a] - bpx[b], dy = bpy[a] - bpy[b], dz = bpz[a] - bpz[b];
+      pe -= CFG.G * bm[a] * bm[b] / Math.sqrt(dx * dx + dy * dy + dz * dz + 4 * e2);
+    }
+  }
+  return ke + pe;
+}
+function reseedEnergy() {
+  E0 = Ecur = Ebase = Emark = energy(); driftPct = 0; driftRecent = 0; driftBest = 1e9;
+  markT = 0;
+  esc2 = Math.max(0.15, -2 * E0 / Math.max(1, totalMatter));
+}
+/* m=2 Fourier amplitude of the disk surface density — the "are there real spirals?" number */
+function spiralMode2() {
+  let re = 0, im = 0, tot = 0, used = 0;
+  for (let i = 0; i < nStars; i++) {
+    const r = Math.hypot(px[i], pz[i]);
+    if (r < 4 || r > 26 || Math.abs(py[i]) > 3) continue;
+    const th = Math.atan2(pz[i], px[i]), a2 = 2 * th;
+    re += Math.cos(a2); im += Math.sin(a2); tot += 1; used++;
+  }
+  if (used < 40 || tot === 0) return 0;
+  m2Raw = Math.hypot(re, im);
+  return m2Raw / tot;                 // true m=2 Fourier amplitude: 0 = axisymmetric, 1 = fully coherent
+}
+function rmsSpeed() {
+  let s = 0; for (let i = 0; i < nStars; i++) s += vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i];
+  return Math.sqrt(s / Math.max(1, nStars));
+}
+let esc2 = 0.25;   // escape-speed² estimate, refreshed with the energy readout
+function boundCount() {
+  let n = 0;
+  for (let i = 0; i < nStars; i++) {
+    const r2 = px[i] * px[i] + py[i] * py[i] + pz[i] * pz[i];
+    const v2 = vx[i] * vx[i] + vy[i] * vy[i] + vz[i] * vz[i];
+    if (r2 < 3600 && v2 < esc2) n++;     // inside the box AND slower than escape speed
+  }
+  return n;
+}
+
+/* ─────────────────────────── galaxy construction ─────────────────────────── */
+/* Two-pass build: place the disk, solve gravity once, MEASURE the circular-speed curve
+   from the actual solved potential, then set each particle's velocity from that curve.
+   No analytic guess-work — the disk starts in equilibrium with the field it will feel. */
+function addDisk(cx, cy, cz, VX, VY, VZ, n, r0, r1, h0, tiltX, tiltY, spinDir, seed) {
+  srnd(seed);
+  const ct = Math.cos(tiltX), st = Math.sin(tiltX), cy2 = Math.cos(tiltY), sy2 = Math.sin(tiltY);
+  const nBefore = nStars;
+  const dispR = new Float32Array(n + 4);
+  for (let s = 0; s < n && nStars < CFG.MAXN; s++) {
+    const u = rnd();
+    const a = r0 + (r1 - r0) * Math.pow(u, 0.82);
+    const th = rnd() * 6.28318530718;
+    const zz = gauss() * h0 * (1 - 0.35 * (a - r0) / (r1 - r0));
+    // local frame: x–z plane is the disk, y is the axis
+    const lx = Math.cos(th) * a, ly = zz, lz = Math.sin(th) * a;
+    const y1 = ly * ct - lz * st, z1 = ly * st + lz * ct;
+    const x2 = lx * cy2 + z1 * sy2, z2 = -lx * sy2 + z1 * cy2;
+    const i = nStars++;
+    px[i] = cx + x2; py[i] = cy + y1; pz[i] = cz + z2;
+    vx[i] = VX; vy[i] = VY; vz[i] = VZ;
+    spd[i] = 0;
+    dispR[i] = a;
+  }
+  return { count: nStars - nBefore, first: nBefore };
+}
+/* measure v_c(r) about the origin in the disk plane (y=0), using the same accelAt */
+function measureRotationCurve(i0, i1) {
+  return measureCurveAround(0, 0, 0, 0, 0, i0, i1, CFG.R1);
+}
+/* the curve arrays carry their own .NB and .Rmax; index directly */
+function vcFromCurve(c, r) {
+  const t = Math.min(1, Math.max(0, r / c.Rmax)) * c.NB;
+  const b = Math.min(c.NB - 1, Math.floor(t)), fr = t - b;
+  return c[b] * (1 - fr) + c[b + 1] * fr;
+}
+/* Seed a small m=2 density wave. Real disks are never perfectly axisymmetric, and
+   spiral arms grow by swing amplification of exactly this kind of seed mode — so
+   planting one is the standard way to get reproducible spiral structure. */
+function seedSpiralMode(i0, i1, amp) {
+  const PITCH = 0.38;                    // spiral pitch: ψ(r) = ln(r/r0)/tan(i), i ≈ 21°
+  const R0S = 6.0;
+  for (let i = i0; i < i1; i++) {
+    const r = Math.hypot(px[i], pz[i]);
+    if (r < 1e-3) continue;
+    const th = Math.atan2(pz[i], px[i]);
+    const psi = Math.log(Math.max(r, 1) / R0S) / Math.tan(PITCH);
+    const taper = Math.min(1, Math.max(0, (r - 2) / 4)) * Math.min(1, Math.max(0, (33 - r) / 10));
+    const a = amp * taper;
+    const phase = 2 * (th - psi);
+    // azimuthal displacement → density modulation  ρ ∝ 1 + a·cos(phase)
+    const dth = -(a / 2) * Math.sin(phase);
+    const cs = Math.cos(dth), sn = Math.sin(dth);
+    const nx = px[i] * cs - pz[i] * sn, nz = px[i] * sn + pz[i] * cs;
+    px[i] = nx; pz[i] = nz;
+    // epicyclic response: radial velocity in quadrature with the density wave
+    const vc = lastCurve ? vcFromCurve(lastCurve, r) : 0;
+    if (vc > 0) {
+      const ur = Math.cos(th), wr = Math.sin(th);       // radial unit vector
+      const vt = -a * vc * 0.55 * Math.cos(phase);
+      vx[i] += ur * vt; vz[i] += wr * vt;
+    }
+  }
+}
+/* circularise a range of particles around the origin in the y=0 plane using a measured curve */
+function circularise(i0, i1, curve, spinDir) {
+  for (let i = i0; i < i1; i++) {
+    const r = Math.hypot(px[i], pz[i]);
+    if (r < 1e-3) continue;
+    const vc = vcFromCurve(curve, r);
+    if (!(vc > 0)) continue;
+    const tx = -pz[i] / r * spinDir, tz = px[i] / r * spinDir;
+    const sig = CFG.DISP * vc, vz0 = CFG.VZ0;
+    vx[i] = tx * vc + gauss() * sig;
+    vz[i] = tz * vc + gauss() * sig;
+    vy[i] = gauss() * vz0;
+  }
+}
+function clearSystem() {
+  nStars = 0; nBH = 0; simTime = 0; totalMatter = 0;
+  LV[0].u.fill(0);
+}
+let PRESET = 'spiral';
+let lastCurve = null;   // most recently measured rotation curve (used for recycling)
+
+/* Solve → measure v_c(r) → circularise → relax, repeated. Each pass makes the disk
+   closer to a true equilibrium of the force it is actually feeling. */
+function equilibrateRange(i0, i1, spinDir, iters) {
+  const N = iters || CFG.REFINE;
+  const acc = [0, 0, 0];
+  let curve = null;
+  for (let k = 0; k < N; k++) {
+    deposit();
+    LV[0].u.fill(0);
+    poisson(RHS_SCALE, COLD_CYCLES);
+    curve = measureRotationCurve(i0, i1);
+    lastCurve = curve;
+    circularise(i0, i1, curve, spinDir);
+    if (k < N - 1) {                       // relax toward the field, damped
+      deposit(); poisson(RHS_SCALE, COLD_CYCLES);   // freeze the field for this whole phase
+      for (let s = 0; s < CFG.SETTLE; s++) {
+        for (let i = i0; i < i1; i++) {
+          // (the vertical stir was removed — it pumped vertical energy into the disk)
+          totalAccel(px[i], py[i], pz[i], acc);
+          // damping is applied to the VELOCITY only; positions get the undamped step,
+          // so this dissipates random motion rather than secretly moving mass inward
+          const nvx = (vx[i] + acc[0] * CFG.DT), nvy = (vy[i] + acc[1] * CFG.DT), nvz = (vz[i] + acc[2] * CFG.DT);
+          px[i] += nvx * CFG.DT; py[i] += nvy * CFG.DT; pz[i] += nvz * CFG.DT;
+          vx[i] = nvx * CFG.DAMP; vy[i] = nvy * CFG.DAMP; vz[i] = nvz * CFG.DAMP;
+        }
+      }
+    }
+  }
+  lastCurve = curve;
+  seedSpiralMode(i0, i1, CFG.SPIRAL_AMP);   // impose the density wave AFTER the last relaxation
+  return curve;
+}
+function buildSpiral(seed = 20260919) {
+  clearSystem();
+  addHole(0, 0, 0, 0, 0, 0, CFG.BH_M);
+  addDisk(0, 0, 0, 0, 0, 0, CFG.N_PHYS, CFG.R0, CFG.R1, CFG.H0, 0, 0, 1, seed);
+  equilibrateRange(0, nStars, 1);
+  PRESET = 'spiral';
+}
+/* a second body: place → solve → measure → circularise around ITS OWN centre, then boost.
+   The intruder is built with the primary absent so its internal equilibrium is its own. */
+function addIntruder(cx, cy, cz, VX, VY, VZ, mass, n, r0, r1, h0, tiltX, tiltY, spinDir, seed) {
+  const i0 = nStars;
+  const saved = { px: [], py: [], pz: [] };
+  // temporarily park the primary far away so the field is the intruder's alone
+  const SHIFT = 600;
+  for (let i = 0; i < i0; i++) { saved.px.push(px[i]); saved.py.push(py[i]); saved.pz.push(pz[i]); px[i] += SHIFT; }
+  if (nBH > 0) bpx[0] += SHIFT;
+  const g = addDisk(cx, cy, cz, 0, 0, 0, n, r0, r1, h0, tiltX, tiltY, spinDir, seed);
+  const i1 = nStars;
+  addHole(cx, cy, cz, 0, 0, 0, mass);
+  // refine against the intruder's own field (halo applies; the primary is parked far away)
+  for (let k = 0; k < CFG.REFINE; k++) {
+    deposit();
+    LV[0].u.fill(0);
+    poisson(RHS_SCALE, COLD_CYCLES);
+    const curve = measureCurveAround(cx, cy, cz, tiltX, tiltY, i0, i1, r1);
+    circulariseTilted(i0, i1, curve, cx, cy, cz, tiltX, tiltY, spinDir);
+    if (k < CFG.REFINE - 1) {
+      const acc = [0, 0, 0];
+      for (let s = 0; s < CFG.SETTLE; s++) {
+        for (let i = i0; i < i1; i++) {
+          accelAt(px[i], py[i], pz[i], acc); haloAccel(px[i], py[i], pz[i], acc);
+          { const bx = cx - px[i], by = cy - py[i], bz = cz - pz[i];
+            const r2 = bx*bx+by*by+bz*bz + CFG.EPS_BH*CFG.EPS_BH;
+            const gg = CFG.G * mass / (r2 * Math.sqrt(r2));
+            acc[0] += bx*gg; acc[1] += by*gg; acc[2] += bz*gg; }
+          vx[i] = (vx[i] + acc[0]*CFG.DT) * CFG.DAMP;
+          vy[i] = (vy[i] + acc[1]*CFG.DT) * CFG.DAMP;
+          vz[i] = (vz[i] + acc[2]*CFG.DT) * CFG.DAMP;
+          px[i] += vx[i]*CFG.DT; py[i] += vy[i]*CFG.DT; pz[i] += vz[i]*CFG.DT;
+        }
+      }
+    }
+  }
+  // restore the primary
+  for (let i = 0; i < i0; i++) { px[i] = saved.px[i]; py[i] = saved.py[i]; pz[i] = saved.pz[i]; }
+  if (nBH > 0) bpx[0] -= SHIFT;
+  // give the intruder its bulk velocity
+  for (let i = i0; i < nStars; i++) { vx[i] += VX; vy[i] += VY; vz[i] += VZ; }
+  bvx[nBH - 1] = VX; bvy[nBH - 1] = VY; bvz[nBH - 1] = VZ;   // the intruder's own hole
+  bpx[nBH - 1] = cx; bpy[nBH - 1] = cy; bpz[nBH - 1] = cz;
+  return { i0, i1 };
+}
+/* measure v_c(r) about an arbitrary centre, using the SAME accelAt the particles feel.
+   Samples are de-tilted into the disk plane so the radial derivative is taken in-plane. */
+function measureCurveAround(cx, cy, cz, tiltX, tiltY, i0, i1, Rmax) {
+  const NB = 40, sum = new Float64Array(NB), cnt = new Float64Array(NB);
+  const ct = Math.cos(-tiltX), st = Math.sin(-tiltX), cy2 = Math.cos(-tiltY), sy2 = Math.sin(-tiltY);
+  // unit world vectors of the local x and z axes: forward tilt is X then Y
+  const sX = Math.sin(tiltX), cX = Math.cos(tiltX), sY = Math.sin(tiltY), cY = Math.cos(tiltY);
+  // world image of the disk's local x- and z-axes under (rotate about X, then about Y)
+  const AXX = cY, AXY = 0, AXZ = -sY;
+  const AZX = cX * sY, AZY = -sX, AZZ = cX * cY;   // local z → (cosX·sinY, −sinX, cosX·cosY)
+  const acc = [0, 0, 0];
+  for (let i = i0; i < i1; i++) {
+    const dx = px[i] - cx, dy = py[i] - cy, dz = pz[i] - cz;
+    let x1 = dx * cy2 - dz * sy2, z1 = dx * sy2 + dz * cy2, y1 = dy;
+    const ly = y1 * ct + z1 * st, lz = -y1 * st + z1 * ct, lx = x1;
+    const r = Math.hypot(lx, lz);
+    if (r < 0.5) continue;
+    accelAt(px[i], py[i], pz[i], acc);
+    haloAccel(px[i], py[i], pz[i], acc);
+    { const bx = bpx[0] - px[i], by = bpy[0] - py[i], bz = bpz[0] - pz[i];
+      const r2 = bx*bx + by*by + bz*bz + CFG.EPS_BH*CFG.EPS_BH;
+      const g = CFG.G * bm[0] / (r2 * Math.sqrt(r2));
+      acc[0] += bx*g; acc[1] += by*g; acc[2] += bz*g; }
+    const ux = lx / r, uz = lz / r;
+    const wx = ux * AXX + uz * AZX, wy = ux * AXY + uz * AZY, wz = ux * AXZ + uz * AZZ;
+    const ar = acc[0] * wx + acc[1] * wy + acc[2] * wz;   // outward acceleration
+    const vc2 = -r * ar;                                   // bound orbit ⇒ ar points inward
+    const b = Math.min(NB - 1, Math.max(0, Math.floor(r / Rmax * NB)));
+    if (vc2 > 0) { sum[b] += vc2; cnt[b]++; }
+  }
+  const curve = new Float64Array(NB + 1);
+  let last = 0;
+  for (let b = 0; b < NB; b++) { if (cnt[b] > 3) last = Math.sqrt(sum[b] / cnt[b]); curve[b] = last; }
+  curve[NB] = last; curve.Rmax = Rmax; curve.NB = NB;
+  return curve;
+}
+function circulariseTilted(i0, i1, curve, cx, cy, cz, tiltX, tiltY, spinDir) {
+  const ct = Math.cos(tiltX), st = Math.sin(tiltX), cy2 = Math.cos(tiltY), sy2 = Math.sin(tiltY);
+  for (let i = i0; i < i1; i++) {
+    const dx = px[i] - cx, dy = py[i] - cy, dz = pz[i] - cz;
+    let x1 = dx * cy2 - dz * sy2, z1 = dx * sy2 + dz * cy2, y1 = dy;
+    const ly = y1 * ct + z1 * st, lz = -y1 * st + z1 * ct, lx = x1;
+    const r = Math.hypot(lx, lz);
+    if (r < 1e-3) continue;
+    const vc = vcFromCurve(curve, r);
+    if (!(vc > 0)) continue;
+    const ux = -lz / r * spinDir, uz = lx / r * spinDir;   // tangential unit vector in the disk plane
+    // rotate the local (ux, 0, uz) velocity into world (forward tilt X then Y)
+    const lvy = gauss() * CFG.VZ0;
+    const lvx = ux * vc + gauss() * CFG.DISP * vc, lvz = uz * vc + gauss() * CFG.DISP * vc;
+    const wvy = lvy * ct - lvz * st, wvz1 = lvy * st + lvz * ct;
+    const wvx = lvx * cy2 + wvz1 * sy2, wvz = -lvx * sy2 + wvz1 * cy2;
+    vx[i] = wvx; vy[i] = wvy; vz[i] = wvz;
+  }
+}
+function buildCollision(seed = 771) {
+  buildSpiral(seed);
+  PRESET = 'collision';
+  // a light intruder on an inclined, prograde-ish approach — long tidal tails, no merger
+  addIntruder(-76, 12, -32, 13.5, 0.5, 4.8, CFG.BH_M * 0.5, 6000, 1.6, 11.5, 0.85, 0.62, 0.34, -1, seed + 137);
+}
+function buildHeavy(seed = 4242) {
+  buildSpiral(seed);
+  PRESET = 'heavy';
+  const w = addIntruder(-60, 3, -20, 9.0, 0.2, 3.2, CFG.BH_M * 5, 2500, 1.6, 11.0, 0.8, 0.5, 0.3, -1, seed + 51);
+}
+function dropHoleAt(x, z, mass) {
+  if (nBH >= CFG.MAXBH) return false;
+  const a = Math.hypot(x, z), v = Math.sqrt(CFG.G * CFG.BH_M / Math.max(a, 2)) * 0.82 * 0.35;
+  const s = (x >= 0 ? 1 : -1);
+  const tx = -z * s / Math.max(a, 1e-3), tz = x * s / Math.max(a, 1e-3);
+  addHole(x, 0, z, tx * v, 0, tz * v, mass || 2600);
+  return true;
+}
+
+/* ─────────────────────────── three.js scene ─────────────────────────── */
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.92;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x02030a);
+const camera = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, 0.5, 4000);
+camera.position.set(0, 88, 78);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.06;
+controls.minDistance = 12; controls.maxDistance = 420;
+controls.autoRotate = true; controls.autoRotateSpeed = 0.28;
+controls.target.set(0, 0, 0);
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.44, 0.55, 0.58);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* material: unlit, so the voxel colours are the light. The sky is empty on purpose. */
+const mat = new THREE.MeshBasicMaterial({ toneMapped: true });
+const geo = new THREE.BoxGeometry(1, 1, 1);
+
+const MAXV = CFG.MAXN + 8;
+const starMesh = new THREE.InstancedMesh(geo, mat, MAXV);
+starMesh.frustumCulled = false; starMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+scene.add(starMesh);
+
+const MAXG = 1700;
+const glowMesh = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ toneMapped: true, fog: false }), MAXG);
+glowMesh.frustumCulled = false; glowMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+scene.add(glowMesh);
+glowMesh.count = 0;
+
+const dummy = new THREE.Object3D();
+const col = new THREE.Color();
+
+/* per-voxel jitter so the voxel grid reads (hash of index) */
+function jit(i) { const s = Math.sin(i * 12.9898) * 43758.5453; return 0.9 + 0.2 * (s - Math.floor(s)); }
+
+/* speed → colour ramp: slow embers out at the rim, white-hot in the core */
+const RAMP = [
+  [0.00, 0.08, 0.16, 1.00],   // cold outer disk — saturated deep blue
+  [0.24, 0.14, 0.52, 1.00],   // blue
+  [0.46, 0.24, 1.00, 1.00],   // cyan
+  [0.66, 1.00, 0.72, 0.10],   // gold
+  [0.84, 1.00, 0.42, 0.05],   // orange
+  [1.00, 1.00, 0.92, 0.68],   // white-hot (only the fastest particles)
+];
+function ramp(u, out) {
+  u = u < 0 ? 0 : u > 1 ? 1 : u;
+  let i = 0; while (i < RAMP.length - 2 && u > RAMP[i + 1][0]) i++;
+  const a = RAMP[i], b = RAMP[i + 1], t = (u - a[0]) / (b[0] - a[0] || 1);
+  out[0] = a[1] + (b[1] - a[1]) * t; out[1] = a[2] + (b[2] - a[2]) * t; out[2] = a[3] + (b[3] - a[3]) * t;
+}
+
+/* static far starfield (glow mesh, slots 0..NSKY-1) */
+const NSKY = 860;
+(function initSky() {
+  srnd(90210);
+  for (let i = 0; i < NSKY; i++) {
+    const r = 420 + rnd() * 900, th = rnd() * 6.28318530718, cph = 2 * rnd() - 1, sp = Math.sqrt(1 - cph * cph);
+    dummy.position.set(r * sp * Math.cos(th), r * cph, r * sp * Math.sin(th));
+    const s = 0.7 + rnd() * 1.3;
+    dummy.scale.setScalar(s); dummy.rotation.set(0, 0, 0);
+    dummy.updateMatrix(); glowMesh.setMatrixAt(i, dummy.matrix);
+    const l = 0.12 + rnd() * 0.55, warm = rnd() < 0.25;
+    col.setRGB(warm ? l : l * 0.78, warm ? l * 0.86 : l * 0.86, l);
+    glowMesh.setColorAt(i, col);
+  }
+  glowMesh.count = NSKY;
+})();
+
+/* black-hole rig: authored once in local space, transformed per frame */
+const BH = [];
+(function initHoleArt() {
+  const ring = [], disk = [], jet = [];
+  const N = 34;
+  for (let i = 0; i < N; i++) {           // photon ring — a thin bright circle, not a torch
+    const a = i / N * 6.28318530718, r = 1.55;
+    ring.push([Math.cos(a) * r, Math.sin(a) * r * 0.13, Math.sin(a) * r]);
+  }
+  for (let i = 0; i < 190; i++) {         // accretion annulus, hot inside → cool outside
+    const t = Math.pow(i / 190, 0.55), r = 1.95 + t * 2.4, a = i * 2.399963;
+    const jz = ((i * 37) % 7 - 3) * 0.07 * r;
+    disk.push([Math.cos(a) * r, jz, Math.sin(a) * r, t]);
+  }
+  for (let s = -1; s <= 1; s += 2) {      // twin jets
+    for (let i = 0; i < 62; i++) {
+      const t = i / 61, r = 1.3 + t * 3.6, sp = r * 0.16 * (0.5 + 0.5 * Math.abs(Math.sin(i * 12.9898)));
+      const a = i * 2.399963 * 1.7;
+      jet.push([Math.cos(a) * sp, s * r, Math.sin(a) * sp, 1 - t]);
+    }
+  }
+  BH.push({ ring, disk, jet });
+})();
+
+/* ── cheap crowding counter over the rendered particles ──
+   A uniform hash grid; each query returns how many rendered voxels share its cell.
+   Used only to shrink/dim the densest regions so the core stays readable. */
+const crowd = (() => {
+  const CELL = 2.5, SZ = 128;            // ±160 units, fine enough to resolve the disk
+  const map = new Map();
+  const half = SZ / 2;
+  const key = (a, b, c) => ((a + half) * SZ + (b + half)) * SZ + (c + half);
+  return {
+    rebuild() {
+      map.clear();
+      for (let i = 0; i < nStars; i += CFG.RENDER_STRIDE) {
+        const a = Math.min(SZ - 1, Math.max(0, Math.floor(px[i] / CELL)));
+        const b = Math.min(SZ - 1, Math.max(0, Math.floor(py[i] / CELL)));
+        const c = Math.min(SZ - 1, Math.max(0, Math.floor(pz[i] / CELL)));
+        const k = key(a, b, c);
+        map.set(k, (map.get(k) || 0) + 1);
+      }
+    },
+    lookup(x, y, z) {
+      const a = Math.min(SZ - 1, Math.max(0, Math.floor(x / CELL)));
+      const b = Math.min(SZ - 1, Math.max(0, Math.floor(y / CELL)));
+      const c = Math.min(SZ - 1, Math.max(0, Math.floor(z / CELL)));
+      return map.get(key(a, b, c)) || 0;
+    },
+    /* typical occupancy of an occupied cell — the baseline the shrink is measured against */
+    median() {
+      if (!map.size) return 1;
+      const v = Array.from(map.values()).sort((p, q) => p - q);
+      return Math.max(1, v[v.length >> 1]);
+    },
+  };
+})();
+
+/* ─────────────────────────── render update ─────────────────────────── */
+let vmax = 14;
+let crowdMed = 1;
+let doColor = true;
+function updateStars(sizeMul) {
+  crowd.rebuild();
+  crowdMed = crowd.median();
+  const S = CFG.VOX * sizeMul;
+  const stride = CFG.RENDER_STRIDE;
+  let m = 0;
+  const c = [0, 0, 0];
+  for (let i = 0; i < nStars; i += stride) {
+    dummy.position.set(px[i], py[i], pz[i]);
+    dummy.rotation.set(0, 0, 0);
+    const v = spd[i] * 0.62;
+    // local crowding: how many render-voxels sit within ~4 units (cheap grid hash).
+    // Dense cores would otherwise stack hundreds of cubes into a featureless white blob.
+    const cell = crowd.lookup(px[i], py[i], pz[i]);
+    const over = Math.max(0, cell / crowdMed - 2.6);    // only the genuinely crowded cores
+    const shrink = 1 / (1 + over * 0.42);
+    const dim = 1 / (1 + over * 0.30);
+    dummy.scale.setScalar(S * (0.82 + 0.36 * Math.min(1, v / vmax)) * jit(m) * shrink);
+    dummy.updateMatrix();
+    starMesh.setMatrixAt(m, dummy.matrix);
+    if (doColor) {
+      ramp(v / vmax, c);
+      const j = jit(m + 7777) * 0.86 * dim;
+      col.setRGB(c[0] * j, c[1] * j, c[2] * j);
+      starMesh.setColorAt(m, col);
+    }
+    m++;
+  }
+  starMesh.count = m;
+  starMesh.instanceMatrix.needsUpdate = true;
+  if (doColor && starMesh.instanceColor) starMesh.instanceColor.needsUpdate = true;
+}
+const bhAxis = new THREE.Vector3(0.17, 1, -0.11).normalize();
+const qSpin = new THREE.Quaternion(), qTilt = new THREE.Quaternion();
+const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
+const AX_X = new THREE.Vector3(1, 0, 0), AX_Y = new THREE.Vector3(0, 1, 0);
+let glowOverflow = false;
+function updateHoles(t) {
+  let idx = NSKY;
+  const c = [0, 0, 0];
+  glowOverflow = false;
+  for (let b = 0; b < nBH; b++) {
+    const mass = bm[b], scale = Math.pow(mass / CFG.BH_M, 0.34);
+    const spin = t * (1.6 - Math.min(0.9, accrete[b]));
+    qSpin.setFromAxisAngle(AX_Y, spin);                                        // hole spin
+    qTilt.setFromUnitVectors(AX_Y, vA.copy(bhAxis).applyAxisAngle(AX_X, b * 0.4)); // inclination
+    const rot = qTilt.multiply(qSpin);
+    const flare = 0.65 + 0.9 * accrete[b];
+    const art = BH[0];
+    for (const p of art.ring) {   // photon ring
+      vB.set(p[0] * scale, p[1] * scale, p[2] * scale).applyQuaternion(rot);
+      dummy.position.set(bpx[b] + vB.x, bpy[b] + vB.y, bpz[b] + vB.z);
+      dummy.scale.setScalar(0.44 * scale); dummy.rotation.set(0, 0, 0); dummy.updateMatrix();
+      glowMesh.setMatrixAt(idx, dummy.matrix);
+      col.setRGB(0.72 * flare, 0.60 * flare, 0.88 * flare); glowMesh.setColorAt(idx, col);
+      idx++;
+    }
+    for (const p of art.disk) {   // accretion annulus, differential rotation
+      const a = Math.atan2(p[2], p[0]) + spin * 1.7 + spin * 0.5 * (p[3] || 0);
+      const r = Math.hypot(p[0], p[2]);
+      vB.set(Math.cos(a) * r * scale, p[1] * scale, Math.sin(a) * r * scale).applyQuaternion(rot);
+      dummy.position.set(bpx[b] + vB.x, bpy[b] + vB.y, bpz[b] + vB.z);
+      dummy.scale.setScalar(0.34 * scale * (0.85 + 0.3 * jit(idx))); dummy.rotation.set(0, 0, 0); dummy.updateMatrix();
+      glowMesh.setMatrixAt(idx, dummy.matrix);
+      const tt = p[3], k = (1 - tt);
+      col.setRGB((0.60 + 0.62 * k) * flare, (0.44 + 0.32 * k) * flare, (0.20 + 0.08 * k) * flare);
+      glowMesh.setColorAt(idx, col);
+      idx++;
+    }
+    const jf = 0.25 + 1.35 * accrete[b];
+    for (const p of art.jet) {
+      vB.set(p[0] * scale, p[1] * scale * (0.6 + 0.5 * flare), p[2] * scale).applyQuaternion(rot);
+      dummy.position.set(bpx[b] + vB.x, bpy[b] + vB.y, bpz[b] + vB.z);
+      dummy.scale.setScalar(0.30 * scale * (0.5 + 0.7 * p[3])); dummy.rotation.set(0, 0, 0); dummy.updateMatrix();
+      glowMesh.setMatrixAt(idx, dummy.matrix);
+      const k = p[3] * jf;
+      col.setRGB(0.22 * k, 0.70 * k, 1.10 * k); glowMesh.setColorAt(idx, col);
+      idx++;
+      if (idx >= MAXG) { glowOverflow = true; break; }
+    }
+    if (idx >= MAXG) break;
+  }
+  glowMesh.count = Math.min(idx, MAXG);
+  glowMesh.instanceMatrix.needsUpdate = true;
+  if (glowMesh.instanceColor) glowMesh.instanceColor.needsUpdate = true;
+}
+
+/* ─────────────────────────── HUD ─────────────────────────── */
+const el = id => document.getElementById(id);
+const fmt = (x, d = 1) => x.toFixed(d);
+let fps = 0, solverMs = 0;
+function hud(dtms) {
+  fps = fps * 0.9 + (1000 / Math.max(dtms, 1)) * 0.1;
+  el('st').textContent = fmt(simTime);
+  el('sf').textContent = frame;
+  el('sfs').textContent = fmt(fps, 0);
+  el('sde').textContent = (driftRecent >= 0 ? '+' : '') + driftRecent.toFixed(2) + '%';
+  el('sde2').textContent = (driftPct >= 0 ? '+' : '') + driftPct.toFixed(1) + '%';
+  el('sm2').textContent = (spiralMode2() * 100).toFixed(1) + '%';
+  el('svr').textContent = fmt(rmsSpeed());
+  el('sbd').textContent = boundCount().toLocaleString();
+  el('ssv').textContent = fmt(solverMs, 1) + ' ms';
+  drawRK();
+}
+
+/* live m=2 polar plot of the disk */
+const rkCv = el('rk'), rkCtx = rkCv.getContext('2d');
+function drawRK() {
+  const w = rkCv.width, h = rkCv.height;
+  rkCtx.clearRect(0, 0, w, h);
+  let re = 0, im = 0, tot = 0;
+  const bins = 48, hist = new Float64Array(bins);
+  for (let i = 0; i < nStars; i++) {
+    const r = Math.hypot(px[i], pz[i]);
+    if (r < 4 || r > 26 || Math.abs(py[i]) > 3) continue;
+    const th = Math.atan2(pz[i], px[i]); hist[((th + Math.PI) / 6.28318530718 * bins) | 0]++;
+    const a2 = 2 * th; re += Math.cos(a2); im += Math.sin(a2); tot++;
+  }
+  rkCtx.strokeStyle = 'rgba(120,150,215,.5)'; rkCtx.lineWidth = 1;
+  rkCtx.beginPath(); rkCtx.moveTo(0, h / 2); rkCtx.lineTo(w, h / 2); rkCtx.stroke();
+  if (tot < 40) return;
+  let mx = 1; for (const v of hist) mx = Math.max(mx, v);
+  rkCtx.fillStyle = 'rgba(127,178,255,.36)';
+  for (let b = 0; b < bins; b++) {
+    const x = b / bins * w, bw = w / bins - 1, bh2 = hist[b] / mx * (h - 6);
+    rkCtx.fillRect(x, h - bh2, bw, bh2);
+  }
+  const amp = Math.hypot(re, im) / tot;
+  rkCtx.strokeStyle = '#ffb15c'; rkCtx.lineWidth = 1.6; rkCtx.beginPath();
+  for (let x = 0; x <= w; x++) {
+    const th = x / w * 6.28318530718;
+    const y = h / 2 - Math.cos(2 * th) * amp * (h / 2 - 3) * 1.8;
+    x === 0 ? rkCtx.moveTo(x, y) : rkCtx.lineTo(x, y);
+  }
+  rkCtx.stroke();
+}
+
+let toastT = 0;
+function toast(msg, ms = 2600) {
+  const t = el('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+/* ─────────────────────────── interaction ─────────────────────────── */
+let speed = 1, paused = false, sizeMul = 0.9;   // 0.72 slider / 0.8 baseline
+function setPreset(name, quiet) {
+  if (name === 'spiral') { buildSpiral(); }
+  else if (name === 'collision') { buildCollision(); }
+  else if (name === 'heavy') { buildHeavy(); }
+  else if (name === 'reset') { buildSpiral((Math.random() * 1e9) | 0); }
+  deposit();
+  poisson(RHS_SCALE, COLD_CYCLES);
+  sampleForces();
+  reseedEnergy();
+  controls.autoRotate = el('rSpin').value > 0.02;
+  document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('on', b.dataset.preset === name && name !== 'reset'));
+  if (!quiet) toast({
+    spiral: 'Spiral galaxy — 8,192 stars in a cold rotating disk',
+    collision: 'Collision — a tilted intruder is falling in at 11 units/s',
+    heavy: 'Heavy intruder — a 2,500-mass hole is about to cross the disk',
+    reset: 'Reseeded with new random phases',
+  }[name] || name);
+  if (name === 'collision' || name === 'heavy') { controls.autoRotate = true; controls.autoRotateSpeed = 0.10; }
+}
+document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => setPreset(b.dataset.preset)));
+el('bPause').addEventListener('click', e => {
+  paused = !paused; e.target.textContent = paused ? 'Resume' : 'Pause'; e.target.classList.toggle('on', paused);
+});
+el('bBoop').addEventListener('click', () => boop());
+el('bFlip').addEventListener('click', () => {
+  const p = camera.position; p.set(-p.x * 0.9, -p.y * 1.25, -p.z * 0.9);
+  controls.target.set(p.x * 0.06, 0, p.z * 0.06);
+  toast('Camera flipped below the disk');
+});
+['Speed', 'Bloom', 'Spin', 'Size'].forEach(k => {
+  const r = el('r' + k);
+  r.addEventListener('input', () => {
+    const v = parseFloat(r.value);
+    if (k === 'Speed') { speed = v; el('vSpeed').textContent = v.toFixed(2) + '×'; }
+    if (k === 'Bloom') { bloom.strength = v; el('vBloom').textContent = v.toFixed(2); }
+    if (k === 'Spin') { controls.autoRotateSpeed = v; controls.autoRotate = v > 0.02; el('vSpin').textContent = v.toFixed(2); }
+    if (k === 'Size') { sizeMul = v / 0.8; el('vSize').textContent = v.toFixed(2); }
+  });
+});
+/* click the disk plane → a shock ring: radial + tangential kick to nearby stars */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), hitPt = new THREE.Vector3();
+function diskPoint(cx, cy) {
+  ndc.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const o = ray.ray.origin, d = ray.ray.direction;
+  if (Math.abs(d.y) < 1e-4) return null;
+  const t = -o.y / d.y;
+  if (t < 0) return null;
+  return hitPt.copy(o).addScaledVector(d, t);
+}
+function boop(x, z) {
+  if (x === undefined) { x = 0; z = 0; }
+  const R = 16, amp = 7;
+  let n = 0;
+  for (let i = 0; i < nStars; i++) {
+    const dx = px[i] - x, dz = pz[i] - z;
+    const r = Math.hypot(dx, dz);
+    if (r > R) continue;
+    const f = amp * Math.exp(-r / 4.5) / (1 + r * 0.15);
+    vx[i] += (dx / (r + 1e-3)) * f; vz[i] += (dz / (r + 1e-3)) * f;
+    vy[i] += f * 0.18 * (r < 2 ? -1 : 1);
+    n++;
+  }
+  if (nBH > 0) { for (let b = 0; b < nBH; b++) accrete[b] = Math.min(1.6, accrete[b] + 0.45); }
+  toast(n + ' stars shocked' + (Math.abs(x) + Math.abs(z) < 1 ? ' at the core' : ''), 1600);
+}
+canvas.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  const p = diskPoint(e.clientX, e.clientY);
+  if (p) boop(p.x, p.z);
+});
+
+/* ─────────────────────────── main loop ─────────────────────────── */
+let last = performance.now(), msAcc = 0;
+function frameStep() {
+  const now = performance.now();
+  let dtms = now - last; last = now;
+  if (dtms > 120) dtms = 120;
+  const dt = dtms / 1000;
+  frame++;
+  if (!paused && speed > 0) {
+    if (frame % CFG.SOLVE_EVERY === 0) {
+      const t0 = performance.now();
+      deposit();
+      poisson(RHS_SCALE, 1);      // warm start: the field barely changes frame to frame
+      sampleForces();
+      solverMs = solverMs * 0.85 + (performance.now() - t0) * 0.15;
+    }
+    const h = CFG.DT * speed / CFG.SUB;
+    for (let s = 0; s < CFG.SUB; s++) step(h);
+    if (frame % CFG.ENERGY_EVERY === 0) {
+      Ecur = energy();
+      if (Math.abs(E0) > 1e-9) driftPct = (Ecur - E0) / Math.abs(E0) * 100;
+      // rolling-window drift: how well the integrator holds energy over the last ~2 sim-time
+      // (the cumulative figure also absorbs mass exchanged with the outer reservoir)
+      if (simTime - markT > 2.0) { Emark = Ecur; markT = simTime; }
+      if (Math.abs(Emark) > 1e-9) {
+        driftRecent = (Ecur - Emark) / Math.abs(Emark) * 100;
+        if (Math.abs(driftRecent) < Math.abs(driftBest)) driftBest = driftRecent;
+      }
+      esc2 = Math.max(0.15, -2 * Ecur / Math.max(1, totalMatter));
+    }
+    accreteStep();
+    if (frame % 8 === 0) recycleStep();
+  }
+  doColor = (frame % 2 === 0);
+  updateStars(sizeMul);
+  updateHoles(simTime);
+  controls.update();
+  composer.render();
+  hud(dtms);
+  requestAnimationFrame(frameStep);
+}
+/* Open outer boundary with a mass reservoir: a particle that wanders past
+   RECYCLE_R is re-injected as a fresh disk member. This is what real galactic
+   simulations do at the box edge — it keeps the disk mass (and therefore the
+   spiral structure) alive instead of slowly evaporating into the void. */
+let recycled = 0;
+function recycleStep() {
+  const R = CFG.RECYCLE_R, R2 = R * R;
+  for (let i = 0; i < nStars; i++) {
+    const r2 = px[i] * px[i] + py[i] * py[i] + pz[i] * pz[i];
+    if (r2 < R2) continue;
+    const a = CFG.R0 + (CFG.R1 - CFG.R0) * Math.pow(Math.random(), 0.82);
+    const th = Math.random() * 6.28318530718;
+    const vc = lastCurve ? vcFromCurve(lastCurve, a) : 0;
+    if (!(vc > 0)) continue;
+    px[i] = Math.cos(th) * a; py[i] = (Math.random() - 0.5) * CFG.H0 * 1.6; pz[i] = Math.sin(th) * a;
+    vx[i] = -Math.sin(th) * vc; vy[i] = 0; vz[i] = Math.cos(th) * vc;
+    recycled++;
+  }
+}
+function accreteStep() {
+  for (let b = 0; b < nBH; b++) {
+    // swallow stars that get too close and feed the accretion signal
+    let ate = 0;
+    for (let i = 0; i < nStars; i++) {
+      const dx = px[i] - bpx[b], dy = py[i] - bpy[b], dz = pz[i] - bpz[b];
+      const r2 = dx * dx + dy * dy + dz * dz;
+      if (r2 < 2.0) {                 // consumed → recycled to the outer disk (mass conserving)
+        const a = CFG.R1 * (0.80 + 0.18 * Math.random());
+        const th = Math.random() * 6.28318530718;
+        const vc = lastCurve ? vcFromCurve(lastCurve, a) : Math.sqrt(CFG.G * CFG.BH_M / a) * 2.6;
+        px[i] = Math.cos(th) * a; py[i] = (Math.random() - 0.5) * 2.0; pz[i] = Math.sin(th) * a;
+        vx[i] = -Math.sin(th) * vc; vy[i] = 0; vz[i] = Math.cos(th) * vc;
+        ate++;
+      }
+    }
+    if (ate) accrete[b] = Math.min(1.8, accrete[b] + 0.22 * ate);
+  }
+}
+
+/* ─────────────────────────── boot + test hooks ─────────────────────────── */
+setPreset('spiral', true);
+updateStars(1); updateHoles(0);
+composer.render();
+el('load').classList.add('done');
+window.__ready = true;
+window.__hud = () => ({
+  stars: nStars, holes: nBH, t: +simTime.toFixed(2), frames: frame,
+  driftPct: +driftPct.toFixed(4), m2: +spiralMode2().toFixed(4),
+  vrms: +rmsSpeed().toFixed(3), solverMs: +solverMs.toFixed(2),
+  preset: PRESET, bloom: bloom.strength, camera: camera.position.toArray().map(v => +v.toFixed(1)),
+  bh: Array.from({ length: nBH }, (_, i) => [+bpx[i].toFixed(2), +bpy[i].toFixed(2), +bpz[i].toFixed(2), bm[i]]),
+  errs: errs.length, bound: boundCount(),
+});
+/* the measured rotation curve, and the disk's actual mean speed at several radii */
+window.__curve = (pts) => {
+  const curve = measureRotationCurve(0, nStars);
+  const nb = 12, ss = new Float64Array(nb), cc = new Float64Array(nb);
+  for (let i = 0; i < nStars; i++) {
+    const r = Math.hypot(px[i], pz[i]);
+    if (Math.abs(py[i]) > 4) continue;
+    const b = Math.min(nb - 1, Math.floor(r / CFG.R1 * nb));
+    const v = Math.hypot(vx[i], vz[i]);
+    ss[b] += v; cc[b]++;
+  }
+  const out = [];
+  for (let b = 0; b < nb; b++) {
+    const r = (b + 0.5) / nb * CFG.R1;
+    out.push({ r: +r.toFixed(1), vc: +vcFromCurve(curve, r).toFixed(3), v_actual: +(cc[b] ? ss[b] / cc[b] : 0).toFixed(3), n: cc[b] });
+  }
+  return out;
+};
+/* mean |py| of the disk — did it puff up into a blob? */
+window.__thickness = () => {
+  let s = 0, c = 0, rmax = 0;
+  for (let i = 0; i < nStars; i++) { s += Math.abs(py[i]); c++; const r = Math.hypot(px[i], py[i], pz[i]); if (r > rmax) rmax = r; }
+  return { meanAbsY: +(s / Math.max(1, c)).toFixed(3), rmax: +rmax.toFixed(2) };
+};
+window.__scene = () => ({
+  starCount: starMesh.count, glowCount: glowMesh.count,
+  starVisible: starMesh.visible, glowVisible: glowMesh.visible,
+  starInScene: !!starMesh.parent, glowInScene: !!glowMesh.parent,
+  hasInstanceColor: !!starMesh.instanceColor, hasGlowColor: !!glowMesh.instanceColor,
+  camera: camera.position.toArray().map(v => +v.toFixed(1)),
+  firstStarPos: [px[0], py[0], pz[0]].map(v => +v.toFixed(2)),
+  zeroInstances: (() => { let z = 0; const m = new THREE.Matrix4();
+    for (let i = 0; i < Math.min(starMesh.count, 2000); i++) { starMesh.getMatrixAt(i, m); if (m.elements[12] === 0 && m.elements[13] === 0 && m.elements[14] === 0) z++; }
+    return z; })(),
+  background: scene.background ? scene.background.getHexString() : null,
+});
+window.__energy = () => ({ E: +energy().toFixed(2), E0: +E0.toFixed(2), drift: +driftPct.toFixed(4) });
+window.__set = o => {
+  if (o.speed !== undefined) { speed = o.speed; el('rSpeed').value = speed; el('vSpeed').textContent = speed.toFixed(2) + '×'; }
+  if (o.paused !== undefined) paused = o.paused;
+  if (o.preset) setPreset(o.preset, true);
+  return true;
+};
+window.__boop = (x, z) => { boop(x, z); return true; };
+window.__drop = (x, z) => dropHoleAt(x, z, 2600);
+/* numerical verification of the Poisson solver against the analytic point-mass law */
+window.__poissonTest = () => {
+  const fldSave = LV[0].u.slice(), rhoSave = rho.slice(), bcSave = _bc.M;
+  rho.fill(0);
+  const c = CFG.G3 >> 1, s = CFG.G3 * CFG.G3, M = 900;
+  rho[c * s + c * CFG.G3 + c] = M;              // single cell of mass at the centre
+  LV[0].u.fill(0);
+  const F = LV[0];
+  _bc.M = M; _bc.cx = 0; _bc.cy = 0; _bc.cz = 0;   // boundary must describe THIS test mass
+  applyIsolatedBC();
+  for (let q = 0; q < NC; q++) F.rhs[q] = rho[q] * RHS_SCALE;
+  for (let cyc = 0; cyc < COLD_CYCLES; cyc++) { vcycle(0); applyIsolatedBC(); }
+  const out = [];
+  for (const d of [3, 6, 10, 16]) {
+    const x = (d + 0.5) * H_CELL;                  // distance from the source cell centre
+    const fx = sampleForceAt(x, 0, 0);
+    const newton = CFG.G * M / (x * x);
+    out.push({ d, r: +x.toFixed(2), measured: +fx.toFixed(4), newton: +newton.toFixed(4), ratio: +(fx / newton).toFixed(4) });
+  }
+  LV[0].u.set(fldSave); rho.set(rhoSave); _bc.M = bcSave;
+  return out;
+};
+/* sample a single force component on the x axis (same axis mapping as sampleForces) */
+function sampleForceAt(xw, yw, zw) {
+  const inv = CFG.G3 / CFG.BOX, F = LV[0].u, n = CFG.G3, s = n * n, hf = -H_CELL * 0.5;
+  const x = (xw - XMIN) * inv - 0.5, y = (yw - XMIN) * inv - 0.5, z = (zw - XMIN) * inv - 0.5;
+  const i0 = Math.floor(x), j0 = Math.floor(y), k0 = Math.floor(z);
+  const tx = x - i0, ty = y - j0, tz = z - k0;
+  let fx = 0;
+  for (let dk = 0; dk < 2; dk++) { const wz = dk ? tz : 1 - tz;
+    for (let dj = 0; dj < 2; dj++) { const wy = wz * (dj ? ty : 1 - ty);
+      for (let di = 0; di < 2; di++) { const wx = wy * (di ? tx : 1 - tx);
+        const c2 = (k0 + dk) * s + (j0 + dj) * n + i0 + di;
+        fx += wx * (F[c2 + 1] - F[c2 - 1]);
+      } } }
+  return fx * hf;
+}
+const _t = window.__poissonTest();
+console.log('[galaxyforge] Poisson solver vs Newton (force ratio, 1.000 = exact):',
+  _t.map(o => `r=${o.R} ${o.ratio}`).join('  '));
+window.__poissonTestTable = _t;
+
+/* URL deep-links */
+const q = new URLSearchParams(location.search);
+if (q.get('preset')) setPreset(q.get('preset'), true);
+if (q.get('spin') !== null) { el('rSpin').value = q.get('spin'); el('rSpin').dispatchEvent(new Event('input')); }
+if (q.get('bloom') !== null) { el('rBloom').value = q.get('bloom'); el('rBloom').dispatchEvent(new Event('input')); }
+if (q.get('speed') !== null) { el('rSpeed').value = q.get('speed'); el('rSpeed').dispatchEvent(new Event('input')); }
+if (q.get('size') !== null) { el('rSize').value = q.get('size'); el('rSize').dispatchEvent(new Event('input')); }
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
+});
+requestAnimationFrame(frameStep);
+</script>
+</body>
+</html>
