@@ -911,26 +911,25 @@ const BH = [];
    A uniform hash grid; each query returns how many rendered voxels share its cell.
    Used only to shrink/dim the densest regions so the core stays readable. */
 const crowd = (() => {
-  const CELL = 2.5, SZ = 128;            // ±160 units, fine enough to resolve the disk
+  const CELL = 2.5, SZ = 128;            // ±(SZ/2) cells = ±160 units
   const map = new Map();
-  const half = SZ / 2;
-  const key = (a, b, c) => ((a + half) * SZ + (b + half)) * SZ + (c + half);
+  const OFF = SZ >> 1;                   // index = floor(v/CELL) + OFF  → centred on the origin
+  // packing factor SZ+1 keeps index ranges disjoint (indices span 0..SZ-1)
+  const key = (a, b, c) => (a * (SZ + 1) + b) * (SZ + 1) + c;
+  const cellOf = v => {
+    const i = Math.floor(v / CELL) + OFF;
+    return i < 0 ? 0 : (i >= SZ ? SZ - 1 : i);
+  };
   return {
     rebuild() {
       map.clear();
       for (let i = 0; i < nStars; i += CFG.RENDER_STRIDE) {
-        const a = Math.min(SZ - 1, Math.max(0, Math.floor(px[i] / CELL)));
-        const b = Math.min(SZ - 1, Math.max(0, Math.floor(py[i] / CELL)));
-        const c = Math.min(SZ - 1, Math.max(0, Math.floor(pz[i] / CELL)));
-        const k = key(a, b, c);
+        const k = key(cellOf(px[i]), cellOf(py[i]), cellOf(pz[i]));
         map.set(k, (map.get(k) || 0) + 1);
       }
     },
     lookup(x, y, z) {
-      const a = Math.min(SZ - 1, Math.max(0, Math.floor(x / CELL)));
-      const b = Math.min(SZ - 1, Math.max(0, Math.floor(y / CELL)));
-      const c = Math.min(SZ - 1, Math.max(0, Math.floor(z / CELL)));
-      return map.get(key(a, b, c)) || 0;
+      return map.get(key(cellOf(x), cellOf(y), cellOf(z))) || 0;
     },
     /* typical occupancy of an occupied cell — the baseline the shrink is measured against */
     median() {
@@ -960,8 +959,8 @@ function updateStars(sizeMul) {
     // Dense cores would otherwise stack hundreds of cubes into a featureless white blob.
     const cell = crowd.lookup(px[i], py[i], pz[i]);
     const over = Math.max(0, cell / crowdMed - 2.6);    // only the genuinely crowded cores
-    const shrink = 1 / (1 + over * 0.42);
-    const dim = 1 / (1 + over * 0.30);
+    const shrink = 1 / (1 + over * 0.42);               // pack dense cores tighter...
+    const dim = 1 / (1 + over * 0.12);                  // ...but barely dim them (was 0.30)
     dummy.scale.setScalar(S * (0.82 + 0.36 * Math.min(1, v / vmax)) * jit(m) * shrink);
     dummy.updateMatrix();
     starMesh.setMatrixAt(m, dummy.matrix);
