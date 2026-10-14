@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Gabagool Soundboard — Tony Soprano Says Things He'd Never Say</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥓</text></svg>">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #17130f;
+    color: #e8dfd2;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  header { text-align: center; padding: 30px 0 10px; }
+  .est {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #a3484c;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    font-weight: normal;
+    color: #f4ead9;
+    line-height: 1.05;
+  }
+  h1 .red { color: #c34a44; }
+  .sub {
+    margin-top: 14px;
+    font-style: italic;
+    color: #9c8f7d;
+    font-size: 1.05rem;
+    line-height: 1.5;
+  }
+
+  .board {
+    margin: 36px 0 8px;
+    border-top: 4px solid #2a231b;
+    border-bottom: 4px solid #2a231b;
+    background: #1e1913;
+    padding: 26px 22px 30px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+  }
+  .board-cap {
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: #6d5f4e;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 14px;
+  }
+  .pad {
+    background: linear-gradient(180deg, #2b231a 0%, #241d15 100%);
+    border: 1px solid #3d3325;
+    border-radius: 6px;
+    padding: 16px 16px 14px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.06s ease, box-shadow 0.1s, border-color 0.1s;
+  }
+  .pad:hover { border-color: #c34a44; box-shadow: 0 0 0 1px #c34a44 inset, 0 6px 18px rgba(0,0,0,0.45); }
+  .pad:active, .pad.playing {
+    transform: scale(0.97);
+    border-color: #e2b04b;
+    background: linear-gradient(180deg, #33291d 0%, #2a2116 100%);
+  }
+  .pad .n {
+    font-family: 'Courier New', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    color: #7a6a52;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .pad .n b { color: #c34a44; font-weight: normal; }
+  .pad .label {
+    font-size: 0.98rem;
+    color: #ead9bd;
+    line-height: 1.4;
+    font-weight: bold;
+  }
+  .pad .quote {
+    font-style: italic;
+    font-size: 0.8rem;
+    color: #8f8168;
+    line-height: 1.45;
+    margin-top: 7px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .eq {
+    display: flex;
+    gap: 3px;
+    height: 14px;
+    align-items: flex-end;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .pad.playing .eq { opacity: 1; }
+  .eq span { width: 4px; background: #e2b04b; border-radius: 1px; animation: eqb 0.8s ease-in-out infinite alternate; }
+  .eq span:nth-child(2) { animation-delay: 0.15s; }
+  .eq span:nth-child(3) { animation-delay: 0.3s; }
+  .eq span:nth-child(4) { animation-delay: 0.45s; }
+  .eq span:nth-child(5) { animation-delay: 0.6s; }
+  @keyframes eqb { from { height: 3px; } to { height: 14px; } }
+
+  .footnote {
+    margin-top: 18px;
+    padding: 18px 20px;
+    border: 1px dashed #3d3325;
+    border-radius: 6px;
+    color: #8f8168;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .footnote b { color: #b8a88d; font-weight: bold; }
+
+  .credit {
+    margin-top: 34px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #6d5f4e;
+    line-height: 1.7;
+  }
+  .credit a { color: #a3484c; text-decoration: none; }
+  .credit a:hover { text-decoration: underline; }
+  .back {
+    display: inline-block;
+    margin-top: 26px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: #9c8f7d;
+    text-decoration: none;
+    border: 1px solid #3d3325;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .back:hover { border-color: #c34a44; color: #f4ead9; }
+  .center { text-align: center; }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pad .quote { display: none; }
+    .pad { padding: 12px 12px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="est">Est. Satriale's · Not an actual pork store</div>
+    <h1>The <span class="red">Gabagool</span> Soundboard</h1>
+    <p class="sub">Tony Soprano's voice — saying things Tony Soprano would never, ever say.<br>Ten clips. Zero canon. All capisce.</p>
+  </header>
+
+  <div class="board">
+    <div class="board-cap">— Press a pad. Don't ask questions. —</div>
+    <div class="grid" id="grid"></div>
+    <noscript>JavaScript is required to play the soundboard clips.</noscript>
+  </div>
+
+  <div class="footnote">
+    <b>A note from the management:</b> every clip on this board is synthetic speech, generated with an AI voice model
+    cloned from a short reference sample. No dialogue from the show is reproduced, sampled, or included — the words are
+    invented, and nothing here is an actual quote. Parody / fan-art, non-commercial. Don't come after us, we own a boat.
+  </div>
+
+  <div class="credit">
+    Generated October 2026 · local voice-clone (CrispASR / breeze-tts-2) · built by Hermes Agent<br>
+    <a class="back" href="../">← back to home</a>
+  </div>
+</div>
+
+<script>
+  const CLIPS = [
+    { id: "kale",       label: "The Kale Situation",        file: "clips/01-kale.mp3",       quote: "Like eatin' somebody's houseplants, but the doctor says roughage." },
+    { id: "yoga",      label: "Downward Dog",               file: "clips/02-yoga.mp3",      quote: "I'm a grown man from New Jersey. My sciatica? Gone. Not a word to Paulie." },
+    { id: "github",    label: "Merging The PR",             file: "clips/03-github.mp3",    quote: "The diff was clean. Barely any conflicts." },
+    { id: "router",    label: "The Router's Actin' Up",     file: "clips/04-router.mp3",    quote: "Unplug it, count to ten, plug it back in." },
+    { id: "vegan",     label: "Vegan Gabagool",             file: "clips/05-vegan.mp3",     quote: "Made outta cashews. An insult to my grandmother. The texture? Not bad." },
+    { id: "minecraft", label: "The Minecraft Thing",       file: "clips/06-minecraft.mp3", quote: "There's a green thing blowin' up my fence. Maybe I whack this guy." },
+    { id: "password",  label: "The Password",               file: "clips/07-password.mp3",  quote: "Carmela made me add the number." },
+    { id: "litter",    label: "The Litterer",              file: "clips/08-litter.mp3",    quote: "I knocked on his window and I recycled it. Very politely." },
+    { id: "therapist", label: "Sitting With My Feelings",   file: "clips/09-therapist.mp3", quote: "They ordered the ziti and never offered me none." },
+    { id: "meditation", label: "Ten Minutes Every Morning", file: "clips/10-meditation.mp3", quote: "My mind wanders to the ducks. But I'm told that's part of it." }
+  ];
+
+  const grid = document.getElementById('grid');
+  const audioCache = {};
+  let playingPad = null;
+
+  CLIPS.forEach((c, i) => {
+    const pad = document.createElement('div');
+    pad.className = 'pad';
+    pad.setAttribute('role', 'button');
+    pad.setAttribute('tabindex', '0');
+    // Safe: innerHTML content comes only from the hardcoded CLIPS constant above — no user input.
+    pad.innerHTML =
+      '<div class="n"><b>' + String(i+1).padStart(2,'0') + '</b><span>REC</span></div>' +
+      '<div class="label">' + c.label + '</div>' +
+      '<div class="quote">&ldquo;' + c.quote + '&rdquo;</div>' +
+      '<div class="eq"><span></span><span></span><span></span><span></span><span></span></div>';
+    const play = () => {
+      let a = audioCache[c.file];
+      if (!a) { a = new Audio(c.file); a.preload = 'auto'; audioCache[c.file] = a; }
+      if (playingPad && playingPad !== pad) { playingPad.classList.remove('playing'); }
+      a.currentTime = 0;
+      a.play().catch(() => {});
+      pad.classList.add('playing');
+      playingPad = pad;
+      a.onended = () => pad.classList.remove('playing');
+    };
+    pad.addEventListener('click', play);
+    pad.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); } });
+    grid.appendChild(pad);
+  });
+
+  // Preload after first interaction so the first tap is instant.
+  let primed = false;
+  window.addEventListener('pointerdown', () => {
+    if (primed) return; primed = true;
+    CLIPS.forEach(c => { if (!audioCache[c.file]) { const a = new Audio(c.file); a.preload = 'auto'; audioCache[c.file] = a; } });
+  }, { once: false });
+  window.__clips = CLIPS;
+</script>
+</body>
+</html>
